@@ -1,0 +1,4336 @@
+[
+  {
+    "id": "Q01",
+    "title": "Deduplicate reverse routes while preserving an original row",
+    "pattern": "Unordered pairs and symmetry breaking",
+    "difficulty": "Medium",
+    "source": "pairs",
+    "origin": "Original extension of a symmetric pair pattern",
+    "prompt": "Treat (source, destination, distance) and its reversal as one route. Preserve the smallest row_id in each duplicate group, including exact duplicates. Different distances are different routes; keep self routes and lone reverse-oriented routes. Endpoints and distance are non-null.",
+    "tables": [
+      {
+        "name": "routes",
+        "columns": [
+          [
+            "row_id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "src",
+            "TEXT"
+          ],
+          [
+            "dst",
+            "TEXT"
+          ],
+          [
+            "dist",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "A",
+            "B",
+            10
+          ],
+          [
+            2,
+            "B",
+            "A",
+            10
+          ],
+          [
+            3,
+            "A",
+            "C",
+            5
+          ],
+          [
+            4,
+            "D",
+            "C",
+            7
+          ],
+          [
+            5,
+            "A",
+            "B",
+            10
+          ],
+          [
+            6,
+            "A",
+            "A",
+            0
+          ],
+          [
+            7,
+            "B",
+            "A",
+            12
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH canonical AS (\n  SELECT *, CASE WHEN src <= dst THEN src ELSE dst END AS lo,\n            CASE WHEN src <= dst THEN dst ELSE src END AS hi\n  FROM routes\n), keep AS (\n  SELECT MIN(row_id) AS row_id FROM canonical GROUP BY lo, hi, dist\n)\nSELECT r.row_id, r.src, r.dst, r.dist\nFROM routes r JOIN keep k ON r.row_id = k.row_id\nORDER BY r.row_id;",
+    "expected": [
+      [
+        1,
+        "A",
+        "B",
+        10
+      ],
+      [
+        3,
+        "A",
+        "C",
+        5
+      ],
+      [
+        4,
+        "D",
+        "C",
+        7
+      ],
+      [
+        6,
+        "A",
+        "A",
+        0
+      ],
+      [
+        7,
+        "B",
+        "A",
+        12
+      ]
+    ],
+    "explanation": "Canonical endpoints define the duplicate key, but joining retained IDs back to the source preserves original direction. The distance belongs to the key because the prompt says different distances are distinct.",
+    "trap": "WHERE src < dst loses the lone D to C route and every self route. DISTINCT on the original columns does not normalize direction.",
+    "followup": "If distance is excluded from the key, which conflicting distance should survive?",
+    "alternatives": [
+      [
+        "LEFT self anti join",
+        "SELECT a.row_id, a.src, a.dst, a.dist\nFROM routes a\nLEFT JOIN routes b\n  ON b.row_id < a.row_id AND b.dist = a.dist\n AND ((b.src = a.src AND b.dst = a.dst)\n   OR (b.src = a.dst AND b.dst = a.src))\nWHERE b.row_id IS NULL\nORDER BY a.row_id;"
+      ]
+    ]
+  },
+  {
+    "id": "Q02",
+    "title": "Find reciprocal pairs without matching a row to itself",
+    "pattern": "Unordered pairs and symmetry breaking",
+    "difficulty": "Medium",
+    "source": "pairs",
+    "origin": "Adapted practice problem with fresh data",
+    "prompt": "Return (x,y) with x <= y when two distinct input rows establish both directions. A self pair (x,x) needs at least two physical rows. Return each pair once.",
+    "tables": [
+      {
+        "name": "pairs",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "x",
+            "INTEGER"
+          ],
+          [
+            "y",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            2
+          ],
+          [
+            2,
+            2,
+            1
+          ],
+          [
+            3,
+            3,
+            3
+          ],
+          [
+            4,
+            4,
+            4
+          ],
+          [
+            5,
+            4,
+            4
+          ],
+          [
+            6,
+            5,
+            6
+          ],
+          [
+            7,
+            1,
+            2
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT DISTINCT a.x, a.y\nFROM pairs a JOIN pairs b\n  ON a.x = b.y AND a.y = b.x AND a.id <> b.id\nWHERE a.x <= a.y\nORDER BY a.x, a.y;",
+    "expected": [
+      [
+        1,
+        2
+      ],
+      [
+        4,
+        4
+      ]
+    ],
+    "explanation": "The ID inequality forces a different physical row. The endpoint inequality picks one orientation; DISTINCT handles repeated witnesses.",
+    "trap": "A self join on endpoints alone incorrectly certifies the single (3,3) row as reciprocal.",
+    "followup": "Without a row ID, how would grouping and counts distinguish one self pair from two?",
+    "alternatives": []
+  },
+  {
+    "id": "Q03",
+    "title": "Count undirected neighbors despite duplicated edge directions",
+    "pattern": "Graph edge normalization",
+    "difficulty": "Medium",
+    "source": "friends",
+    "origin": "Original extension of a published bidirectional friendship problem",
+    "prompt": "Return each registered person and the number of distinct other people connected to them. Edges are undirected; duplicate directions and self edges must not inflate counts. Include isolated people.",
+    "tables": [
+      {
+        "name": "people",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ]
+        ]
+      },
+      {
+        "name": "edges",
+        "columns": [
+          [
+            "a",
+            "INTEGER"
+          ],
+          [
+            "b",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            3
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH directed AS (\n  SELECT a AS person, b AS neighbor FROM edges WHERE a <> b\n  UNION\n  SELECT b, a FROM edges WHERE a <> b\n)\nSELECT p.id, COUNT(d.neighbor) AS neighbors\nFROM people p LEFT JOIN directed d ON d.person = p.id\nGROUP BY p.id ORDER BY p.id;",
+    "expected": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        4,
+        0
+      ]
+    ],
+    "explanation": "UNION constructs a set of directed neighbor relationships. The master people table retains isolated vertices.",
+    "trap": "UNION ALL counts duplicate edges. COUNT(*) gives an isolated person a count of one after a LEFT JOIN.",
+    "followup": "How would you return actual mutual friends between two people instead of degrees?",
+    "alternatives": []
+  },
+  {
+    "id": "Q04",
+    "title": "Find graph triangles exactly once",
+    "pattern": "Graph edge normalization",
+    "difficulty": "Hard",
+    "source": "recursive",
+    "origin": "Original practice extension",
+    "prompt": "Return all undirected triangles as a < b < c. Ignore duplicate edges and self edges. A triangle requires all three edges, not just a two-hop path.",
+    "tables": [
+      {
+        "name": "edges",
+        "columns": [
+          [
+            "src",
+            "INTEGER"
+          ],
+          [
+            "dst",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH e AS (\n  SELECT DISTINCT CASE WHEN src < dst THEN src ELSE dst END AS a,\n                  CASE WHEN src < dst THEN dst ELSE src END AS b\n  FROM edges WHERE src <> dst\n)\nSELECT x.a, x.b, y.b AS c\nFROM e x JOIN e y ON x.b = y.a\nJOIN e z ON z.a = x.a AND z.b = y.b\nORDER BY x.a, x.b, y.b;",
+    "expected": [
+      [
+        1,
+        2,
+        3
+      ],
+      [
+        1,
+        3,
+        4
+      ]
+    ],
+    "explanation": "Canonical edges enforce a strict vertex order. Two joined edges form a path; the third join closes it.",
+    "trap": "Three unrestricted self joins return permutations of the same triangle. A two-edge path is not a triangle.",
+    "followup": "How would directed cycles differ from undirected triangles?",
+    "alternatives": []
+  },
+  {
+    "id": "Q05",
+    "title": "Assign connected components including isolated nodes",
+    "pattern": "Recursive reachability",
+    "difficulty": "Hard",
+    "source": "recursive",
+    "origin": "Original practice extension",
+    "prompt": "Return each node with the smallest node ID in its undirected connected component. Include isolated nodes. Edges can contain cycles and duplicates.",
+    "tables": [
+      {
+        "name": "nodes",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ],
+          [
+            6
+          ]
+        ]
+      },
+      {
+        "name": "edges",
+        "columns": [
+          [
+            "a",
+            "INTEGER"
+          ],
+          [
+            "b",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH RECURSIVE e(a,b) AS (\n  SELECT a,b FROM edges UNION SELECT b,a FROM edges\n), reach(root,node) AS (\n  SELECT id,id FROM nodes\n  UNION\n  SELECT r.root,e.b FROM reach r JOIN e ON e.a=r.node\n)\nSELECT node, MIN(root) AS component\nFROM reach GROUP BY node ORDER BY node;",
+    "expected": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        6,
+        6
+      ]
+    ],
+    "explanation": "Start from every node and expand reachability. UNION deduplicates the complete (root,node) state, allowing finite termination on cycles.",
+    "trap": "UNION ALL loops on cycles. Adding an ever-increasing depth to the deduplication state would defeat cycle termination.",
+    "followup": "What changes if you need shortest paths instead of reachability?",
+    "alternatives": []
+  },
+  {
+    "id": "Q06",
+    "title": "Compress integer sequences with duplicate input values",
+    "pattern": "Gaps and islands",
+    "difficulty": "Medium",
+    "source": "projects",
+    "origin": "Original practice extension of contiguous grouping",
+    "prompt": "Return start_value, end_value, and distinct length for every maximal consecutive integer run. Duplicate observations count once.",
+    "tables": [
+      {
+        "name": "observations",
+        "columns": [
+          [
+            "value",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            7
+          ],
+          [
+            8
+          ],
+          [
+            10
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH d AS (SELECT DISTINCT value FROM observations),\ng AS (SELECT value, value-ROW_NUMBER() OVER (ORDER BY value) AS island FROM d)\nSELECT MIN(value) AS start_value, MAX(value) AS end_value, COUNT(*) AS length\nFROM g GROUP BY island ORDER BY start_value;",
+    "expected": [
+      [
+        1,
+        3,
+        3
+      ],
+      [
+        7,
+        8,
+        2
+      ],
+      [
+        10,
+        10,
+        1
+      ]
+    ],
+    "explanation": "After deduplication, value and row number increase together inside a run, so their difference is constant.",
+    "trap": "Numbering duplicate values first splits a legitimate run. Grouping by value alone does not identify adjacency.",
+    "followup": "How would you change the break condition if a gap of two were allowed?",
+    "alternatives": [
+      [
+        "Boundary flags instead of row-number subtraction",
+        "WITH d AS (SELECT DISTINCT value FROM observations),\np AS (SELECT value,LAG(value) OVER (ORDER BY value) AS prev FROM d),\ng AS (SELECT value,SUM(CASE WHEN prev IS NULL OR value<>prev+1 THEN 1 ELSE 0 END)\n      OVER (ORDER BY value ROWS UNBOUNDED PRECEDING) AS island FROM p)\nSELECT MIN(value) AS start_value,MAX(value) AS end_value,COUNT(*) AS length\nFROM g GROUP BY island ORDER BY start_value;"
+      ]
+    ]
+  },
+  {
+    "id": "Q07",
+    "title": "Find every longest login streak with duplicate logins",
+    "pattern": "Gaps and islands",
+    "difficulty": "Medium",
+    "source": "projects",
+    "origin": "Original practice extension",
+    "prompt": "day_no is a calendar-day ordinal, not a YYYYMMDD integer. Return all longest streaks per user, including ties. Multiple logins on the same day count once.",
+    "tables": [
+      {
+        "name": "logins",
+        "columns": [
+          [
+            "user_id",
+            "INTEGER"
+          ],
+          [
+            "day_no",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH d AS (SELECT DISTINCT user_id,day_no FROM logins),\ng AS (\n  SELECT *,day_no-ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY day_no) AS island FROM d\n), streaks AS (\n  SELECT user_id,MIN(day_no) AS start_day,MAX(day_no) AS end_day,COUNT(*) AS days\n  FROM g GROUP BY user_id,island\n), ranked AS (\n  SELECT *,MAX(days) OVER (PARTITION BY user_id) AS longest FROM streaks\n)\nSELECT user_id,start_day,end_day,days FROM ranked\nWHERE days=longest ORDER BY user_id,start_day;",
+    "expected": [
+      [
+        1,
+        1,
+        2,
+        2
+      ],
+      [
+        1,
+        4,
+        5,
+        2
+      ],
+      [
+        2,
+        2,
+        4,
+        3
+      ]
+    ],
+    "explanation": "First build streaks, then compare their lengths within each user. Comparing against the maximum keeps both equally long streaks.",
+    "trap": "ROW_NUMBER() = 1 over streak length arbitrarily discards ties. YYYYMMDD subtraction is not calendar arithmetic.",
+    "followup": "For actual DATE columns, what date arithmetic does your SQL dialect require?",
+    "alternatives": []
+  },
+  {
+    "id": "Q08",
+    "title": "Find missing ranges including the boundaries",
+    "pattern": "Gaps and islands",
+    "difficulty": "Medium",
+    "source": "recursive",
+    "origin": "Original practice extension",
+    "prompt": "Find all missing inclusive integer ranges within 1 through 12. Existing IDs are distinct and within the bounds. Include leading and trailing gaps without returning each missing ID separately.",
+    "tables": [
+      {
+        "name": "ids",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            8
+          ],
+          [
+            10
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH points AS (\n  SELECT 0 AS id UNION SELECT id FROM ids UNION SELECT 13\n), n AS (SELECT id,LEAD(id) OVER (ORDER BY id) AS next_id FROM points)\nSELECT id+1 AS gap_start,next_id-1 AS gap_end\nFROM n WHERE next_id > id+1 ORDER BY gap_start;",
+    "expected": [
+      [
+        1,
+        2
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        11,
+        12
+      ]
+    ],
+    "explanation": "Sentinels just outside the allowed range expose both boundary gaps. LEAD gives each neighboring pair of observed points.",
+    "trap": "Looking only between existing rows misses the beginning and end. Expanding every absent number can be expensive for large ranges.",
+    "followup": "What should happen when the input is empty? The answer should be the entire allowed range.",
+    "alternatives": []
+  },
+  {
+    "id": "Q09",
+    "title": "Sessionize events with an exact inactivity threshold",
+    "pattern": "Sessionization and change points",
+    "difficulty": "Medium",
+    "source": "sessions",
+    "origin": "Adapted pattern with fresh data and explicit boundary semantics",
+    "prompt": "minute_no is an elapsed-minute ordinal. Start a new session only when the gap from the previous event is greater than 30 minutes. Equal timestamps are ordered by event_id. Return user, session number, start minute, end minute, and event count.",
+    "tables": [
+      {
+        "name": "events",
+        "columns": [
+          [
+            "event_id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "user_id",
+            "INTEGER"
+          ],
+          [
+            "minute_no",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            2,
+            1,
+            30
+          ],
+          [
+            3,
+            1,
+            61
+          ],
+          [
+            4,
+            1,
+            61
+          ],
+          [
+            5,
+            2,
+            5
+          ],
+          [
+            6,
+            2,
+            40
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH p AS (\n  SELECT *,LAG(minute_no) OVER (PARTITION BY user_id ORDER BY minute_no,event_id) AS prev FROM events\n), f AS (\n  SELECT *,CASE WHEN prev IS NULL OR minute_no-prev>30 THEN 1 ELSE 0 END AS fresh FROM p\n), g AS (\n  SELECT *,SUM(fresh) OVER (PARTITION BY user_id ORDER BY minute_no,event_id ROWS UNBOUNDED PRECEDING) AS session_no FROM f\n)\nSELECT user_id,session_no,MIN(minute_no) AS start_minute,MAX(minute_no) AS end_minute,COUNT(*) AS events\nFROM g GROUP BY user_id,session_no ORDER BY user_id,session_no;",
+    "expected": [
+      [
+        1,
+        1,
+        0,
+        30,
+        2
+      ],
+      [
+        1,
+        2,
+        61,
+        61,
+        2
+      ],
+      [
+        2,
+        1,
+        5,
+        5,
+        1
+      ],
+      [
+        2,
+        2,
+        40,
+        40,
+        1
+      ]
+    ],
+    "explanation": "LAG measures inactivity between adjacent events; a running sum of break flags labels sessions.",
+    "trap": "Using >= 30 changes the exact boundary. Bucketing by minute_no / 30 ignores activity chains that cross fixed bucket boundaries.",
+    "followup": "Should late-arriving events be allowed to merge two sessions that were already published?",
+    "alternatives": []
+  },
+  {
+    "id": "Q10",
+    "title": "Group status runs with NULL states and missing days",
+    "pattern": "Sessionization and change points",
+    "difficulty": "Hard",
+    "source": "window",
+    "origin": "Original practice extension",
+    "prompt": "Return maximal runs of the same status on consecutive calendar-day ordinals. NULL is a legitimate status and equals another NULL for grouping. A missing day breaks a run even if status stays the same. One row exists per day.",
+    "tables": [
+      {
+        "name": "daily",
+        "columns": [
+          [
+            "day_no",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "status",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "up"
+          ],
+          [
+            2,
+            "up"
+          ],
+          [
+            3,
+            null
+          ],
+          [
+            4,
+            null
+          ],
+          [
+            6,
+            null
+          ],
+          [
+            7,
+            "up"
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH p AS (\n  SELECT *,LAG(day_no) OVER (ORDER BY day_no) AS prev_day,\n           LAG(status) OVER (ORDER BY day_no) AS prev_status FROM daily\n), f AS (\n  SELECT *,CASE WHEN day_no=prev_day+1 AND\n    (status=prev_status OR (status IS NULL AND prev_status IS NULL))\n    THEN 0 ELSE 1 END AS fresh FROM p\n), g AS (\n  SELECT *,SUM(fresh) OVER (ORDER BY day_no ROWS UNBOUNDED PRECEDING) AS island FROM f\n)\nSELECT status,MIN(day_no) AS start_day,MAX(day_no) AS end_day\nFROM g GROUP BY island,status ORDER BY start_day;",
+    "expected": [
+      [
+        "up",
+        1,
+        2
+      ],
+      [
+        null,
+        3,
+        4
+      ],
+      [
+        null,
+        6,
+        6
+      ],
+      [
+        "up",
+        7,
+        7
+      ]
+    ],
+    "explanation": "A boundary depends on both calendar adjacency and null-aware state equality. Explicitly handling NULL preserves the intended unknown-state run.",
+    "trap": "status <> LAG(status) evaluates to unknown around NULLs. Grouping only by status merges separated runs.",
+    "followup": "How should conflicting status observations for the same day be resolved?",
+    "alternatives": []
+  },
+  {
+    "id": "Q11",
+    "title": "Return every row in qualifying ID streaks",
+    "pattern": "Gaps and islands",
+    "difficulty": "Medium",
+    "source": "stadium",
+    "origin": "Adapted problem with fresh data",
+    "prompt": "Return all rows belonging to at least three consecutive IDs whose attendance is at least 100. Adjacency is by ID, not by calendar date. IDs are unique.",
+    "tables": [
+      {
+        "name": "visits",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "day_no",
+            "INTEGER"
+          ],
+          [
+            "people",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            90
+          ],
+          [
+            2,
+            2,
+            110
+          ],
+          [
+            3,
+            3,
+            120
+          ],
+          [
+            4,
+            4,
+            90
+          ],
+          [
+            5,
+            5,
+            130
+          ],
+          [
+            6,
+            6,
+            140
+          ],
+          [
+            7,
+            9,
+            150
+          ],
+          [
+            9,
+            10,
+            160
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH g AS (\n  SELECT *,id-ROW_NUMBER() OVER (ORDER BY id) AS island\n  FROM visits WHERE people>=100\n), c AS (SELECT *,COUNT(*) OVER (PARTITION BY island) AS run_length FROM g)\nSELECT id,day_no,people FROM c WHERE run_length>=3 ORDER BY id;",
+    "expected": [
+      [
+        5,
+        5,
+        130
+      ],
+      [
+        6,
+        6,
+        140
+      ],
+      [
+        7,
+        9,
+        150
+      ]
+    ],
+    "explanation": "Filter qualifying observations before deriving ID islands. A window count labels every row with its island size.",
+    "trap": "Calendar-date gaps are irrelevant here. Returning only each island boundary omits required interior rows.",
+    "followup": "What changes when the interviewer asks for consecutive dates instead of IDs?",
+    "alternatives": []
+  },
+  {
+    "id": "Q12",
+    "title": "Reconstruct projects from one day tasks",
+    "pattern": "Gaps and islands",
+    "difficulty": "Medium",
+    "source": "projects",
+    "origin": "Adapted problem with fresh data",
+    "prompt": "Each task covers [start_day,end_day) and lasts exactly one day. Tasks do not overlap. Adjacent tasks belong to one project. Return project start, end, and duration, ordered by duration then start.",
+    "tables": [
+      {
+        "name": "tasks",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "start_day",
+            "INTEGER"
+          ],
+          [
+            "end_day",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            2
+          ],
+          [
+            2,
+            2,
+            3
+          ],
+          [
+            3,
+            5,
+            6
+          ],
+          [
+            4,
+            8,
+            9
+          ],
+          [
+            5,
+            9,
+            10
+          ],
+          [
+            6,
+            10,
+            11
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH g AS (\n  SELECT *,start_day-ROW_NUMBER() OVER (ORDER BY start_day) AS island FROM tasks\n)\nSELECT MIN(start_day) AS project_start,MAX(end_day) AS project_end,\n       MAX(end_day)-MIN(start_day) AS duration\nFROM g GROUP BY island ORDER BY duration,project_start;",
+    "expected": [
+      [
+        5,
+        6,
+        1
+      ],
+      [
+        1,
+        3,
+        2
+      ],
+      [
+        8,
+        11,
+        3
+      ]
+    ],
+    "explanation": "The one-day, non-overlapping contract turns project reconstruction into integer islands on task starts.",
+    "trap": "This arithmetic shortcut fails when tasks have variable durations or overlap; interval packing is then required.",
+    "followup": "Would touching tasks still form a project if end boundaries were inclusive?",
+    "alternatives": []
+  },
+  {
+    "id": "Q13",
+    "title": "Merge overlapping intervals even when they are nested",
+    "pattern": "Interval packing and sweep lines",
+    "difficulty": "Hard",
+    "source": "intervals",
+    "origin": "Adapted pattern with a nested-interval counterexample",
+    "prompt": "Merge intervals into maximal coverage ranges. Intervals use [start,end); touching intervals merge. Input intervals have positive lengths and unique IDs. Include nested ranges correctly.",
+    "tables": [
+      {
+        "name": "intervals",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "start_at",
+            "INTEGER"
+          ],
+          [
+            "end_at",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            10
+          ],
+          [
+            2,
+            2,
+            3
+          ],
+          [
+            3,
+            4,
+            8
+          ],
+          [
+            4,
+            10,
+            12
+          ],
+          [
+            5,
+            15,
+            17
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH p AS (\n  SELECT *,MAX(end_at) OVER (ORDER BY start_at,end_at,id\n    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS previous_max\n  FROM intervals\n), f AS (\n  SELECT *,CASE WHEN previous_max IS NULL OR start_at>previous_max THEN 1 ELSE 0 END AS fresh FROM p\n), g AS (\n  SELECT *,SUM(fresh) OVER (ORDER BY start_at,end_at,id ROWS UNBOUNDED PRECEDING) AS island FROM f\n)\nSELECT MIN(start_at) AS start_at,MAX(end_at) AS end_at\nFROM g GROUP BY island ORDER BY start_at;",
+    "expected": [
+      [
+        1,
+        12
+      ],
+      [
+        15,
+        17
+      ]
+    ],
+    "explanation": "Compare each start with the largest prior end, not merely the previous row end. That prior envelope remembers long intervals even after short nested ones.",
+    "trap": "LAG(end_at) sees 3 before the interval starting at 4 and incorrectly splits coverage still protected by [1,10).",
+    "followup": "Change > to >= if touching intervals should remain separate. Partition all windows when intervals belong to different resources.",
+    "alternatives": []
+  },
+  {
+    "id": "Q14",
+    "title": "Find free time between overlapping bookings",
+    "pattern": "Interval packing and sweep lines",
+    "difficulty": "Hard",
+    "source": "intervals",
+    "origin": "Original practice extension",
+    "prompt": "Within [0,20), return every maximal free interval. Bookings are positive-length half-open intervals fully inside the requested window. Touching occupied intervals leave no gap.",
+    "tables": [
+      {
+        "name": "bookings",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "start_at",
+            "INTEGER"
+          ],
+          [
+            "end_at",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            5
+          ],
+          [
+            2,
+            3,
+            7
+          ],
+          [
+            3,
+            10,
+            12
+          ],
+          [
+            4,
+            12,
+            16
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH p AS (\n  SELECT *,MAX(end_at) OVER (ORDER BY start_at,end_at,id\n    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS mx FROM bookings\n), f AS (\n  SELECT *,CASE WHEN mx IS NULL OR start_at>mx THEN 1 ELSE 0 END AS fresh FROM p\n), g AS (\n  SELECT *,SUM(fresh) OVER (ORDER BY start_at,end_at,id ROWS UNBOUNDED PRECEDING) AS grp FROM f\n), packed AS (\n  SELECT MIN(start_at) AS s,MAX(end_at) AS e FROM g GROUP BY grp\n), padded AS (\n  SELECT s,e FROM packed UNION ALL SELECT 0,0 UNION ALL SELECT 20,20\n), gaps AS (\n  SELECT e AS free_start,LEAD(s) OVER (ORDER BY s,e) AS free_end FROM padded\n)\nSELECT free_start,free_end FROM gaps WHERE free_end>free_start ORDER BY free_start;",
+    "expected": [
+      [
+        0,
+        1
+      ],
+      [
+        7,
+        10
+      ],
+      [
+        16,
+        20
+      ]
+    ],
+    "explanation": "Pack occupied coverage before taking its complement. Boundary sentinels expose free time before the first booking and after the last.",
+    "trap": "Taking LEAD directly over raw bookings invents free intervals inside overlapping bookings.",
+    "followup": "How would you clip bookings that start before 0 or end after 20?",
+    "alternatives": []
+  },
+  {
+    "id": "Q15",
+    "title": "Find peak simultaneous meetings with tied event times",
+    "pattern": "Interval packing and sweep lines",
+    "difficulty": "Hard",
+    "source": "window",
+    "origin": "Original practice exercise",
+    "prompt": "Meetings are half-open intervals: a meeting ending at time t is inactive at t. Return every positive-duration segment having the maximum simultaneous meeting count.",
+    "tables": [
+      {
+        "name": "meetings",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "start_at",
+            "INTEGER"
+          ],
+          [
+            "end_at",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            4
+          ],
+          [
+            2,
+            2,
+            5
+          ],
+          [
+            3,
+            4,
+            6
+          ],
+          [
+            4,
+            4,
+            7
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH events AS (\n  SELECT start_at AS at,1 AS delta FROM meetings\n  UNION ALL SELECT end_at,-1 FROM meetings\n), grouped AS (SELECT at,SUM(delta) AS delta FROM events GROUP BY at),\nswept AS (\n  SELECT at,LEAD(at) OVER (ORDER BY at) AS until,\n         SUM(delta) OVER (ORDER BY at ROWS UNBOUNDED PRECEDING) AS active\n  FROM grouped\n), segments AS (SELECT * FROM swept WHERE until>at),\npeaks AS (SELECT *,MAX(active) OVER () AS peak FROM segments)\nSELECT at AS start_at,until AS end_at,active FROM peaks WHERE active=peak ORDER BY at;",
+    "expected": [
+      [
+        4,
+        5,
+        3
+      ]
+    ],
+    "explanation": "Collapse simultaneous starts and ends into one net change. The running active count applies to the interval from that time to the next event.",
+    "trap": "Processing starts before ends can create a fake zero-duration peak. Counting overlapping pairs is not a concurrency measure.",
+    "followup": "If meetings use closed intervals, what must change at equal endpoints?",
+    "alternatives": []
+  },
+  {
+    "id": "Q16",
+    "title": "Measure occupied duration without counting overlaps twice",
+    "pattern": "Interval packing and sweep lines",
+    "difficulty": "Hard",
+    "source": "intervals",
+    "origin": "Original practice extension",
+    "prompt": "Return total occupied duration across half-open intervals. Duplicate and nested coverage must count once. Touching ranges may be merged.",
+    "tables": [
+      {
+        "name": "ranges",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "s",
+            "INTEGER"
+          ],
+          [
+            "e",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            10
+          ],
+          [
+            2,
+            2,
+            3
+          ],
+          [
+            3,
+            9,
+            12
+          ],
+          [
+            4,
+            15,
+            18
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH p AS (\n  SELECT *,MAX(e) OVER (ORDER BY s,e,id ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS mx FROM ranges\n), f AS (SELECT *,CASE WHEN mx IS NULL OR s>mx THEN 1 ELSE 0 END AS fresh FROM p),\ng AS (SELECT *,SUM(fresh) OVER (ORDER BY s,e,id ROWS UNBOUNDED PRECEDING) AS grp FROM f),\npacked AS (SELECT MIN(s) AS s,MAX(e) AS e FROM g GROUP BY grp)\nSELECT COALESCE(SUM(e-s),0) AS occupied FROM packed;",
+    "expected": [
+      [
+        14
+      ]
+    ],
+    "explanation": "Pack the union of coverage, then measure the disjoint ranges. COALESCE gives zero when there are no intervals.",
+    "trap": "SUM(end-start) measures total booked effort, not unique occupied time.",
+    "followup": "Can you compute the same measure from sweep-line segments where active > 0?",
+    "alternatives": []
+  },
+  {
+    "id": "Q17",
+    "title": "Resolve prices as of a date while keeping products without history",
+    "pattern": "Temporal and nearest joins",
+    "difficulty": "Medium",
+    "source": "price",
+    "origin": "Adapted pattern with fresh data and a product master",
+    "prompt": "Return every product price at day_no 5. Use the most recent change at or before that day; otherwise use default price 10. Product IDs come from a master table, so products with no history must appear. Changes are unique by product and day.",
+    "tables": [
+      {
+        "name": "products",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ]
+        ]
+      },
+      {
+        "name": "changes",
+        "columns": [
+          [
+            "product_id",
+            "INTEGER"
+          ],
+          [
+            "day_no",
+            "INTEGER"
+          ],
+          [
+            "price",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            2,
+            20
+          ],
+          [
+            1,
+            5,
+            30
+          ],
+          [
+            1,
+            8,
+            99
+          ],
+          [
+            2,
+            7,
+            40
+          ],
+          [
+            3,
+            3,
+            15
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH eligible AS (\n  SELECT *,ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY day_no DESC) AS rn\n  FROM changes WHERE day_no<=5\n)\nSELECT p.id,COALESCE(e.price,10) AS price\nFROM products p LEFT JOIN eligible e ON e.product_id=p.id AND e.rn=1\nORDER BY p.id;",
+    "expected": [
+      [
+        1,
+        30
+      ],
+      [
+        2,
+        10
+      ],
+      [
+        3,
+        15
+      ],
+      [
+        4,
+        10
+      ]
+    ],
+    "explanation": "Restrict history to the as-of boundary before choosing a row. Driving from the master preserves future-only and history-free products. Stored prices are non-null.",
+    "trap": "Ranking all history first and then filtering the newest row by date can erase the valid earlier price.",
+    "followup": "If a stored price can be NULL, why must you test row existence rather than COALESCE(price,10)?",
+    "alternatives": [
+      [
+        "Correlated latest eligible change",
+        "SELECT p.id,COALESCE((\n  SELECT c.price FROM changes c WHERE c.product_id=p.id AND c.day_no<=5\n  ORDER BY c.day_no DESC LIMIT 1\n),10) AS price FROM products p ORDER BY p.id;"
+      ]
+    ]
+  },
+  {
+    "id": "Q18",
+    "title": "Join facts to effective dated dimensions at a shared boundary",
+    "pattern": "Temporal and nearest joins",
+    "difficulty": "Medium",
+    "source": "pgjoin",
+    "origin": "Original practice exercise",
+    "prompt": "Attach the effective label to each fact using [valid_from,valid_to). NULL valid_to means open-ended. Return NULL for uncovered facts. Dimension periods for each key never overlap.",
+    "tables": [
+      {
+        "name": "facts",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "key_id",
+            "INTEGER"
+          ],
+          [
+            "at",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            4
+          ],
+          [
+            2,
+            1,
+            5
+          ],
+          [
+            3,
+            1,
+            10
+          ],
+          [
+            4,
+            2,
+            5
+          ]
+        ]
+      },
+      {
+        "name": "versions",
+        "columns": [
+          [
+            "key_id",
+            "INTEGER"
+          ],
+          [
+            "valid_from",
+            "INTEGER"
+          ],
+          [
+            "valid_to",
+            "INTEGER"
+          ],
+          [
+            "label",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            5,
+            "old"
+          ],
+          [
+            1,
+            5,
+            10,
+            "new"
+          ],
+          [
+            1,
+            10,
+            null,
+            "latest"
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT f.id,v.label\nFROM facts f LEFT JOIN versions v\n  ON v.key_id=f.key_id AND f.at>=v.valid_from\n AND (f.at<v.valid_to OR v.valid_to IS NULL)\nORDER BY f.id;",
+    "expected": [
+      [
+        1,
+        "old"
+      ],
+      [
+        2,
+        "new"
+      ],
+      [
+        3,
+        "latest"
+      ],
+      [
+        4,
+        null
+      ]
+    ],
+    "explanation": "The lower bound is inclusive and the upper bound exclusive. Put eligibility in ON so uncovered facts survive.",
+    "trap": "BETWEEN includes both ends and matches the fact at 5 to two versions.",
+    "followup": "How would you detect overlapping dimension periods before trusting this join?",
+    "alternatives": []
+  },
+  {
+    "id": "Q19",
+    "title": "Choose the closest observation with a deterministic tie rule",
+    "pattern": "Temporal and nearest joins",
+    "difficulty": "Hard",
+    "source": "closest",
+    "origin": "Adapted pattern with fresh data",
+    "prompt": "For each target minute, choose the nearest reading. A distance tie prefers the earlier reading minute, then the smaller reading ID. There is at least one reading; reading timestamps may duplicate.",
+    "tables": [
+      {
+        "name": "targets",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "at",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "readings",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "at",
+            "INTEGER"
+          ],
+          [
+            "value",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            3,
+            30
+          ],
+          [
+            2,
+            7,
+            70
+          ],
+          [
+            3,
+            7,
+            71
+          ],
+          [
+            4,
+            12,
+            120
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH candidates AS (\n  SELECT t.id AS target_id,r.id AS reading_id,r.at,r.value,\n    ROW_NUMBER() OVER (PARTITION BY t.id ORDER BY ABS(t.at-r.at),r.at,r.id) AS rn\n  FROM targets t CROSS JOIN readings r\n)\nSELECT target_id,reading_id,value FROM candidates WHERE rn=1 ORDER BY target_id;",
+    "expected": [
+      [
+        1,
+        1,
+        30
+      ],
+      [
+        2,
+        4,
+        120
+      ],
+      [
+        3,
+        1,
+        30
+      ]
+    ],
+    "explanation": "The ordering expresses all tie-breakers. This exhaustive candidate version favors clarity for small examples, not production-scale efficiency.",
+    "trap": "MIN(ABS(...)) alone can return multiple tied candidates. Ordering by distance alone leaves the winner unspecified.",
+    "followup": "At scale, how could predecessor and successor seeks avoid a full cross join?",
+    "alternatives": []
+  },
+  {
+    "id": "Q20",
+    "title": "Find nonbuyers when the purchase table contains NULL",
+    "pattern": "NULL semantics and anti joins",
+    "difficulty": "Medium",
+    "source": "pgsubquery",
+    "origin": "Original semantics exercise",
+    "prompt": "Return registered customer IDs with no matching purchase. A purchase can have an unknown customer_id represented by NULL; it does not match any registered customer.",
+    "tables": [
+      {
+        "name": "customers",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ]
+      },
+      {
+        "name": "purchases",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "customer_id",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            null
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT c.id FROM customers c\nWHERE NOT EXISTS (SELECT 1 FROM purchases p WHERE p.customer_id=c.id)\nORDER BY c.id;",
+    "expected": [
+      [
+        2
+      ],
+      [
+        3
+      ]
+    ],
+    "explanation": "NOT EXISTS asks whether a matching row exists, so the unrelated NULL key cannot poison the result.",
+    "trap": "id NOT IN (SELECT customer_id FROM purchases) yields unknown for nonmatching IDs when the subquery contains NULL.",
+    "followup": "How would you implement the same anti join with LEFT JOIN and a non-nullable purchase ID?",
+    "alternatives": [
+      [
+        "LEFT anti join",
+        "SELECT c.id FROM customers c\nLEFT JOIN purchases p ON p.customer_id=c.id\nWHERE p.id IS NULL ORDER BY c.id;"
+      ]
+    ]
+  },
+  {
+    "id": "Q21",
+    "title": "Keep parents that have no qualifying child rows",
+    "pattern": "NULL semantics and anti joins",
+    "difficulty": "Medium",
+    "source": "pgjoin",
+    "origin": "Original semantics exercise",
+    "prompt": "Return every customer with the number of paid orders. Customers with only cancelled orders, or no orders, must have zero.",
+    "tables": [
+      {
+        "name": "customers",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ]
+      },
+      {
+        "name": "orders",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "customer_id",
+            "INTEGER"
+          ],
+          [
+            "status",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            11,
+            1,
+            "paid"
+          ],
+          [
+            12,
+            1,
+            "cancelled"
+          ],
+          [
+            13,
+            2,
+            "cancelled"
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT c.id,COUNT(o.id) AS paid_orders\nFROM customers c LEFT JOIN orders o\n  ON o.customer_id=c.id AND o.status='paid'\nGROUP BY c.id ORDER BY c.id;",
+    "expected": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        3,
+        0
+      ]
+    ],
+    "explanation": "Apply the child eligibility predicate in ON. Count the child key, not the null-extended parent row.",
+    "trap": "WHERE o.status='paid' after the LEFT JOIN eliminates customers 2 and 3. WHERE status='paid' OR status IS NULL still loses customer 2.",
+    "followup": "Why does the OR status IS NULL workaround fail when nonqualifying child rows exist?",
+    "alternatives": []
+  },
+  {
+    "id": "Q22",
+    "title": "Aggregate orders and payments without join fan out",
+    "pattern": "Join grain and multiplicity",
+    "difficulty": "Hard",
+    "source": "pgjoin",
+    "origin": "Original practice exercise",
+    "prompt": "Return every customer, total order amount, and total payment amount. Orders and payments are separate one-to-many children of customers. A customer can have no child rows. Amounts are non-null.",
+    "tables": [
+      {
+        "name": "customers",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ]
+      },
+      {
+        "name": "orders",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "customer_id",
+            "INTEGER"
+          ],
+          [
+            "amount",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            50
+          ],
+          [
+            2,
+            1,
+            50
+          ]
+        ]
+      },
+      {
+        "name": "payments",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "customer_id",
+            "INTEGER"
+          ],
+          [
+            "amount",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            30
+          ],
+          [
+            2,
+            1,
+            30
+          ],
+          [
+            3,
+            1,
+            40
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH o AS (SELECT customer_id,SUM(amount) AS total FROM orders GROUP BY customer_id),\np AS (SELECT customer_id,SUM(amount) AS total FROM payments GROUP BY customer_id)\nSELECT c.id,COALESCE(o.total,0) AS ordered,COALESCE(p.total,0) AS paid\nFROM customers c LEFT JOIN o ON o.customer_id=c.id\nLEFT JOIN p ON p.customer_id=c.id ORDER BY c.id;",
+    "expected": [
+      [
+        1,
+        100,
+        100
+      ],
+      [
+        2,
+        0,
+        0
+      ]
+    ],
+    "explanation": "Reduce each child independently to one row per customer before joining. This makes both measures live at the same grain.",
+    "trap": "The raw join creates 2 x 3 rows for customer 1. SUM(DISTINCT amount) undercounts legitimate equal-value orders and payments.",
+    "followup": "How would you add refunds as a third independent child without multiplying rows?",
+    "alternatives": []
+  },
+  {
+    "id": "Q23",
+    "title": "Preserve independent transaction amounts when duplicate values are valid",
+    "pattern": "Join grain and multiplicity",
+    "difficulty": "Medium",
+    "source": "select",
+    "origin": "Original practice exercise",
+    "prompt": "Sum the amount of invoices having at least one approved tag. Each invoice contributes once, even if multiple approved tags exist. Equal amounts on different invoices are legitimate.",
+    "tables": [
+      {
+        "name": "invoices",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "amount",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            50
+          ],
+          [
+            2,
+            50
+          ],
+          [
+            3,
+            100
+          ]
+        ]
+      },
+      {
+        "name": "tags",
+        "columns": [
+          [
+            "invoice_id",
+            "INTEGER"
+          ],
+          [
+            "tag",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "approved"
+          ],
+          [
+            1,
+            "approved"
+          ],
+          [
+            2,
+            "approved"
+          ],
+          [
+            3,
+            "draft"
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT COALESCE(SUM(i.amount),0) AS approved_total\nFROM invoices i WHERE EXISTS (\n  SELECT 1 FROM tags t WHERE t.invoice_id=i.id AND t.tag='approved'\n);",
+    "expected": [
+      [
+        100
+      ]
+    ],
+    "explanation": "EXISTS tests eligibility without expanding invoice rows. The sum therefore counts invoice identities rather than distinct numeric values.",
+    "trap": "SUM after a raw join returns 150; SUM(DISTINCT amount) returns 50. Both are wrong for opposite reasons.",
+    "followup": "How would you return qualifying invoice detail without relying on DISTINCT?",
+    "alternatives": [
+      [
+        "Deduplicate eligible identities before aggregating",
+        "WITH eligible AS (\n  SELECT DISTINCT invoice_id FROM tags WHERE tag='approved'\n)\nSELECT COALESCE(SUM(i.amount),0) AS approved_total\nFROM invoices i JOIN eligible e ON e.invoice_id=i.id;"
+      ]
+    ]
+  },
+  {
+    "id": "Q24",
+    "title": "Reconcile two snapshots including NULL valued changes",
+    "pattern": "Set and multiset reconciliation",
+    "difficulty": "Hard",
+    "source": "expr",
+    "origin": "Original practice exercise",
+    "prompt": "Both snapshots have a unique non-null ID. Return added, removed, or changed IDs. NULL to value and value to NULL are changes; NULL to NULL is unchanged. Output id, change_kind, old_value, new_value.",
+    "tables": [
+      {
+        "name": "old_snapshot",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "val",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "a"
+          ],
+          [
+            2,
+            null
+          ],
+          [
+            3,
+            "c"
+          ],
+          [
+            5,
+            null
+          ]
+        ]
+      },
+      {
+        "name": "new_snapshot",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "val",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "a"
+          ],
+          [
+            2,
+            "b"
+          ],
+          [
+            4,
+            "d"
+          ],
+          [
+            5,
+            null
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT o.id AS id,CASE WHEN n.id IS NULL THEN 'removed' ELSE 'changed' END AS change_kind,\n       o.val AS old_value,n.val AS new_value\nFROM old_snapshot o LEFT JOIN new_snapshot n ON n.id=o.id\nWHERE n.id IS NULL OR o.val<>n.val\n   OR (o.val IS NULL AND n.val IS NOT NULL)\n   OR (o.val IS NOT NULL AND n.val IS NULL)\nUNION ALL\nSELECT n.id,'added',NULL,n.val\nFROM new_snapshot n LEFT JOIN old_snapshot o ON o.id=n.id\nWHERE o.id IS NULL\nORDER BY id;",
+    "expected": [
+      [
+        2,
+        "changed",
+        null,
+        "b"
+      ],
+      [
+        3,
+        "removed",
+        "c",
+        null
+      ],
+      [
+        4,
+        "added",
+        null,
+        "d"
+      ]
+    ],
+    "explanation": "Two disjoint LEFT JOIN branches emulate a full comparison. Presence is tested using the primary key; value differences explicitly include NULL transitions.",
+    "trap": "old.val <> new.val misses NULL changes. COALESCE to a magic string conflates real data with a sentinel.",
+    "followup": "On PostgreSQL, how would FULL OUTER JOIN and IS DISTINCT FROM shorten the query?",
+    "alternatives": []
+  },
+  {
+    "id": "Q25",
+    "title": "Reconcile duplicate counts rather than just distinct rows",
+    "pattern": "Set and multiset reconciliation",
+    "difficulty": "Hard",
+    "source": "select",
+    "origin": "Original practice exercise",
+    "prompt": "Return keys whose multiplicity differs between two bags, with delta = new_count - old_count. NULL is a valid key. Suppress zero deltas.",
+    "tables": [
+      {
+        "name": "old_bag",
+        "columns": [
+          [
+            "key_name",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            "a"
+          ],
+          [
+            "a"
+          ],
+          [
+            "b"
+          ],
+          [
+            null
+          ]
+        ]
+      },
+      {
+        "name": "new_bag",
+        "columns": [
+          [
+            "key_name",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            "a"
+          ],
+          [
+            "b"
+          ],
+          [
+            "b"
+          ],
+          [
+            "c"
+          ],
+          [
+            null
+          ],
+          [
+            null
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH signed AS (\n  SELECT key_name,-1 AS delta FROM old_bag\n  UNION ALL SELECT key_name,1 FROM new_bag\n)\nSELECT key_name,SUM(delta) AS delta FROM signed\nGROUP BY key_name HAVING SUM(delta)<>0\nORDER BY CASE WHEN key_name IS NULL THEN 0 ELSE 1 END,key_name;",
+    "expected": [
+      [
+        null,
+        1
+      ],
+      [
+        "a",
+        -1
+      ],
+      [
+        "b",
+        1
+      ],
+      [
+        "c",
+        1
+      ]
+    ],
+    "explanation": "Treat every old occurrence as minus one and every new occurrence as plus one, then add per key. GROUP BY also collects NULL keys together.",
+    "trap": "EXCEPT with distinct semantics can hide multiplicity changes for a and b. UNION would erase repeated signed occurrences.",
+    "followup": "How would you return actual surplus physical rows if the bags also had stable row IDs?",
+    "alternatives": []
+  },
+  {
+    "id": "Q26",
+    "title": "Find customers covering every required product",
+    "pattern": "Relational division and set equality",
+    "difficulty": "Hard",
+    "source": "allproducts",
+    "origin": "Adapted pattern with duplicates, extras, and a master table",
+    "prompt": "Return registered customers who bought every required product. Extra purchases are allowed; repeated purchases do not help. When the required set is empty, every registered customer qualifies.",
+    "tables": [
+      {
+        "name": "customers",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ]
+        ]
+      },
+      {
+        "name": "required",
+        "columns": [
+          [
+            "product",
+            "TEXT PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            "A"
+          ],
+          [
+            "B"
+          ]
+        ]
+      },
+      {
+        "name": "purchases",
+        "columns": [
+          [
+            "customer_id",
+            "INTEGER"
+          ],
+          [
+            "product",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "A"
+          ],
+          [
+            1,
+            "A"
+          ],
+          [
+            1,
+            "B"
+          ],
+          [
+            1,
+            "X"
+          ],
+          [
+            2,
+            "A"
+          ],
+          [
+            2,
+            "A"
+          ],
+          [
+            3,
+            "A"
+          ],
+          [
+            3,
+            "B"
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT c.id FROM customers c\nWHERE NOT EXISTS (\n  SELECT 1 FROM required r WHERE NOT EXISTS (\n    SELECT 1 FROM purchases p WHERE p.customer_id=c.id AND p.product=r.product\n  )\n) ORDER BY c.id;",
+    "expected": [
+      [
+        1
+      ],
+      [
+        3
+      ]
+    ],
+    "explanation": "Double NOT EXISTS says there is no required product missing from this customer. It naturally handles duplicate purchases and an empty requirement set.",
+    "trap": "Counting all purchased products can confuse duplicates or extras with coverage. Starting from purchases loses customers with no purchases under empty requirements.",
+    "followup": "Why is the empty-set result called vacuous truth? When might the business rule deliberately reject it?",
+    "alternatives": [
+      [
+        "Count coverage after intersecting with requirements",
+        "SELECT c.id FROM customers c\nLEFT JOIN purchases p ON p.customer_id=c.id\nLEFT JOIN required r ON r.product=p.product\nGROUP BY c.id\nHAVING COUNT(DISTINCT r.product)=(SELECT COUNT(*) FROM required)\nORDER BY c.id;"
+      ]
+    ]
+  },
+  {
+    "id": "Q27",
+    "title": "Find customers whose basket exactly equals the required set",
+    "pattern": "Relational division and set equality",
+    "difficulty": "Hard",
+    "source": "allproducts",
+    "origin": "Original extension from containment to equality",
+    "prompt": "Return customers whose distinct purchased products equal the required set: no missing product and no extra product. Products and customer IDs are non-null. Duplicate purchases are irrelevant.",
+    "tables": [
+      {
+        "name": "customers",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ]
+        ]
+      },
+      {
+        "name": "required",
+        "columns": [
+          [
+            "product",
+            "TEXT PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            "A"
+          ],
+          [
+            "B"
+          ]
+        ]
+      },
+      {
+        "name": "purchases",
+        "columns": [
+          [
+            "customer_id",
+            "INTEGER"
+          ],
+          [
+            "product",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "A"
+          ],
+          [
+            1,
+            "B"
+          ],
+          [
+            1,
+            "X"
+          ],
+          [
+            2,
+            "A"
+          ],
+          [
+            3,
+            "A"
+          ],
+          [
+            3,
+            "A"
+          ],
+          [
+            3,
+            "B"
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT c.id FROM customers c\nWHERE NOT EXISTS (\n  SELECT 1 FROM required r WHERE NOT EXISTS (\n    SELECT 1 FROM purchases p WHERE p.customer_id=c.id AND p.product=r.product\n  )\n) AND NOT EXISTS (\n  SELECT 1 FROM purchases p WHERE p.customer_id=c.id AND NOT EXISTS (\n    SELECT 1 FROM required r WHERE r.product=p.product\n  )\n) ORDER BY c.id;",
+    "expected": [
+      [
+        3
+      ]
+    ],
+    "explanation": "Set equality needs containment in both directions. Coverage alone permits customer 1, whose basket includes X.",
+    "trap": "Matching the count of distinct products is insufficient: a basket {A,X} has the same cardinality as {A,B}.",
+    "followup": "With empty requirements, only customers with empty baskets should qualify.",
+    "alternatives": []
+  },
+  {
+    "id": "Q28",
+    "title": "Find pairs of customers with identical baskets including empty ones",
+    "pattern": "Relational division and set equality",
+    "difficulty": "Hard",
+    "source": "pgsubquery",
+    "origin": "Original practice exercise",
+    "prompt": "Return customer pairs a < b whose distinct baskets are identical. Include pairs of empty baskets. Product keys are non-null; repeated basket rows count once.",
+    "tables": [
+      {
+        "name": "customers",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ]
+        ]
+      },
+      {
+        "name": "basket",
+        "columns": [
+          [
+            "customer_id",
+            "INTEGER"
+          ],
+          [
+            "product",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "A"
+          ],
+          [
+            1,
+            "A"
+          ],
+          [
+            1,
+            "B"
+          ],
+          [
+            2,
+            "B"
+          ],
+          [
+            2,
+            "A"
+          ],
+          [
+            3,
+            "A"
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT a.id AS a,b.id AS b FROM customers a JOIN customers b ON a.id<b.id\nWHERE NOT EXISTS (\n  SELECT 1 FROM basket x WHERE x.customer_id=a.id AND NOT EXISTS (\n    SELECT 1 FROM basket y WHERE y.customer_id=b.id AND y.product=x.product\n  )\n) AND NOT EXISTS (\n  SELECT 1 FROM basket y WHERE y.customer_id=b.id AND NOT EXISTS (\n    SELECT 1 FROM basket x WHERE x.customer_id=a.id AND x.product=y.product\n  )\n) ORDER BY a.id,b.id;",
+    "expected": [
+      [
+        1,
+        2
+      ],
+      [
+        4,
+        5
+      ]
+    ],
+    "explanation": "Compare missing members in both directions for every candidate pair. Empty baskets pass both tests without special serialization.",
+    "trap": "Concatenating products can collide, depend on ordering, or silently drop empty baskets. Equal counts do not establish equal contents.",
+    "followup": "How would you change this to compare multisets where duplicate quantities matter?",
+    "alternatives": []
+  },
+  {
+    "id": "Q29",
+    "title": "Find students who never scored an exam extreme",
+    "pattern": "Universal conditions and exclusion",
+    "difficulty": "Hard",
+    "source": "pgsubquery",
+    "origin": "Original practice exercise",
+    "prompt": "A quiet student took at least one exam and never tied for the minimum or maximum score in any exam they took. Return quiet student IDs. Scores are non-null and unique by student and exam. Students with no exams are excluded.",
+    "tables": [
+      {
+        "name": "students",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [
+            5
+          ]
+        ]
+      },
+      {
+        "name": "scores",
+        "columns": [
+          [
+            "exam_id",
+            "INTEGER"
+          ],
+          [
+            "student_id",
+            "INTEGER"
+          ],
+          [
+            "score",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            10
+          ],
+          [
+            1,
+            2,
+            20
+          ],
+          [
+            1,
+            3,
+            30
+          ],
+          [
+            1,
+            4,
+            30
+          ],
+          [
+            2,
+            1,
+            40
+          ],
+          [
+            2,
+            2,
+            50
+          ],
+          [
+            2,
+            3,
+            60
+          ],
+          [
+            2,
+            4,
+            50
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH limits AS (\n  SELECT exam_id,MIN(score) AS lo,MAX(score) AS hi FROM scores GROUP BY exam_id\n)\nSELECT s.id FROM students s\nWHERE EXISTS (SELECT 1 FROM scores x WHERE x.student_id=s.id)\n  AND NOT EXISTS (\n    SELECT 1 FROM scores x JOIN limits l ON l.exam_id=x.exam_id\n    WHERE x.student_id=s.id AND (x.score=l.lo OR x.score=l.hi)\n  ) ORDER BY s.id;",
+    "expected": [
+      [
+        2
+      ]
+    ],
+    "explanation": "First derive each exam extreme, then exclude anyone appearing at either extreme in any exam. The participation check excludes student 5.",
+    "trap": "Filtering individual non-extreme rows still leaves student 4 because they were non-extreme in exam 2 but maximal in exam 1.",
+    "followup": "In an exam with one participant, that participant is both minimum and maximum.",
+    "alternatives": []
+  },
+  {
+    "id": "Q30",
+    "title": "Combine duplicate and unique conditions at different grains",
+    "pattern": "Independent grouping grains",
+    "difficulty": "Hard",
+    "source": "insurance",
+    "origin": "Adapted pattern with fresh integer amounts",
+    "prompt": "Sum current_value for policies whose prior_value occurs more than once across all policies, but whose (lat,lon) pair occurs exactly once across all policies. Locations and values are non-null.",
+    "tables": [
+      {
+        "name": "policies",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "prior_value",
+            "INTEGER"
+          ],
+          [
+            "current_value",
+            "INTEGER"
+          ],
+          [
+            "lat",
+            "INTEGER"
+          ],
+          [
+            "lon",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            10,
+            5,
+            1,
+            1
+          ],
+          [
+            2,
+            20,
+            20,
+            2,
+            2
+          ],
+          [
+            3,
+            10,
+            30,
+            2,
+            2
+          ],
+          [
+            4,
+            10,
+            40,
+            4,
+            4
+          ],
+          [
+            5,
+            99,
+            7,
+            5,
+            5
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH flagged AS (\n  SELECT *,COUNT(*) OVER (PARTITION BY prior_value) AS prior_count,\n           COUNT(*) OVER (PARTITION BY lat,lon) AS location_count FROM policies\n)\nSELECT COALESCE(SUM(current_value),0) AS total FROM flagged\nWHERE prior_count>1 AND location_count=1;",
+    "expected": [
+      [
+        45
+      ]
+    ],
+    "explanation": "Compute independent frequencies on the original population. Both flags must hold for a policy to contribute.",
+    "trap": "Filtering by duplicated prior value before counting locations makes policy 3 appear unique because policy 2 has already been removed.",
+    "followup": "Why can concatenating latitude and longitude be an unsafe grouping key?",
+    "alternatives": []
+  },
+  {
+    "id": "Q31",
+    "title": "Explain peer expansion in ROWS versus RANGE",
+    "pattern": "Window frames and peer rows",
+    "difficulty": "Medium",
+    "source": "pgwindow",
+    "origin": "Original semantics exercise",
+    "prompt": "Return each transaction with two cumulative sums: row_total follows (at,id) one row at a time; peer_total includes every transaction with timestamp <= the current timestamp. The two transactions at time 1 must share peer_total.",
+    "tables": [
+      {
+        "name": "tx",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "at",
+            "INTEGER"
+          ],
+          [
+            "amount",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            10
+          ],
+          [
+            2,
+            1,
+            20
+          ],
+          [
+            3,
+            2,
+            5
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT id,\n  SUM(amount) OVER (ORDER BY at,id ROWS UNBOUNDED PRECEDING) AS row_total,\n  SUM(amount) OVER (ORDER BY at RANGE UNBOUNDED PRECEDING) AS peer_total\nFROM tx ORDER BY at,id;",
+    "expected": [
+      [
+        1,
+        10,
+        30
+      ],
+      [
+        2,
+        30,
+        30
+      ],
+      [
+        3,
+        35,
+        35
+      ]
+    ],
+    "explanation": "ROWS follows individual row positions under a total ordering. RANGE treats equal ordering values as peers.",
+    "trap": "Adding id to the RANGE ordering changes peer groups. Leaving the frame implicit may produce timestamp-wide jumps when row-by-row accumulation was intended.",
+    "followup": "What total ordering is needed if two transactions share a timestamp?",
+    "alternatives": []
+  },
+  {
+    "id": "Q32",
+    "title": "Get the true last value rather than the last value so far",
+    "pattern": "Window frames and peer rows",
+    "difficulty": "Medium",
+    "source": "pgwindow",
+    "origin": "Original semantics exercise",
+    "prompt": "Return every event with the final value for its user. Final means greatest (at,id), and a final NULL must stay NULL. Do not collapse the event rows.",
+    "tables": [
+      {
+        "name": "events",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "user_id",
+            "INTEGER"
+          ],
+          [
+            "at",
+            "INTEGER"
+          ],
+          [
+            "val",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            1,
+            10
+          ],
+          [
+            2,
+            1,
+            2,
+            5
+          ],
+          [
+            3,
+            2,
+            1,
+            7
+          ],
+          [
+            4,
+            2,
+            2,
+            null
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT id,LAST_VALUE(val) OVER (\n  PARTITION BY user_id ORDER BY at,id\n  ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING\n) AS final_value FROM events ORDER BY id;",
+    "expected": [
+      [
+        1,
+        5
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        3,
+        null
+      ],
+      [
+        4,
+        null
+      ]
+    ],
+    "explanation": "The frame must reach the partition end. The function respects a genuinely NULL final observation.",
+    "trap": "The default ordered frame ends at the current peer group, so LAST_VALUE often returns the current value. MAX is not the last value.",
+    "followup": "How would the question change if it asked for the last non-null value?",
+    "alternatives": []
+  },
+  {
+    "id": "Q33",
+    "title": "Forward fill NULLs even when values decrease",
+    "pattern": "Window frames and missing values",
+    "difficulty": "Hard",
+    "source": "window",
+    "origin": "Original practice exercise",
+    "prompt": "For each user, carry the latest non-null value forward in timestamp and ID order. Leading NULLs remain NULL. Values may decrease or be negative.",
+    "tables": [
+      {
+        "name": "readings",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "user_id",
+            "INTEGER"
+          ],
+          [
+            "at",
+            "INTEGER"
+          ],
+          [
+            "val",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            1,
+            null
+          ],
+          [
+            2,
+            1,
+            2,
+            10
+          ],
+          [
+            3,
+            1,
+            3,
+            null
+          ],
+          [
+            4,
+            1,
+            4,
+            3
+          ],
+          [
+            5,
+            1,
+            5,
+            null
+          ],
+          [
+            6,
+            2,
+            1,
+            -2
+          ],
+          [
+            7,
+            2,
+            2,
+            null
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH g AS (\n  SELECT *,COUNT(val) OVER (PARTITION BY user_id ORDER BY at,id ROWS UNBOUNDED PRECEDING) AS grp FROM readings\n)\nSELECT id,MAX(val) OVER (PARTITION BY user_id,grp) AS filled_value FROM g ORDER BY id;",
+    "expected": [
+      [
+        1,
+        null
+      ],
+      [
+        2,
+        10
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        6,
+        -2
+      ],
+      [
+        7,
+        -2
+      ]
+    ],
+    "explanation": "Each non-null value starts a new count group. Within a group there is exactly one non-null value, which MAX can propagate.",
+    "trap": "A running MAX over the whole user keeps 10 after the real value decreases to 3.",
+    "followup": "If NULL means an explicit reset rather than missing data, is forward fill appropriate?",
+    "alternatives": []
+  },
+  {
+    "id": "Q34",
+    "title": "Compute a calendar rolling average with missing days",
+    "pattern": "Calendar completion and rolling windows",
+    "difficulty": "Hard",
+    "source": "restaurant",
+    "origin": "Original extension with missing days and a shorter window",
+    "prompt": "For report days 1 through 5, return complete three-calendar-day windows ending at days 3,4,5. Missing days have zero revenue. Multiple sales per day must first aggregate. Return day, window_total, and average rounded to two decimals.",
+    "tables": [
+      {
+        "name": "sales",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "day_no",
+            "INTEGER"
+          ],
+          [
+            "amount",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            10
+          ],
+          [
+            2,
+            1,
+            20
+          ],
+          [
+            3,
+            3,
+            60
+          ],
+          [
+            4,
+            5,
+            30
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH RECURSIVE calendar(day_no) AS (\n  SELECT 1 UNION ALL SELECT day_no+1 FROM calendar WHERE day_no<5\n), totals AS (SELECT day_no,SUM(amount) AS amount FROM sales GROUP BY day_no),\ndaily AS (\n  SELECT c.day_no,COALESCE(t.amount,0) AS amount FROM calendar c LEFT JOIN totals t ON t.day_no=c.day_no\n), rolled AS (\n  SELECT day_no,SUM(amount) OVER (ORDER BY day_no ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS window_total FROM daily\n)\nSELECT day_no,window_total,ROUND(window_total/3.0,2) AS average\nFROM rolled WHERE day_no>=3 ORDER BY day_no;",
+    "expected": [
+      [
+        3,
+        90,
+        30.0
+      ],
+      [
+        4,
+        60,
+        20.0
+      ],
+      [
+        5,
+        90,
+        30.0
+      ]
+    ],
+    "explanation": "Densify the calendar and aggregate transaction grain before a row window. Only then do three rows mean three calendar days.",
+    "trap": "Three preceding transactions or three observed days do not represent three calendar days. Filtering early removes window history.",
+    "followup": "How would a real calendar table account for business days or daylight-saving boundaries?",
+    "alternatives": []
+  },
+  {
+    "id": "Q35",
+    "title": "Count distinct active users across a rolling calendar window",
+    "pattern": "Calendar completion and rolling windows",
+    "difficulty": "Hard",
+    "source": "select",
+    "origin": "Original practice exercise",
+    "prompt": "Return distinct active users for each report day 1 through 4, considering that day and the previous two calendar days. Duplicate user events count once. There are no events before day 1.",
+    "tables": [
+      {
+        "name": "calendar",
+        "columns": [
+          [
+            "day_no",
+            "INTEGER PRIMARY KEY"
+          ]
+        ],
+        "rows": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ]
+        ]
+      },
+      {
+        "name": "activity",
+        "columns": [
+          [
+            "user_id",
+            "INTEGER"
+          ],
+          [
+            "day_no",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT c.day_no,(\n  SELECT COUNT(DISTINCT a.user_id) FROM activity a\n  WHERE a.day_no BETWEEN c.day_no-2 AND c.day_no\n) AS active_users FROM calendar c ORDER BY c.day_no;",
+    "expected": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        3
+      ]
+    ],
+    "explanation": "Distinctness is evaluated over the whole window, not independently for each day. Correlation provides a clear portable reference solution.",
+    "trap": "Summing daily distinct counts double-counts users active on multiple days. COUNT(DISTINCT ...) as a window aggregate is not available in every SQL engine.",
+    "followup": "For large data, how could per-user active intervals and sweep lines avoid repeated scans?",
+    "alternatives": []
+  },
+  {
+    "id": "Q36",
+    "title": "Maintain a cumulative distinct count without a distinct window aggregate",
+    "pattern": "Window frames and missing values",
+    "difficulty": "Hard",
+    "source": "window",
+    "origin": "Original practice exercise",
+    "prompt": "In (at,id) event order, return the cumulative number of distinct non-null user IDs seen. NULL users contribute nothing. Repeated users do not increase the total.",
+    "tables": [
+      {
+        "name": "events",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "at",
+            "INTEGER"
+          ],
+          [
+            "user_id",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            8
+          ],
+          [
+            2,
+            1,
+            8
+          ],
+          [
+            3,
+            2,
+            9
+          ],
+          [
+            4,
+            3,
+            null
+          ],
+          [
+            5,
+            4,
+            8
+          ],
+          [
+            6,
+            5,
+            10
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH marked AS (\n  SELECT *,ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY at,id) AS occurrence FROM events\n)\nSELECT id,SUM(CASE WHEN user_id IS NOT NULL AND occurrence=1 THEN 1 ELSE 0 END)\n  OVER (ORDER BY at,id ROWS UNBOUNDED PRECEDING) AS distinct_users\nFROM marked ORDER BY at,id;",
+    "expected": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        6,
+        3
+      ]
+    ],
+    "explanation": "Mark only each user first occurrence, then accumulate those markers. The explicit NULL exclusion matches COUNT(DISTINCT user_id) semantics.",
+    "trap": "A running count of events includes repeats. DENSE_RANK over user_id imposes user-value order, not first-arrival order.",
+    "followup": "Why does first-occurrence marking fail for a sliding distinct window when old users leave the window?",
+    "alternatives": []
+  },
+  {
+    "id": "Q37",
+    "title": "Compute group medians without losing duplicate observations",
+    "pattern": "Order statistics and weighted distributions",
+    "difficulty": "Hard",
+    "source": "window",
+    "origin": "Original practice exercise",
+    "prompt": "Return the numeric median salary per company, averaging the two central observations for even-size groups. Equal salaries are separate observations. Salaries are non-null.",
+    "tables": [
+      {
+        "name": "employees",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "company",
+            "TEXT"
+          ],
+          [
+            "salary",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "A",
+            10
+          ],
+          [
+            2,
+            "A",
+            10
+          ],
+          [
+            3,
+            "A",
+            30
+          ],
+          [
+            4,
+            "A",
+            90
+          ],
+          [
+            5,
+            "B",
+            5
+          ],
+          [
+            6,
+            "B",
+            15
+          ],
+          [
+            7,
+            "B",
+            100
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH ordered AS (\n  SELECT *,ROW_NUMBER() OVER (PARTITION BY company ORDER BY salary,id) AS rn,\n           COUNT(*) OVER (PARTITION BY company) AS n FROM employees\n)\nSELECT company,AVG(salary*1.0) AS median FROM ordered\nWHERE rn BETWEEN (n+1)/2 AND (n+2)/2\nGROUP BY company ORDER BY company;",
+    "expected": [
+      [
+        "A",
+        20.0
+      ],
+      [
+        "B",
+        15.0
+      ]
+    ],
+    "explanation": "Integer division identifies one or two central row positions. A deterministic ID tie-break preserves observation identities.",
+    "trap": "DENSE_RANK numbers distinct salary values rather than employees, changing the median when salaries repeat.",
+    "followup": "If you need the employee records at the median instead of a scalar median, what should be returned for even counts?",
+    "alternatives": []
+  },
+  {
+    "id": "Q38",
+    "title": "Find the median from value frequencies without expanding rows",
+    "pattern": "Order statistics and weighted distributions",
+    "difficulty": "Hard",
+    "source": "window",
+    "origin": "Original practice exercise",
+    "prompt": "Return the median of the represented multiset. Each frequency is a positive integer; value keys are unique. Avoid generating one row per observation.",
+    "tables": [
+      {
+        "name": "frequencies",
+        "columns": [
+          [
+            "val",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "freq",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            10,
+            2
+          ],
+          [
+            20,
+            1
+          ],
+          [
+            30,
+            3
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH bounds AS (\n  SELECT val,freq,SUM(freq) OVER (ORDER BY val ROWS UNBOUNDED PRECEDING) AS hi,\n                  SUM(freq) OVER () AS n FROM frequencies\n), positions AS (\n  SELECT (SUM(freq)+1)/2 AS p FROM frequencies\n  UNION ALL SELECT (SUM(freq)+2)/2 FROM frequencies\n)\nSELECT AVG(b.val*1.0) AS median\nFROM positions p JOIN bounds b ON p.p>b.hi-b.freq AND p.p<=b.hi;",
+    "expected": [
+      [
+        25.0
+      ]
+    ],
+    "explanation": "Each value owns a cumulative rank interval. Locate both central positions within those intervals; UNION ALL retains two equal middle positions for odd counts.",
+    "trap": "Taking the median of distinct values ignores frequency. Expanding very large frequencies wastes work.",
+    "followup": "How would the rank target change for a percentile other than the median?",
+    "alternatives": []
+  },
+  {
+    "id": "Q39",
+    "title": "Find the last person in a capacity limited boarding prefix",
+    "pattern": "Prefix constraints and cumulative state",
+    "difficulty": "Medium",
+    "source": "bus",
+    "origin": "Adapted problem with fresh data and explicit stop semantics",
+    "prompt": "People board in ascending turn. Boarding stops at the first person who would exceed capacity 1000; later lighter people cannot skip ahead. Weights are positive and turns are unique. Return the final admitted person, or no row if nobody fits.",
+    "tables": [
+      {
+        "name": "queue",
+        "columns": [
+          [
+            "turn",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "name",
+            "TEXT"
+          ],
+          [
+            "weight",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "Ana",
+            400
+          ],
+          [
+            2,
+            "Ben",
+            350
+          ],
+          [
+            3,
+            "Cy",
+            250
+          ],
+          [
+            4,
+            "Di",
+            1
+          ],
+          [
+            5,
+            "Eli",
+            10
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH totals AS (\n  SELECT *,SUM(weight) OVER (ORDER BY turn ROWS UNBOUNDED PRECEDING) AS cumulative FROM queue\n)\nSELECT turn,name FROM totals WHERE cumulative<=1000 ORDER BY turn DESC LIMIT 1;",
+    "expected": [
+      [
+        3,
+        "Cy"
+      ]
+    ],
+    "explanation": "Positive weights make cumulative load monotonic, so eligible rows form a prefix. Descending turn chooses its final member.",
+    "trap": "Filtering each person by individual weight does not enforce the shared capacity. The query relies on positivity and stop-at-first-failure semantics.",
+    "followup": "If skipping people is allowed, why is this no longer a simple prefix problem?",
+    "alternatives": [
+      [
+        "Correlated prefix sum",
+        "SELECT q.turn,q.name FROM queue q\nWHERE (SELECT SUM(p.weight) FROM queue p WHERE p.turn<=q.turn)<=1000\nORDER BY q.turn DESC LIMIT 1;"
+      ]
+    ]
+  },
+  {
+    "id": "Q40",
+    "title": "Reset running totals at reset events",
+    "pattern": "Prefix constraints and cumulative state",
+    "difficulty": "Hard",
+    "source": "window",
+    "origin": "Original practice exercise",
+    "prompt": "Return each event with its accumulated amount since the most recent reset. Reset rows have amount zero and reset the displayed total to zero. Amounts may be negative. Events have a unique sequence number.",
+    "tables": [
+      {
+        "name": "events",
+        "columns": [
+          [
+            "seq",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "is_reset",
+            "INTEGER"
+          ],
+          [
+            "amount",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            0,
+            5
+          ],
+          [
+            2,
+            0,
+            3
+          ],
+          [
+            3,
+            1,
+            0
+          ],
+          [
+            4,
+            0,
+            4
+          ],
+          [
+            5,
+            0,
+            -1
+          ],
+          [
+            6,
+            1,
+            0
+          ],
+          [
+            7,
+            0,
+            2
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH grouped AS (\n  SELECT *,SUM(is_reset) OVER (ORDER BY seq ROWS UNBOUNDED PRECEDING) AS grp FROM events\n)\nSELECT seq,SUM(amount) OVER (PARTITION BY grp ORDER BY seq ROWS UNBOUNDED PRECEDING) AS running_total\nFROM grouped ORDER BY seq;",
+    "expected": [
+      [
+        1,
+        5
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        6,
+        0
+      ],
+      [
+        7,
+        2
+      ]
+    ],
+    "explanation": "A running count of reset events creates partitions. Each partition receives its own cumulative amount.",
+    "trap": "Subtracting a global running minimum is unrelated to resets. Filtering reset rows before assigning groups removes the boundaries.",
+    "followup": "If a reset row also contains an amount, should that amount be included before or after the reset?",
+    "alternatives": []
+  },
+  {
+    "id": "Q41",
+    "title": "Detect repeated values by row adjacency rather than ID arithmetic",
+    "pattern": "Gaps and islands",
+    "difficulty": "Medium",
+    "source": "consecutive",
+    "origin": "Original extension distinguishing row adjacency from consecutive IDs",
+    "prompt": "Return non-null values appearing in at least three consecutive observations ordered by seq. seq is unique but may have gaps. Consecutive means adjacent rows, not seq + 1. Return each qualifying value once.",
+    "tables": [
+      {
+        "name": "logs",
+        "columns": [
+          [
+            "seq",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "val",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            10,
+            7
+          ],
+          [
+            20,
+            7
+          ],
+          [
+            40,
+            7
+          ],
+          [
+            50,
+            8
+          ],
+          [
+            60,
+            7
+          ],
+          [
+            70,
+            8
+          ],
+          [
+            80,
+            8
+          ],
+          [
+            90,
+            8
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH g AS (\n  SELECT val,ROW_NUMBER() OVER (ORDER BY seq)\n    -ROW_NUMBER() OVER (PARTITION BY val ORDER BY seq) AS island FROM logs\n)\nSELECT DISTINCT val FROM g WHERE val IS NOT NULL\nGROUP BY val,island HAVING COUNT(*)>=3 ORDER BY val;",
+    "expected": [
+      [
+        7
+      ],
+      [
+        8
+      ]
+    ],
+    "explanation": "The difference between global and per-value row positions is constant within each uninterrupted value run. Group by both the value and the difference.",
+    "trap": "Joining seq to seq+1 fails on sparse identifiers. Grouping by the difference alone can merge runs from different values.",
+    "followup": "If NULL itself is a meaningful repeated value, how should the query change?",
+    "alternatives": [
+      [
+        "Three adjacent row positions using LEAD",
+        "WITH n AS (\n  SELECT val,LEAD(val,1) OVER (ORDER BY seq) AS v1,\n             LEAD(val,2) OVER (ORDER BY seq) AS v2 FROM logs\n)\nSELECT DISTINCT val FROM n WHERE val=v1 AND val=v2 ORDER BY val;"
+      ]
+    ]
+  },
+  {
+    "id": "Q42",
+    "title": "Swap neighboring seats when seat IDs are sparse",
+    "pattern": "Positional pairing",
+    "difficulty": "Hard",
+    "source": "seats",
+    "origin": "Original extension using position rather than ID parity",
+    "prompt": "Order seats by seat_id and swap the occupants of each neighboring pair. Keep seat IDs fixed. An odd last occupant stays. Seat IDs need not start at 1 or be consecutive; occupants are non-null.",
+    "tables": [
+      {
+        "name": "seats",
+        "columns": [
+          [
+            "seat_id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "occupant",
+            "TEXT"
+          ]
+        ],
+        "rows": [
+          [
+            10,
+            "Ana"
+          ],
+          [
+            20,
+            "Ben"
+          ],
+          [
+            40,
+            "Cy"
+          ],
+          [
+            70,
+            "Di"
+          ],
+          [
+            90,
+            "Eli"
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH positioned AS (\n  SELECT *,ROW_NUMBER() OVER (ORDER BY seat_id) AS pos FROM seats\n)\nSELECT a.seat_id,COALESCE(b.occupant,a.occupant) AS occupant\nFROM positioned a LEFT JOIN positioned b\n  ON b.pos=CASE WHEN a.pos%2=1 THEN a.pos+1 ELSE a.pos-1 END\nORDER BY a.seat_id;",
+    "expected": [
+      [
+        10,
+        "Ben"
+      ],
+      [
+        20,
+        "Ana"
+      ],
+      [
+        40,
+        "Di"
+      ],
+      [
+        70,
+        "Cy"
+      ],
+      [
+        90,
+        "Eli"
+      ]
+    ],
+    "explanation": "Pair ordinal positions, not numeric IDs. The unmatched last position falls back to its current occupant.",
+    "trap": "seat_id +/- 1 and ID parity assume dense identifiers. A nullable occupant would require checking partner presence instead of COALESCE.",
+    "followup": "How would the logic differ for rotating groups of three instead of swapping pairs?",
+    "alternatives": []
+  },
+  {
+    "id": "Q43",
+    "title": "Choose tournament winners when players occupy either match column",
+    "pattern": "Role unpivoting and tie rules",
+    "difficulty": "Hard",
+    "source": "select",
+    "origin": "Original practice exercise",
+    "prompt": "Return the winning player for every group by total match score. A player can appear as either first_player or second_player. Include registered players with no matches as zero. Break total-score ties by smaller player ID. Each match belongs within one group.",
+    "tables": [
+      {
+        "name": "players",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "group_id",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            5,
+            2
+          ]
+        ]
+      },
+      {
+        "name": "matches",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "first_player",
+            "INTEGER"
+          ],
+          [
+            "second_player",
+            "INTEGER"
+          ],
+          [
+            "first_score",
+            "INTEGER"
+          ],
+          [
+            "second_score",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            2,
+            3,
+            1
+          ],
+          [
+            2,
+            2,
+            3,
+            2,
+            3
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH points AS (\n  SELECT first_player AS player_id,first_score AS score FROM matches\n  UNION ALL SELECT second_player,second_score FROM matches\n), totals AS (\n  SELECT p.id,p.group_id,COALESCE(SUM(x.score),0) AS score\n  FROM players p LEFT JOIN points x ON x.player_id=p.id GROUP BY p.id,p.group_id\n), ranked AS (\n  SELECT *,ROW_NUMBER() OVER (PARTITION BY group_id ORDER BY score DESC,id) AS rn FROM totals\n)\nSELECT group_id,id AS winner_id,score FROM ranked WHERE rn=1 ORDER BY group_id;",
+    "expected": [
+      [
+        1,
+        1,
+        3
+      ],
+      [
+        2,
+        4,
+        0
+      ]
+    ],
+    "explanation": "Unpivot both participant roles before aggregation. Only after scores are complete does the stated tie rule select a winner.",
+    "trap": "Joining only first_player misses half the contributions. UNION can erase two legitimate equal-scoring match contributions.",
+    "followup": "How would your result differ if the task asked for every tied winner?",
+    "alternatives": []
+  },
+  {
+    "id": "Q44",
+    "title": "Compute cohort retention with a fixed signup denominator",
+    "pattern": "Grain and denominator traps",
+    "difficulty": "Hard",
+    "source": "select",
+    "origin": "Original practice exercise",
+    "prompt": "Return day-one retention for each signup-day cohort: the fraction of its registered users with at least one activity exactly one day after signup. Duplicate activity rows count once; inactive users stay in the denominator. Round to two decimals.",
+    "tables": [
+      {
+        "name": "users",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "signup_day",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            5,
+            2
+          ]
+        ]
+      },
+      {
+        "name": "activity",
+        "columns": [
+          [
+            "user_id",
+            "INTEGER"
+          ],
+          [
+            "day_no",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            5,
+            3
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT u.signup_day,ROUND(AVG(CASE WHEN EXISTS (\n  SELECT 1 FROM activity a WHERE a.user_id=u.id AND a.day_no=u.signup_day+1\n) THEN 1.0 ELSE 0.0 END),2) AS retention\nFROM users u GROUP BY u.signup_day ORDER BY u.signup_day;",
+    "expected": [
+      [
+        1,
+        0.33
+      ],
+      [
+        2,
+        1.0
+      ]
+    ],
+    "explanation": "Each signup contributes one indicator to the average. The source population is the cohort, not the people who happened to return.",
+    "trap": "An inner join removes inactive users and repeated activity overweights active users. Consecutive activity days are not necessarily day-one retention.",
+    "followup": "For unfinished cohorts, how should the report exclude users whose day-one observation window has not closed?",
+    "alternatives": []
+  },
+  {
+    "id": "Q45",
+    "title": "Find consecutive over limit months across a year boundary",
+    "pattern": "Calendar adjacency and preaggregation",
+    "difficulty": "Hard",
+    "source": "window",
+    "origin": "Original practice exercise",
+    "prompt": "Return accounts whose credited total exceeds their limit in two consecutive calendar months. month_index is year*12 + month-1, so December and January are adjacent. Aggregate credits by account and month first. Missing months are not over-limit; equals the limit is not over-limit.",
+    "tables": [
+      {
+        "name": "accounts",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "monthly_limit",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            100
+          ],
+          [
+            2,
+            100
+          ],
+          [
+            3,
+            100
+          ]
+        ]
+      },
+      {
+        "name": "credits",
+        "columns": [
+          [
+            "account_id",
+            "INTEGER"
+          ],
+          [
+            "month_index",
+            "INTEGER"
+          ],
+          [
+            "amount",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            24299,
+            60
+          ],
+          [
+            1,
+            24299,
+            60
+          ],
+          [
+            1,
+            24300,
+            110
+          ],
+          [
+            2,
+            24299,
+            120
+          ],
+          [
+            2,
+            24301,
+            130
+          ],
+          [
+            3,
+            24299,
+            100
+          ],
+          [
+            3,
+            24300,
+            150
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH monthly AS (\n  SELECT c.account_id,c.month_index,SUM(c.amount) AS total\n  FROM credits c GROUP BY c.account_id,c.month_index\n), over_limit AS (\n  SELECT m.* FROM monthly m JOIN accounts a ON a.id=m.account_id WHERE m.total>a.monthly_limit\n), adjacent AS (\n  SELECT *,LAG(month_index) OVER (PARTITION BY account_id ORDER BY month_index) AS prev FROM over_limit\n)\nSELECT DISTINCT account_id FROM adjacent WHERE month_index=prev+1 ORDER BY account_id;",
+    "expected": [
+      [
+        1
+      ]
+    ],
+    "explanation": "Monthly aggregation precedes threshold testing. Month ordinals make year transitions and missing months explicit.",
+    "trap": "Two over-limit observations can be separated by months. Comparing raw month numbers falsely treats December to January as a nonconsecutive transition.",
+    "followup": "How would you derive month_index from actual dates in PostgreSQL or SQL Server?",
+    "alternatives": []
+  },
+  {
+    "id": "Q46",
+    "title": "Find all descendants without looping on cyclic relationships",
+    "pattern": "Recursive reachability",
+    "difficulty": "Hard",
+    "source": "pgrecursive",
+    "origin": "Original practice exercise",
+    "prompt": "Return all IDs reachable below manager 1 through the reports edges, excluding manager 1 itself. Data can be cyclic and duplicated; an employee may have more than one incoming edge.",
+    "tables": [
+      {
+        "name": "reports",
+        "columns": [
+          [
+            "manager_id",
+            "INTEGER"
+          ],
+          [
+            "employee_id",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            5,
+            6
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH RECURSIVE reachable(id) AS (\n  SELECT 1\n  UNION\n  SELECT r.employee_id FROM reports r JOIN reachable x ON r.manager_id=x.id\n)\nSELECT id FROM reachable WHERE id<>1 ORDER BY id;",
+    "expected": [
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4
+      ]
+    ],
+    "explanation": "Deduplicate only the reachable identity. Every reachable ID can enter the state once, even through cycles and multiple paths.",
+    "trap": "A fixed number of self joins assumes a maximum depth. UNION ALL with no visited-state guard keeps expanding the 1 to 2 to 3 to 1 cycle.",
+    "followup": "If you must show each full reporting path, how will you prevent revisiting a node already in that path?",
+    "alternatives": []
+  },
+  {
+    "id": "Q47",
+    "title": "Classify tree nodes with root precedence",
+    "pattern": "Hierarchy classification",
+    "difficulty": "Medium",
+    "source": "tree",
+    "origin": "Adapted pattern with multiple rooted trees including a singleton",
+    "prompt": "Classify each node Root, Inner, or Leaf. A root has no parent and must be Root even if it has no children. The input is a valid forest with non-null IDs and nullable parent_id.",
+    "tables": [
+      {
+        "name": "nodes",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "parent_id",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            null
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            9,
+            null
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT n.id,CASE\n  WHEN n.parent_id IS NULL THEN 'Root'\n  WHEN EXISTS (SELECT 1 FROM nodes c WHERE c.parent_id=n.id) THEN 'Inner'\n  ELSE 'Leaf' END AS node_type\nFROM nodes n ORDER BY n.id;",
+    "expected": [
+      [
+        1,
+        "Root"
+      ],
+      [
+        2,
+        "Inner"
+      ],
+      [
+        3,
+        "Leaf"
+      ],
+      [
+        4,
+        "Leaf"
+      ],
+      [
+        9,
+        "Root"
+      ]
+    ],
+    "explanation": "Test root status before child existence so the singleton root is classified correctly. EXISTS avoids expanding parents with multiple children.",
+    "trap": "id NOT IN (SELECT parent_id ...) is poisoned by root NULLs. Checking leaf before root misclassifies a singleton.",
+    "followup": "How would you report orphan nodes whose non-null parent ID is missing from the master?",
+    "alternatives": []
+  },
+  {
+    "id": "Q48",
+    "title": "Find ordered funnel completions rather than mere event presence",
+    "pattern": "Ordered event matching",
+    "difficulty": "Hard",
+    "source": "pgsubquery",
+    "origin": "Original practice exercise",
+    "prompt": "Return users who have a view, then a later add, then a later buy. Timestamps must strictly increase. Repeated attempts are allowed and any valid sequence qualifies. Merely having all three event kinds is insufficient.",
+    "tables": [
+      {
+        "name": "events",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "user_id",
+            "INTEGER"
+          ],
+          [
+            "kind",
+            "TEXT"
+          ],
+          [
+            "at",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            1,
+            "view",
+            1
+          ],
+          [
+            2,
+            1,
+            "buy",
+            2
+          ],
+          [
+            3,
+            1,
+            "add",
+            3
+          ],
+          [
+            4,
+            1,
+            "buy",
+            4
+          ],
+          [
+            5,
+            2,
+            "buy",
+            1
+          ],
+          [
+            6,
+            2,
+            "add",
+            2
+          ],
+          [
+            7,
+            2,
+            "view",
+            3
+          ],
+          [
+            8,
+            3,
+            "view",
+            1
+          ],
+          [
+            9,
+            3,
+            "add",
+            1
+          ],
+          [
+            10,
+            3,
+            "buy",
+            2
+          ]
+        ]
+      }
+    ],
+    "sql": "SELECT DISTINCT v.user_id FROM events v\nWHERE v.kind='view' AND EXISTS (\n  SELECT 1 FROM events a WHERE a.user_id=v.user_id AND a.kind='add' AND a.at>v.at\n    AND EXISTS (\n      SELECT 1 FROM events b WHERE b.user_id=a.user_id AND b.kind='buy' AND b.at>a.at\n    )\n) ORDER BY v.user_id;",
+    "expected": [
+      [
+        1
+      ]
+    ],
+    "explanation": "Correlated existence checks preserve the ordering relation for a complete sequence. User 1 can use the later buy even though an earlier buy was out of order.",
+    "trap": "COUNT(DISTINCT kind)=3 admits users 2 and 3. Taking only each kind first event can miss a valid later retry.",
+    "followup": "How would you impose a maximum total funnel duration or require all steps within one session?",
+    "alternatives": []
+  },
+  {
+    "id": "Q49",
+    "title": "Allocate supply to demand in FIFO order without a cursor",
+    "pattern": "Cumulative interval matching and FIFO",
+    "difficulty": "Hard",
+    "source": "supply",
+    "origin": "Adapted allocation pattern with fresh data",
+    "prompt": "Supplies are available before all demands. Consume supplies and fulfill demands in ascending ID order. Quantities are positive and total supply is sufficient. Return demand_id, supply_id, and allocated quantity for every nonzero allocation.",
+    "tables": [
+      {
+        "name": "supplies",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "qty",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            6
+          ]
+        ]
+      },
+      {
+        "name": "demands",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "qty",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            5
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH s AS (\n  SELECT id,qty,SUM(qty) OVER (ORDER BY id ROWS UNBOUNDED PRECEDING) AS hi FROM supplies\n), d AS (\n  SELECT id,qty,SUM(qty) OVER (ORDER BY id ROWS UNBOUNDED PRECEDING) AS hi FROM demands\n)\nSELECT d.id AS demand_id,s.id AS supply_id,\n  CASE WHEN s.hi<d.hi THEN s.hi ELSE d.hi END\n    -CASE WHEN s.hi-s.qty>d.hi-d.qty THEN s.hi-s.qty ELSE d.hi-d.qty END AS allocated\nFROM s JOIN d ON s.hi>d.hi-d.qty AND d.hi>s.hi-s.qty\nORDER BY d.id,s.id;",
+    "expected": [
+      [
+        1,
+        1,
+        5
+      ],
+      [
+        1,
+        2,
+        2
+      ],
+      [
+        2,
+        2,
+        2
+      ],
+      [
+        2,
+        3,
+        3
+      ]
+    ],
+    "explanation": "Give supplies and demands half-open spans on a cumulative quantity axis. Their overlap length is the allocation, including partial splits.",
+    "trap": "An equality join on cumulative endpoints misses split allocations. This formulation does not enforce receipt-before-demand time unless availability is separately guaranteed.",
+    "followup": "How would you handle shortage, multiple products, or receipts arriving after a demand?",
+    "alternatives": []
+  },
+  {
+    "id": "Q50",
+    "title": "Value remaining FIFO inventory with a partially consumed batch",
+    "pattern": "Cumulative interval matching and FIFO",
+    "difficulty": "Hard",
+    "source": "fifo",
+    "origin": "Simplified adaptation with no returns or backorders",
+    "prompt": "For each product, return remaining quantity and FIFO inventory value after all movements. IN rows have positive quantity and a unit cost; OUT rows have positive quantity and NULL cost. IDs define chronology. Inventory never goes negative. There are no returns. Equal costs do not identify equal batches.",
+    "tables": [
+      {
+        "name": "movements",
+        "columns": [
+          [
+            "id",
+            "INTEGER PRIMARY KEY"
+          ],
+          [
+            "product",
+            "TEXT"
+          ],
+          [
+            "kind",
+            "TEXT"
+          ],
+          [
+            "qty",
+            "INTEGER"
+          ],
+          [
+            "cost",
+            "INTEGER"
+          ]
+        ],
+        "rows": [
+          [
+            1,
+            "A",
+            "IN",
+            5,
+            10
+          ],
+          [
+            2,
+            "A",
+            "IN",
+            4,
+            20
+          ],
+          [
+            3,
+            "A",
+            "OUT",
+            7,
+            null
+          ],
+          [
+            4,
+            "A",
+            "IN",
+            6,
+            30
+          ],
+          [
+            5,
+            "A",
+            "OUT",
+            5,
+            null
+          ],
+          [
+            6,
+            "B",
+            "IN",
+            2,
+            7
+          ],
+          [
+            7,
+            "B",
+            "OUT",
+            2,
+            null
+          ]
+        ]
+      }
+    ],
+    "sql": "WITH incoming AS (\n  SELECT *,SUM(qty) OVER (PARTITION BY product ORDER BY id ROWS UNBOUNDED PRECEDING) AS hi\n  FROM movements WHERE kind='IN'\n), sold AS (\n  SELECT product,SUM(CASE WHEN kind='OUT' THEN qty ELSE 0 END) AS qty\n  FROM movements GROUP BY product\n), leftovers AS (\n  SELECT i.product,i.cost,CASE\n    WHEN i.hi<=s.qty THEN 0\n    WHEN i.hi-i.qty>=s.qty THEN i.qty\n    ELSE i.hi-s.qty END AS remaining\n  FROM incoming i JOIN sold s ON s.product=i.product\n)\nSELECT product,SUM(remaining) AS remaining_qty,SUM(remaining*cost) AS inventory_value\nFROM leftovers GROUP BY product ORDER BY product;",
+    "expected": [
+      [
+        "A",
+        3,
+        90
+      ],
+      [
+        "B",
+        0,
+        0
+      ]
+    ],
+    "explanation": "Total sold consumes a prefix of each product cumulative receipt axis. Only the unconsumed suffix of each priced batch contributes value.",
+    "trap": "Multiplying net quantity by an average or latest cost loses batch provenance. Fully consumed products must still return zero.",
+    "followup": "How should returned stock acquire its cost? What validation is needed before accepting negative stock histories?",
+    "alternatives": []
+  }
+]

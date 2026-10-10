@@ -1,0 +1,5 @@
+WITH grouped AS (
+  SELECT *,SUM(is_reset) OVER (ORDER BY seq ROWS UNBOUNDED PRECEDING) AS grp FROM events
+)
+SELECT seq,SUM(amount) OVER (PARTITION BY grp ORDER BY seq ROWS UNBOUNDED PRECEDING) AS running_total
+FROM grouped ORDER BY seq;

@@ -1,0 +1,4 @@
+SELECT id,
+  SUM(amount) OVER (ORDER BY at,id ROWS UNBOUNDED PRECEDING) AS row_total,
+  SUM(amount) OVER (ORDER BY at RANGE UNBOUNDED PRECEDING) AS peer_total
+FROM tx ORDER BY at,id;
