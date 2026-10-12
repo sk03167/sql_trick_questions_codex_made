@@ -1,0 +1,14 @@
+flowchart TD
+    source["A few operational tables APIs<br/>and daily files"]
+    ingest["Python HTTP and file<br/>extraction"]
+    archive["Parquet object archive"]
+    process["DuckDB analytical job"]
+    gate["Validate the product contract"]
+    serving["Published tables or query<br/>service"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

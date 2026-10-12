@@ -1,0 +1,14 @@
+flowchart TD
+    source["Vehicle positions telemetry<br/>and sensor readings"]
+    ingest["Kafka telemetry"]
+    archive["Parquet telemetry archive"]
+    process["Flink normalization"]
+    gate["Validate the product contract"]
+    serving["TimescaleDB query API"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

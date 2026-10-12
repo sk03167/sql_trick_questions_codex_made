@@ -1,0 +1,14 @@
+flowchart TD
+    source["Vehicle positions telemetry<br/>and sensor readings"]
+    ingest["Event Hubs telemetry"]
+    archive["ADLS telemetry archive"]
+    process["Spark normalization"]
+    gate["Validate the product contract"]
+    serving["PostgreSQL with PostGIS plus<br/>BI"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

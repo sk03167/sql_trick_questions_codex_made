@@ -1,0 +1,14 @@
+flowchart TD
+    source["DynamoDB items and export<br/>snapshot"]
+    ingest["DynamoDB export and Streams<br/>worker"]
+    archive["S3 replayable landing"]
+    process["Sequenced normalization plus<br/>target-specific apply"]
+    gate["Validate the product contract"]
+    serving["Redshift governed marts"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

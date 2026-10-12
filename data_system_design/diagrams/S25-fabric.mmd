@@ -1,0 +1,14 @@
+flowchart TD
+    source["Existing AWS Azure or GCP<br/>analytical estate"]
+    ingest["Fabric Data Factory pipelines"]
+    archive["OneLake raw landing"]
+    process["Fabric Spark lakehouse tables"]
+    gate["Validate the product contract"]
+    serving["Fabric SQL endpoint and Power<br/>BI"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

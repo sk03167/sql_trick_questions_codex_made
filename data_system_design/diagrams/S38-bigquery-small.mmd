@@ -1,0 +1,14 @@
+flowchart TD
+    source["A few operational tables APIs<br/>and daily files"]
+    ingest["Cloud Run scheduled extractor"]
+    archive["GCS immutable landing"]
+    process["BigQuery load and SQL"]
+    gate["Validate the product contract"]
+    serving["BigQuery curated datasets"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

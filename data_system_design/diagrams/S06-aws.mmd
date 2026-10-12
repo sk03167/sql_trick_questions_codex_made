@@ -1,0 +1,16 @@
+flowchart TD
+    source["PostgreSQL MySQL or SQL Server<br/>tables"]
+    ingest["AWS DMS source-specific CDC"]
+    archive["S3 replayable landing"]
+    process["Spark applies sequenced<br/>changes"]
+    gate["Validate the product contract"]
+    serving["Redshift via validated bulk or<br/>merge adapter"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold
+    state["Separate checkpoints and progress"]
+    process -. persist recoverable state .-> state

@@ -1,0 +1,14 @@
+flowchart TD
+    source["Cosmos DB items and selected<br/>feed mode"]
+    ingest["Cosmos snapshot and<br/>change-feed worker"]
+    archive["ADLS replayable landing"]
+    process["Sequenced normalization plus<br/>target-specific apply"]
+    gate["Validate the product contract"]
+    serving["Synapse dedicated SQL marts"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

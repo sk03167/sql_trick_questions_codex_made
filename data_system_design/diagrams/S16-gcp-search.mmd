@@ -1,0 +1,14 @@
+flowchart TD
+    source["Application logs audit events<br/>and text documents"]
+    ingest["Pub Sub plus ingest worker"]
+    archive["GCS permitted raw archive"]
+    process["Redaction and index<br/>transformation"]
+    gate["Validate the product contract"]
+    serving["Elasticsearch plus search APIs"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

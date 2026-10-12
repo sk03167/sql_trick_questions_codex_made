@@ -1,0 +1,14 @@
+flowchart TD
+    source["Application logs audit events<br/>and text documents"]
+    ingest["Fluent Bit with Kafka"]
+    archive["Object archive"]
+    process["Redaction and schema worker"]
+    gate["Validate the product contract"]
+    serving["OpenSearch query API"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

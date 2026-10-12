@@ -1,0 +1,22 @@
+erDiagram
+    DIM_CUSTOMER ||--o{ FACT_ORDER : attributes
+    DIM_PRODUCT ||--o{ FACT_ORDER : describes
+    DIM_CUSTOMER {
+        bigint customer_sk PK
+        string customer_business_key
+        timestamp valid_from
+        timestamp valid_to
+        string segment
+    }
+    DIM_PRODUCT {
+        bigint product_sk PK
+        string product_business_key
+    }
+    FACT_ORDER {
+        string order_line_id PK
+        bigint customer_sk FK
+        bigint product_sk FK
+        timestamp event_time
+        decimal amount
+        string currency
+    }

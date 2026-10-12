@@ -1,0 +1,16 @@
+flowchart TD
+    source["Database transaction logs and<br/>table schemas"]
+    ingest["Debezium worker and Kafka"]
+    archive["ADLS replayable landing"]
+    process["Spark applies sequenced<br/>changes"]
+    gate["Validate the product contract"]
+    serving["Synapse via validated staging<br/>and apply adapter"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold
+    state["Separate checkpoints and progress"]
+    process -. persist recoverable state .-> state

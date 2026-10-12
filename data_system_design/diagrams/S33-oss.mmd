@@ -1,0 +1,14 @@
+flowchart TD
+    source["Stores vehicles factories and<br/>intermittently connected<br/>devices"]
+    ingest["Site-local durable spool and<br/>upload worker"]
+    archive["S3 compatible raw storage"]
+    process["Spark deduplication of<br/>uploaded batches"]
+    gate["Validate the product contract"]
+    serving["Iceberg via compatible sink"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

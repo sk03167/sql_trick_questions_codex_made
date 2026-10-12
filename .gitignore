@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 *.db
 .DS_Store
+
+data_system_design/tools/node_modules/
+data_system_design/tools/test-results/
+data_system_design/tools/playwright-report/

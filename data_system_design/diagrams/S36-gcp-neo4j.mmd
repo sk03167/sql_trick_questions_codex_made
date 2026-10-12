@@ -1,0 +1,14 @@
+flowchart TD
+    source["Customer account supplier and<br/>transaction relationships"]
+    ingest["Cloud Run ingestion worker"]
+    archive["GCS raw relationships"]
+    process["Spark graph preparation"]
+    gate["Validate the product contract"]
+    serving["Neo4j service and query API"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

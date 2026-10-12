@@ -1,0 +1,14 @@
+flowchart TD
+    source["Enterprise documents and<br/>source permissions"]
+    ingest["Document connector worker"]
+    archive["Object originals and ACL<br/>manifest"]
+    process["Python parsing and embedding<br/>jobs"]
+    gate["Validate the product contract"]
+    serving["Qdrant plus retrieval API"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

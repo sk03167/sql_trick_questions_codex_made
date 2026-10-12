@@ -1,0 +1,9 @@
+stateDiagram-v2
+    [*] --> DesiredState
+    DesiredState --> PendingDelivery: Versioned diff
+    PendingDelivery --> Acknowledged: Destination confirms durable result
+    PendingDelivery --> Retryable: Quota or temporary failure
+    Retryable --> PendingDelivery: Same operation identity
+    PendingDelivery --> NeedsReview: Permanent conflict
+    NeedsReview --> PendingDelivery: Corrected authorized operation
+    Acknowledged --> [*]

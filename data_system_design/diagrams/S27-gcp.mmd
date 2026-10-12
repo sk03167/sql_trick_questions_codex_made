@@ -1,0 +1,14 @@
+flowchart TD
+    source["Curated analytical products<br/>and external consumers"]
+    ingest["Producer curated product<br/>release"]
+    archive["GCS replayable landing"]
+    process["Policy-filtered share or<br/>export builder"]
+    gate["Validate the product contract"]
+    serving["Authorized consumer query or<br/>copy"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

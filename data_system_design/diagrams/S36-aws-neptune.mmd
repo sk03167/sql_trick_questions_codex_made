@@ -1,0 +1,14 @@
+flowchart TD
+    source["Customer account supplier and<br/>transaction relationships"]
+    ingest["CDC or file connector worker"]
+    archive["S3 relationship archive"]
+    process["Spark identity and edge<br/>preparation"]
+    gate["Validate the product contract"]
+    serving["Neptune plus constrained query<br/>API"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

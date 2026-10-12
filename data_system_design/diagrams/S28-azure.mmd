@@ -1,0 +1,14 @@
+flowchart TD
+    source["Warehouse or lakehouse<br/>customer and account models"]
+    ingest["Versioned curated model<br/>extraction"]
+    archive["ADLS replayable landing"]
+    process["Desired-state diff and<br/>delivery worker"]
+    gate["Validate the product contract"]
+    serving["Operational SaaS destination<br/>API"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

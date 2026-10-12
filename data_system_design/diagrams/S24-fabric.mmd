@@ -1,0 +1,14 @@
+flowchart TD
+    source["On premises sensitive records<br/>and approved cloud data"]
+    ingest["On premises approved aggregate<br/>worker"]
+    archive["OneLake approved landing only"]
+    process["Fabric Spark lakehouse tables"]
+    gate["Validate the product contract"]
+    serving["Fabric SQL endpoint and Power<br/>BI"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

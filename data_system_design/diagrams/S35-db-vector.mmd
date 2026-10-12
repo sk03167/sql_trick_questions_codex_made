@@ -1,0 +1,14 @@
+flowchart TD
+    source["Enterprise documents and<br/>source permissions"]
+    ingest["Document jobs and source<br/>metadata"]
+    archive["Delta content and source<br/>versions"]
+    process["Databricks parsing and<br/>embeddings"]
+    gate["Validate the product contract"]
+    serving["Databricks AI Search plus API"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

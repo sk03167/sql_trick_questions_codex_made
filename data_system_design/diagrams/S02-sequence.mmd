@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant O as Old authoritative system
+    participant M as Migration coordinator
+    participant N as New target
+    participant C as Consumers
+    M->>O: Capture consistent snapshot and position
+    O->>N: Bulk snapshot with manifests
+    O->>N: Apply retained ongoing changes
+    M->>N: Reconcile at an agreed checkpoint
+    M->>O: Fence old writer or pause final ingestion
+    O->>N: Apply final accepted changes
+    M->>C: Switch the consumer endpoint
+    C->>N: Read validated products
+    Note over O,N: After target writes begin rollback needs reconciliation

@@ -1,0 +1,16 @@
+flowchart TD
+    source["PostgreSQL MySQL or SQL Server<br/>tables"]
+    ingest["Debezium with Kafka Connect"]
+    archive["S3 compatible raw storage"]
+    process["Spark sequenced Iceberg MERGE"]
+    gate["Validate the product contract"]
+    serving["Trino query API and BI"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold
+    state["Separate checkpoints and progress"]
+    process -. persist recoverable state .-> state

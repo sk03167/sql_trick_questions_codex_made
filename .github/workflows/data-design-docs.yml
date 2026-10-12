@@ -1,0 +1,30 @@
+name: Data design catalog checks
+on:
+  pull_request:
+    paths: ["data_system_design/**", "DATA_SYSTEM_DESIGN_INDEX.md", ".github/workflows/data-design-docs.yml"]
+  push:
+    branches: [data-system-design-questions]
+    paths: ["data_system_design/**", "DATA_SYSTEM_DESIGN_INDEX.md", ".github/workflows/data-design-docs.yml"]
+permissions:
+  contents: read
+jobs:
+  documents-and-diagrams:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout reviewed action
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Validate documents and combination rules
+        run: python3 data_system_design/tools/validate_design_docs.py
+      - name: Install locked diagram dependencies
+        run: npm ci --prefix data_system_design/tools --ignore-scripts --no-audit --no-fund
+      - name: Install isolated Chromium test browser
+        run: npm exec --prefix data_system_design/tools -- playwright install --with-deps chromium
+      - name: Parse and render all diagrams
+        run: node data_system_design/tools/render_diagrams.cjs
+      - name: Validate source hashes and diagram evidence
+        run: python3 data_system_design/tools/validate_design_docs.py

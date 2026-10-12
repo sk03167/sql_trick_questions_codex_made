@@ -1,0 +1,14 @@
+flowchart TD
+    source["Bigtable cells and change<br/>streams"]
+    ingest["Bigtable Dataflow<br/>change-stream pipeline"]
+    archive["GCS replayable landing"]
+    process["Sequenced normalization plus<br/>target-specific apply"]
+    gate["Validate the product contract"]
+    serving["BigQuery governed marts"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

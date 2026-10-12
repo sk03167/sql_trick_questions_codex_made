@@ -1,0 +1,14 @@
+flowchart TD
+    source["MongoDB replica set or sharded<br/>collections"]
+    ingest["MongoDB change-stream<br/>extraction worker"]
+    archive["S3 landing and source<br/>manifests"]
+    process["Snowflake staged JSON<br/>normalization"]
+    gate["Validate the product contract"]
+    serving["Snowflake governed marts"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

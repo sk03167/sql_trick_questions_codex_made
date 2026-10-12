@@ -1,0 +1,15 @@
+flowchart TD
+    owner["Product owner and policy contract"]
+    metadata["Catalog lineage and classification"]
+    iam["Engine and storage authorization"]
+    infra["Versioned infrastructure definitions"]
+    plan["Plan policy and permission tests"]
+    apply["Environment-specific resource rollout"]
+    audit["Runtime audits and access reviews"]
+    owner -->|register intent| metadata
+    owner -->|authorize required access| iam
+    infra -->|review changes| plan
+    iam -->|test actual enforcement| plan
+    plan -->|accepted configuration| apply
+    apply -->|collect evidence| audit
+    metadata -. expected controls .-> audit

@@ -1,0 +1,14 @@
+flowchart TD
+    source["Customer account supplier and<br/>transaction relationships"]
+    ingest["Kafka Connect ingestion worker"]
+    archive["S3 compatible relationship<br/>archive"]
+    process["Spark entity matching"]
+    gate["Validate the product contract"]
+    serving["Neo4j plus constrained API"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

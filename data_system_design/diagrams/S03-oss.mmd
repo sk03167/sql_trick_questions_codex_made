@@ -1,0 +1,14 @@
+flowchart TD
+    source["Operational databases files<br/>and event archives"]
+    ingest["Airbyte connector worker"]
+    archive["S3 compatible raw storage"]
+    process["Spark writes Iceberg tables"]
+    gate["Validate the product contract"]
+    serving["Trino query API and BI"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

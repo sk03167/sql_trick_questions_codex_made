@@ -1,0 +1,14 @@
+flowchart TD
+    source["Warehouse lake catalog<br/>scheduler and state stores"]
+    ingest["Protected backup and replay<br/>manifest"]
+    archive["ADLS raw payload archive"]
+    process["Restore data catalog grants<br/>and jobs"]
+    gate["Validate the product contract"]
+    serving["Validated recovered consumer<br/>endpoint"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

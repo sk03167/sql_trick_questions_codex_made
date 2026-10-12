@@ -1,0 +1,14 @@
+erDiagram
+    ENTITY ||--o{ TEMPORAL_VERSION : has
+    ENTITY {
+        string entity_id PK
+    }
+    TEMPORAL_VERSION {
+        string version_id PK
+        string entity_id FK
+        timestamp valid_from
+        timestamp valid_to
+        timestamp recorded_from
+        timestamp recorded_to
+        string correction_id
+    }

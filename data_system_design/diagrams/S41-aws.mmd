@@ -1,0 +1,14 @@
+flowchart TD
+    source["Expanding batch and streaming<br/>analytical workloads"]
+    ingest["Glue bounded extract"]
+    archive["S3 replayable landing"]
+    process["EMR Spark writes Iceberg"]
+    gate["Validate the product contract"]
+    serving["Athena reads Iceberg"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant A as Application
+    participant D as Source database
+    participant C as Outbox CDC reader
+    participant B as Replayable broker
+    participant P as Consumer
+    participant L as Operation ledger
+    participant E as External destination
+    A->>D: Commit business change and outbox row in one transaction
+    C->>D: Read committed outbox changes
+    C->>B: Publish stable operation identity
+    B->>P: Deliver or redeliver operation
+    P->>L: Register or claim idempotent operation
+    P->>E: Request action with supported idempotency key
+    E-->>P: Durable result or retryable failure
+    P->>L: Persist acknowledged destination state
+    Note over P,E: If the destination lacks idempotency use reconciliation and a declared delivery contract

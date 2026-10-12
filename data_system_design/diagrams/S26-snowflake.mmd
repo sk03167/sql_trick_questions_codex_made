@@ -1,0 +1,14 @@
+flowchart TD
+    source["Sales finance logistics and<br/>customer domains"]
+    ingest["Supported connector or<br/>extraction worker"]
+    archive["S3 landing and source<br/>manifests"]
+    process["COPY into native Snowflake<br/>tables"]
+    gate["Validate the product contract"]
+    serving["Snowflake SQL with governed<br/>products"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

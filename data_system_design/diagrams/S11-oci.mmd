@@ -1,0 +1,14 @@
+flowchart TD
+    source["Order payment inventory and<br/>customer tables"]
+    ingest["Verified file or GoldenGate<br/>adapter"]
+    archive["OCI Object Storage landing"]
+    process["OCI Data Flow Spark and target<br/>load"]
+    gate["Validate the product contract"]
+    serving["Autonomous Database warehouse<br/>workload"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

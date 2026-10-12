@@ -1,0 +1,16 @@
+flowchart TD
+    pr["Pull request and versioned contracts"]
+    checks["Unit schema IaC and diagram checks"]
+    artifact["Immutable reviewed artifact"]
+    staging["Deploy into isolated staging"]
+    probe["Integration parity and access tests"]
+    production["Promote the same artifact"]
+    verify["Observe product SLOs and correctness"]
+    recovery["Rollback code or repair data safely"]
+    pr -->|run CI| checks
+    checks -->|build once| artifact
+    artifact -->|deploy candidate| staging
+    staging -->|exercise real interfaces| probe
+    probe -->|release gate passes| production
+    production -->|validate consumer boundary| verify
+    verify -->|regression or failure| recovery

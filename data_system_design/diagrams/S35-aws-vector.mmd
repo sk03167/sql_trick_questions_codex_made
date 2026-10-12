@@ -1,0 +1,14 @@
+flowchart TD
+    source["Enterprise documents and<br/>source permissions"]
+    ingest["Document ingestion worker"]
+    archive["S3 originals and ACL manifest"]
+    process["Container parsing and<br/>embedding"]
+    gate["Validate the product contract"]
+    serving["OpenSearch plus retrieval API"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

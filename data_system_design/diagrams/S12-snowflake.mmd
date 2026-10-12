@@ -1,0 +1,19 @@
+flowchart TD
+    source["Website and mobile clickstream<br/>events"]
+    ingest["Kafka durable event transport"]
+    archive["S3 landing and source<br/>manifests"]
+    process["External Flink plus sink<br/>adapter"]
+    gate["Validate the product contract"]
+    serving["Snowpipe Streaming and SQL<br/>marts"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    archive_writer["Kafka Connect object sink"]
+    ingest -->|independent archive path| archive_writer
+    archive_writer -->|durable original records| archive
+    ingest -->|consume live records| process
+    archive -. replay archived records .-> process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold
+    state["Separate checkpoints and progress"]
+    process -. persist recoverable state .-> state

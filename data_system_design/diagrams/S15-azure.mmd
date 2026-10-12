@@ -1,0 +1,19 @@
+flowchart TD
+    source["Events CDC and append-only<br/>operational activity"]
+    ingest["Azure Event Hubs"]
+    archive["ADLS replayable landing"]
+    process["Apache Flink on AKS"]
+    gate["Validate the product contract"]
+    serving["Azure Data Explorer or<br/>Eventhouse"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    archive_writer["Event Hubs Capture to ADLS"]
+    ingest -->|independent archive path| archive_writer
+    archive_writer -->|durable original records| archive
+    ingest -->|consume live records| process
+    archive -. replay archived records .-> process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold
+    state["Separate checkpoints and progress"]
+    process -. persist recoverable state .-> state

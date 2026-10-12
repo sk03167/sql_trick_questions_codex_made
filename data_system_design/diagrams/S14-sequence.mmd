@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant B as Replayable source
+    participant P as Processor
+    participant S as Serving sink
+    participant K as Progress store
+    B->>P: Event with stable identity and sequence
+    P->>S: Idempotent or transactional write
+    S-->>P: Durable acknowledgment
+    P->>K: Persist compatible progress
+    Note over P,K: Crash here can cause a replay
+    B->>P: Deliver the event again after restart
+    P->>S: Reapply with the same business identity
+    S-->>P: Same visible business result
+    Note over P,S: Arbitrary side effects need their own deduplication contract

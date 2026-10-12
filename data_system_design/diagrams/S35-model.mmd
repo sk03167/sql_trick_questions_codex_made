@@ -1,0 +1,21 @@
+erDiagram
+    SOURCE_DOCUMENT ||--o{ CHUNK : contains
+    CHUNK ||--o{ EMBEDDING : represents
+    SOURCE_DOCUMENT {
+        string document_version_id PK
+        string source_uri
+        string entitlement_version
+        string content_hash
+    }
+    CHUNK {
+        string chunk_id PK
+        string document_version_id FK
+        string parser_version
+    }
+    EMBEDDING {
+        string embedding_id PK
+        string chunk_id FK
+        string model_version
+        int dimensions
+        string index_release
+    }

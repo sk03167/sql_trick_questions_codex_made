@@ -1,0 +1,14 @@
+flowchart TD
+    source["Multiple ERPs CRMs and<br/>regional warehouse feeds"]
+    ingest["Verified DataStage extraction"]
+    archive["IBM Cloud Object Storage<br/>landing"]
+    process["Supported Spark writes Iceberg"]
+    gate["Validate the product contract"]
+    serving["watsonx.data analytical query<br/>layer"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

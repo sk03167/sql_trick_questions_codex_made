@@ -1,0 +1,14 @@
+flowchart TD
+    source["Salesforce Stripe Shopify and<br/>REST endpoints"]
+    ingest["Quota-aware API connector<br/>worker"]
+    archive["GCS replayable landing"]
+    process["BigQuery loading and SQL dbt"]
+    gate["Validate the product contract"]
+    serving["BigQuery governed marts"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

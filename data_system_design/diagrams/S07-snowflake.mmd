@@ -1,0 +1,16 @@
+flowchart TD
+    source["Database transaction logs and<br/>table schemas"]
+    ingest["Verified CDC connector"]
+    archive["S3 landing and source<br/>manifests"]
+    process["Snowflake sequenced MERGE<br/>apply"]
+    gate["Validate the product contract"]
+    serving["Snowflake governed marts"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold
+    state["Separate checkpoints and progress"]
+    process -. persist recoverable state .-> state

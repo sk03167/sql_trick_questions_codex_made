@@ -1,0 +1,19 @@
+flowchart TD
+    source["Website and mobile clickstream<br/>events"]
+    ingest["Apache Kafka"]
+    archive["S3 compatible raw storage"]
+    process["Apache Flink processing"]
+    gate["Validate the product contract"]
+    serving["Iceberg via compatible sink"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    archive_writer["Kafka Connect object sink"]
+    ingest -->|independent archive path| archive_writer
+    archive_writer -->|durable original records| archive
+    ingest -->|consume live records| process
+    archive -. replay archived records .-> process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold
+    state["Separate checkpoints and progress"]
+    process -. persist recoverable state .-> state

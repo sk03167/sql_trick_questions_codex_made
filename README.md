@@ -1,5 +1,7 @@
 # SQL Trick Question Catalog
 
+This branch also contains the [data system design scenario library](DATA_SYSTEM_DESIGN_INDEX.md): 43 scenarios with architecture diagrams, technology alternatives, governance, infrastructure and code-delivery automation, and testing plans.
+
 50 exercises organized into 25 patterns, with fresh datasets, expected outputs, and runnable solutions.
 
 - [Questions and sample datasets](QUESTIONS.md)

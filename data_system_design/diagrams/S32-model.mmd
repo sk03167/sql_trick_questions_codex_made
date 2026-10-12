@@ -1,0 +1,24 @@
+erDiagram
+    LEDGER_POSTING ||--o{ MATCH_DECISION : evidence
+    SETTLEMENT_LINE ||--o{ MATCH_DECISION : evidence
+    LEDGER_POSTING {
+        string posting_id PK
+        string transaction_ref
+        decimal amount
+        string currency
+        string source_release
+    }
+    SETTLEMENT_LINE {
+        string line_id PK
+        string settlement_batch
+        decimal amount
+        string currency
+    }
+    MATCH_DECISION {
+        string decision_id PK
+        string posting_id FK
+        string line_id FK
+        decimal allocated_amount
+        string status
+        string rule_version
+    }

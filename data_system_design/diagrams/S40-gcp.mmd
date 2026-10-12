@@ -1,0 +1,14 @@
+flowchart TD
+    source["Unexpected schema changes<br/>missing feeds and corrupt<br/>records"]
+    ingest["Cloud Run bounded extractor"]
+    archive["GCS replayable landing"]
+    process["Dataproc Spark writes Iceberg"]
+    gate["Validate the product contract"]
+    serving["Trino reads GCS Iceberg tables"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

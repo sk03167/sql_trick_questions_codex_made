@@ -1,0 +1,14 @@
+flowchart TD
+    source["SQL Server warehouse and SSIS<br/>jobs"]
+    ingest["Database backup and log<br/>transport"]
+    archive["GCS backup archive"]
+    process["Restore SQL Server on GCE"]
+    gate["Validate the product contract"]
+    serving["Existing BI against SQL Server"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold

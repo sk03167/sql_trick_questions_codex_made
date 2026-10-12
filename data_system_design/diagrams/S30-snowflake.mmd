@@ -1,0 +1,16 @@
+flowchart TD
+    source["Streaming events and offline<br/>feature tables"]
+    ingest["Warehouse change or query<br/>polling"]
+    archive["S3 landing and source<br/>manifests"]
+    process["Outbound projection worker"]
+    gate["Validate the product contract"]
+    serving["External Redis with outbound<br/>worker"]
+    hold["Hold publication and investigate"]
+    source -->|extract or publish| ingest
+    ingest -->|archive through a configured writer| archive
+    archive -->|bounded input or restore| process
+    process -->|candidate output| gate
+    gate -->|accepted release| serving
+    gate -->|contract violated| hold
+    state["Separate checkpoints and progress"]
+    process -. persist recoverable state .-> state
