@@ -1,10 +1,10 @@
 # SQL Trick Question Solutions
 
-Each solution answers the corresponding exercise in [QUESTIONS.md](QUESTIONS.md). Read the question contract first: duplicate identity, time boundaries, allowed ties, missing rows, and NULL meaning determine whether the SQL is correct.
+Each solution answers the corresponding exercise in [QUESTIONS.md](QUESTIONS.md). Each exercise also includes a **PySpark DataFrame solution** and sample setup; start with [the PySpark guide](PYSPARK_GUIDE.md) for runtime setup and shared helpers. Read the question contract first: duplicate identity, time boundaries, allowed ties, missing rows, and NULL meaning determine whether the SQL is correct.
 
 ## Dialect and data conventions
 
-- Tested reference dialect: SQLite 3.28 or newer. The recorded verification run uses SQLite 3.53.4. No database server or third-party package is required.
+- Tested reference dialect: SQLite 3.28 or newer. See VERIFICATION.md for the recorded runtime version. No database server or third-party package is required.
 - Integer `/` in the median queries must truncate for integer operands; `3.0` and `1.0` force fractional arithmetic where required. Adapt with FLOOR or integer division in another dialect.
 - SQL Server: remove the RECURSIVE keyword, use TOP or OFFSET/FETCH instead of LIMIT, use an appropriate string type instead of TEXT, and apply the engine recursion limits deliberately. Recursive UNION-based cycle handling needs a different implementation because SQL Server recursive CTE syntax and restrictions differ.
 - PostgreSQL: these CASE-based endpoint comparisons avoid reliance on SQLite scalar MIN/MAX. PostgreSQL offers LEAST/GREATEST and IS DISTINCT FROM as conveniences. This catalog does not claim engine-by-engine execution testing.
@@ -110,6 +110,60 @@ WHERE b.row_id IS NULL
 ORDER BY a.row_id;
 ```
 
+### PySpark Q01
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['routes'] = spark.createDataFrame(
+    [(1, 'A', 'B', 10),
+ (2, 'B', 'A', 10),
+ (3, 'A', 'C', 5),
+ (4, 'D', 'C', 7),
+ (5, 'A', 'B', 10),
+ (6, 'A', 'A', 0),
+ (7, 'B', 'A', 12)],
+    'row_id long, src string, dst string, dist long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q01(t):
+    routes = t['routes']
+    canonical = (routes.withColumn('_lo', F.least('src', 'dst'))
+                 .withColumn('_hi', F.greatest('src', 'dst')))
+    w = Window.partitionBy('_lo', '_hi', 'dist').orderBy('row_id')
+    return (canonical.withColumn('_rn', F.row_number().over(w)).filter('_rn = 1')
+            .select('row_id', 'src', 'dst', 'dist').orderBy('row_id'))
+
+result = q01(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Canonicalize endpoints with least/greatest, then retain row_number = 1 ordered by row_id within (lo, hi, dist). dropDuplicates on the canonical keys alone cannot promise the smallest original row_id. The left-join alternative explicitly tests that no earlier equivalent row exists; a left_anti join with the same condition is another direct expression. Ranking is usually preferable to generating all earlier matches for a heavily duplicated route.
+
+**Alternative: left join and keep unmatched rows**
+
+```python
+def q01_left_join(t):
+    # A survivor has no smaller row_id with the same unordered endpoints/distance.
+    a, b = t['routes'].alias('a'), t['routes'].alias('b')
+    same_pair = (((F.col('a.src') == F.col('b.src')) & (F.col('a.dst') == F.col('b.dst'))) |
+                 ((F.col('a.src') == F.col('b.dst')) & (F.col('a.dst') == F.col('b.src'))))
+    condition = same_pair & (F.col('a.dist') == F.col('b.dist')) & (F.col('b.row_id') < F.col('a.row_id'))
+    return (a.join(b, condition, 'left').filter(F.col('b.row_id').isNull())
+            .select('a.*').orderBy('row_id'))
+
+q01_left_join(t).show(truncate=False)
+```
+
 ### Expected output
 
 | row_id | src | dst | dist |
@@ -148,6 +202,38 @@ The ID inequality forces a different physical row. The endpoint inequality picks
 
 A self join on endpoints alone incorrectly certifies the single (3,3) row as reciprocal.
 
+### PySpark Q02
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['pairs'] = spark.createDataFrame(
+    [(1, 1, 2), (2, 2, 1), (3, 3, 3), (4, 4, 4), (5, 4, 4), (6, 5, 6), (7, 1, 2)],
+    'id long, x long, y long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q02(t):
+    a, b = t['pairs'].alias('a'), t['pairs'].alias('b')
+    condition = ((F.col('a.x') == F.col('b.y')) & (F.col('a.y') == F.col('b.x')) &
+                 (F.col('a.id') != F.col('b.id')))
+    return (a.join(b, condition).filter(F.col('a.x') <= F.col('a.y'))
+            .select('a.x', 'a.y').distinct().orderBy('x', 'y'))
+
+result = q02(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Alias both inputs and require different physical IDs before distinct removes repeated output pairs. That identity check makes one self-pair insufficient. Deduplicating the input first would erase the evidence that two identical self-pair rows exist. The self join can expand greatly for frequent pairs.
+
 ### Expected output
 
 | x | y |
@@ -185,6 +271,42 @@ UNION constructs a set of directed neighbor relationships. The master people tab
 ### The trap
 
 UNION ALL counts duplicate edges. COUNT(*) gives an isolated person a count of one after a LEFT JOIN.
+
+### PySpark Q03
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['people'] = spark.createDataFrame(
+    [(1,), (2,), (3,), (4,)],
+    'id long'
+)
+t['edges'] = spark.createDataFrame(
+    [(1, 2), (2, 1), (1, 2), (2, 3), (3, 3)],
+    'a long, b long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q03(t):
+    e = t['edges'].filter(F.col('a') != F.col('b'))
+    directed = (e.select(F.col('a').alias('id'), F.col('b').alias('neighbor'))
+                .union(e.select('b', 'a')).distinct())
+    return (t['people'].join(directed, 'id', 'left').groupBy('id')
+            .agg(F.count('neighbor').alias('neighbors')).orderBy('id'))
+
+result = q03(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Create both directions, remove self edges, and distinct the (person, neighbor) pairs. A left join from the people master keeps isolates; count(neighbor) ignores the null placeholder produced by that join. count(*) would incorrectly give an isolate one neighbor.
 
 ### Expected output
 
@@ -227,6 +349,40 @@ Canonical edges enforce a strict vertex order. Two joined edges form a path; the
 
 Three unrestricted self joins return permutations of the same triangle. A two-edge path is not a triangle.
 
+### PySpark Q04
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['edges'] = spark.createDataFrame(
+    [(1, 2), (2, 1), (2, 3), (1, 3), (1, 4), (3, 4), (4, 4)],
+    'src long, dst long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q04(t):
+    e = (t['edges'].filter(F.col('src') != F.col('dst'))
+         .select(F.least('src', 'dst').alias('a'), F.greatest('src', 'dst').alias('b')).distinct())
+    paths = (e.alias('x').join(e.alias('y'), F.col('x.b') == F.col('y.a'))
+             .select('x.a', 'x.b', F.col('y.b').alias('c')))
+    return (paths.alias('p').join(e.alias('z'),
+            (F.col('p.a') == F.col('z.a')) & (F.col('p.c') == F.col('z.b')), 'left_semi')
+            .orderBy('a', 'b', 'c'))
+
+result = q04(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Normalize each undirected edge so a < b. Join a-b to b-c, then use a left_semi join to require the closing a-c edge without adding columns or multiplying matching paths. The strict ordering yields one representation of each triangle; high-degree vertices can still create many candidate paths.
+
 ### Expected output
 
 | a | b | c |
@@ -265,6 +421,45 @@ Start from every node and expand reachability. UNION deduplicates the complete (
 ### The trap
 
 UNION ALL loops on cycles. Adding an ever-increasing depth to the deduplication state would defeat cycle termination.
+
+### PySpark Q05
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Before running:** configure a checkpoint directory as shown in [graph iteration setup](PYSPARK_GUIDE.md#graph-iteration-and-checkpoints). The local runner handles this automatically.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['nodes'] = spark.createDataFrame(
+    [(1,), (2,), (3,), (4,), (5,), (6,)],
+    'id long'
+)
+t['edges'] = spark.createDataFrame(
+    [(1, 2), (2, 3), (3, 1), (4, 5), (1, 2)],
+    'a long, b long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import reachability
+
+def q05(t):
+    e = t['edges'].select(F.col('a').alias('src'), F.col('b').alias('dst'))
+    undirected = e.union(e.select(F.col('dst').alias('src'), F.col('src').alias('dst')))
+    seeds = t['nodes'].select(F.col('id').alias('root'), F.col('id').alias('node'))
+    return (reachability(seeds, undirected).groupBy('node')
+            .agg(F.min('root').alias('component')).orderBy('node'))
+
+result = q05(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Seed every node as its own root, follow edges in both directions, and retain only previously unseen (root, node) pairs at each iteration. MIN(root) gives the component label and isolates survive their seeds. See the reachability helper for cycle termination and checkpoint setup. The all-pairs closure can grow quadratically within a large component; a graph library or minimum-label propagation is a better production starting point.
 
 ### Expected output
 
@@ -315,6 +510,38 @@ SELECT MIN(value) AS start_value,MAX(value) AS end_value,COUNT(*) AS length
 FROM g GROUP BY island ORDER BY start_value;
 ```
 
+### PySpark Q06
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['observations'] = spark.createDataFrame(
+    [(1,), (2,), (2,), (3,), (7,), (8,), (10,)],
+    'value long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q06(t):
+    d = t['observations'].distinct()
+    g = d.withColumn('_island', F.col('value') - F.row_number().over(Window.orderBy('value')))
+    return (g.groupBy('_island').agg(F.min('value').alias('start_value'),
+            F.max('value').alias('end_value'), F.count('*').alias('length'))
+            .drop('_island').orderBy('start_value'))
+
+result = q06(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Deduplicate before assigning row_number. Subtracting the row position from each consecutive integer gives a constant island key. Grouping that key yields the endpoints and distinct length. The global ordered window is intentional for this single sequence; separate sequences need a business partition key.
+
 ### Expected output
 
 | start_value | end_value | length |
@@ -357,6 +584,40 @@ First build streaks, then compare their lengths within each user. Comparing agai
 
 ROW_NUMBER() = 1 over streak length arbitrarily discards ties. YYYYMMDD subtraction is not calendar arithmetic.
 
+### PySpark Q07
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['logins'] = spark.createDataFrame(
+    [(1, 1), (1, 2), (1, 2), (1, 4), (1, 5), (2, 2), (2, 3), (2, 4)],
+    'user_id long, day_no long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q07(t):
+    w = Window.partitionBy('user_id').orderBy('day_no')
+    g = t['logins'].distinct().withColumn('_island', F.col('day_no') - F.row_number().over(w))
+    streaks = g.groupBy('user_id', '_island').agg(F.min('day_no').alias('start_day'),
+        F.max('day_no').alias('end_day'), F.count('*').alias('days'))
+    return (streaks.withColumn('_longest', F.max('days').over(Window.partitionBy('user_id')))
+            .filter(F.col('days') == F.col('_longest'))
+            .select('user_id', 'start_day', 'end_day', 'days').orderBy('user_id', 'start_day'))
+
+result = q07(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Deduplicate (user_id, day_no), build each user's islands, then compare every streak length with that user's maximum. Equality retains all tied longest streaks. Ranking one streak first and taking row_number = 1 would discard ties.
+
 ### Expected output
 
 | user_id | start_day | end_day | days |
@@ -392,6 +653,39 @@ Sentinels just outside the allowed range expose both boundary gaps. LEAD gives e
 ### The trap
 
 Looking only between existing rows misses the beginning and end. Expanding every absent number can be expensive for large ranges.
+
+### PySpark Q08
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['ids'] = spark.createDataFrame(
+    [(3,), (4,), (8,), (10,)],
+    'id long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q08(t):
+    spark = t['ids'].sparkSession
+    points = t['ids'].union(spark.createDataFrame([(0,), (13,)], 'id long')).distinct()
+    gaps = points.withColumn('_next', F.lead('id').over(Window.orderBy('id')))
+    return (gaps.filter(F.col('_next') > F.col('id') + 1)
+            .select((F.col('id') + 1).alias('gap_start'), (F.col('_next') - 1).alias('gap_end'))
+            .orderBy('gap_start'))
+
+result = q08(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Pad the observed IDs with 0 and 13, then use lead to find distances greater than one. The output endpoints are current + 1 and next - 1. This also handles an empty input without expanding all missing integers. The constants encode the question's inclusive 1–12 domain.
 
 ### Expected output
 
@@ -433,6 +727,42 @@ LAG measures inactivity between adjacent events; a running sum of break flags la
 ### The trap
 
 Using >= 30 changes the exact boundary. Bucketing by minute_no / 30 ignores activity chains that cross fixed bucket boundaries.
+
+### PySpark Q09
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['events'] = spark.createDataFrame(
+    [(1, 1, 0), (2, 1, 30), (3, 1, 61), (4, 1, 61), (5, 2, 5), (6, 2, 40)],
+    'event_id long, user_id long, minute_no long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q09(t):
+    w = Window.partitionBy('user_id').orderBy('minute_no', 'event_id')
+    p = t['events'].withColumn('_prev', F.lag('minute_no').over(w))
+    f = p.withColumn('_fresh', F.when(F.col('_prev').isNull() |
+        (F.col('minute_no') - F.col('_prev') > 30), 1).otherwise(0))
+    return (f.withColumn('session_no', F.sum('_fresh').over(prefix(w)))
+            .groupBy('user_id', 'session_no').agg(F.min('minute_no').alias('start_minute'),
+                F.max('minute_no').alias('end_minute'), F.count('*').alias('events'))
+            .orderBy('user_id', 'session_no'))
+
+result = q09(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** lag finds the preceding event within each user in (minute_no, event_id) order. Mark a boundary only for a gap greater than 30, and cumulatively sum boundary flags using an explicit ROWS frame. Equal timestamps and exactly 30-minute gaps stay in the same session.
 
 ### Expected output
 
@@ -478,6 +808,42 @@ A boundary depends on both calendar adjacency and null-aware state equality. Exp
 
 status <> LAG(status) evaluates to unknown around NULLs. Grouping only by status merges separated runs.
 
+### PySpark Q10
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['daily'] = spark.createDataFrame(
+    [(1, 'up'), (2, 'up'), (3, None), (4, None), (6, None), (7, 'up')],
+    'day_no long, status string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q10(t):
+    w = Window.orderBy('day_no')
+    p = (t['daily'].withColumn('_prev_day', F.lag('day_no').over(w))
+         .withColumn('_prev_status', F.lag('status').over(w)))
+    same_run = (F.col('day_no') == F.col('_prev_day') + 1) & F.col('status').eqNullSafe(F.col('_prev_status'))
+    f = p.withColumn('_fresh', F.when(same_run, 0).otherwise(1))
+    return (f.withColumn('_island', F.sum('_fresh').over(prefix(w)))
+            .groupBy('_island', 'status').agg(F.min('day_no').alias('start_day'), F.max('day_no').alias('end_day'))
+            .select('status', 'start_day', 'end_day').orderBy('start_day'))
+
+result = q10(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** A row continues a run only when the day is consecutive and status.eqNullSafe(previous_status) is true. The missing predecessor starts a new run, including when the first status is null. A cumulative boundary count separates recurring statuses and missing-day breaks.
+
 ### Expected output
 
 | status | start_day | end_day |
@@ -515,6 +881,44 @@ Filter qualifying observations before deriving ID islands. A window count labels
 
 Calendar-date gaps are irrelevant here. Returning only each island boundary omits required interior rows.
 
+### PySpark Q11
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['visits'] = spark.createDataFrame(
+    [(1, 1, 90),
+ (2, 2, 110),
+ (3, 3, 120),
+ (4, 4, 90),
+ (5, 5, 130),
+ (6, 6, 140),
+ (7, 9, 150),
+ (9, 10, 160)],
+    'id long, day_no long, people long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q11(t):
+    g = (t['visits'].filter(F.col('people') >= 100)
+         .withColumn('_island', F.col('id') - F.row_number().over(Window.orderBy('id'))))
+    return (g.withColumn('_length', F.count('*').over(Window.partitionBy('_island')))
+            .filter('_length >= 3').select('id', 'day_no', 'people').orderBy('id'))
+
+result = q11(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Filter attendance before computing id minus row_number, because a low-attendance row must interrupt the qualifying ID sequence. Count each island with a partition window, then preserve all original rows from islands of size at least three. The date column does not define adjacency here.
+
 ### Expected output
 
 | id | day_no | people |
@@ -551,6 +955,37 @@ The one-day, non-overlapping contract turns project reconstruction into integer 
 ### The trap
 
 This arithmetic shortcut fails when tasks have variable durations or overlap; interval packing is then required.
+
+### PySpark Q12
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['tasks'] = spark.createDataFrame(
+    [(1, 1, 2), (2, 2, 3), (3, 5, 6), (4, 8, 9), (5, 9, 10), (6, 10, 11)],
+    'id long, start_day long, end_day long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q12(t):
+    g = t['tasks'].withColumn('_island', F.col('start_day') - F.row_number().over(Window.orderBy('start_day')))
+    return (g.groupBy('_island').agg(F.min('start_day').alias('project_start'), F.max('end_day').alias('project_end'))
+            .withColumn('duration', F.col('project_end') - F.col('project_start'))
+            .drop('_island').orderBy('duration', 'project_start'))
+
+result = q12(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** For these non-overlapping one-day tasks, start_day minus row_number is constant across adjoining tasks. Aggregate the smallest start and greatest end; subtract them for the half-open project duration. Variable-length or overlapping tasks require interval packing instead.
 
 ### Expected output
 
@@ -593,6 +1028,35 @@ Compare each start with the largest prior end, not merely the previous row end. 
 ### The trap
 
 LAG(end_at) sees 3 before the interval starting at 4 and incorrectly splits coverage still protected by [1,10).
+
+### PySpark Q13
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['intervals'] = spark.createDataFrame(
+    [(1, 1, 10), (2, 2, 3), (3, 4, 8), (4, 10, 12), (5, 15, 17)],
+    'id long, start_at long, end_at long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import pack_intervals
+
+def q13(t):
+    return pack_intervals(t['intervals']).orderBy('start_at')
+
+result = q13(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** The shared pack_intervals helper compares each start with the maximum end of ALL preceding rows. Using lag(end_at) fails for nested intervals whose immediately preceding end is short. Strictly greater starts split islands, so touching ranges merge. Ordering also includes the unique ID.
 
 ### Expected output
 
@@ -639,6 +1103,39 @@ Pack occupied coverage before taking its complement. Boundary sentinels expose f
 
 Taking LEAD directly over raw bookings invents free intervals inside overlapping bookings.
 
+### PySpark Q14
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['bookings'] = spark.createDataFrame(
+    [(1, 1, 5), (2, 3, 7), (3, 10, 12), (4, 12, 16)],
+    'id long, start_at long, end_at long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import pack_intervals
+
+def q14(t):
+    packed = pack_intervals(t['bookings'])
+    padding = packed.sparkSession.createDataFrame([(0, 0), (20, 20)], 'start_at long, end_at long')
+    gaps = packed.union(padding).withColumn('free_end', F.lead('start_at').over(Window.orderBy('start_at', 'end_at')))
+    return (gaps.filter(F.col('free_end') > F.col('end_at'))
+            .select(F.col('end_at').alias('free_start'), 'free_end').orderBy('free_start'))
+
+result = q14(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Pack occupied intervals first, append zero-length boundary markers at 0 and 20, then take gaps from an end to the next start. The markers preserve leading/trailing space and yield the entire window when there are no bookings. The input contract already confines bookings to the requested window.
+
 ### Expected output
 
 | free_start | free_end |
@@ -681,6 +1178,45 @@ Collapse simultaneous starts and ends into one net change. The running active co
 
 Processing starts before ends can create a fake zero-duration peak. Counting overlapping pairs is not a concurrency measure.
 
+### PySpark Q15
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['meetings'] = spark.createDataFrame(
+    [(1, 1, 4), (2, 2, 5), (3, 4, 6), (4, 4, 7)],
+    'id long, start_at long, end_at long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q15(t):
+    m = t['meetings']
+    events = (m.select(F.col('start_at').alias('at'), F.lit(1).alias('delta'))
+              .union(m.select(F.col('end_at').alias('at'), F.lit(-1).alias('delta'))))
+    w = Window.orderBy('at')
+    segments = (events.groupBy('at').agg(F.sum('delta').alias('delta'))
+                .withColumn('until', F.lead('at').over(w))
+                .withColumn('active', F.sum('delta').over(prefix(w)))
+                .filter(F.col('until') > F.col('at')))
+    return (segments.withColumn('_peak', F.max('active').over(Window.partitionBy()))
+            .filter(F.col('active') == F.col('_peak'))
+            .select(F.col('at').alias('start_at'), F.col('until').alias('end_at'), 'active').orderBy('start_at'))
+
+result = q15(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Union +1 start and -1 end events, and sum deltas at each timestamp BEFORE computing the running occupancy. This implements half-open boundaries at tied times. lead supplies the segment end; retain every positive-duration segment tied at maximum occupancy. Adjacent peak segments are reported separately, matching the question.
+
 ### Expected output
 
 | start_at | end_at | active |
@@ -715,6 +1251,36 @@ Pack the union of coverage, then measure the disjoint ranges. COALESCE gives zer
 ### The trap
 
 SUM(end-start) measures total booked effort, not unique occupied time.
+
+### PySpark Q16
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['ranges'] = spark.createDataFrame(
+    [(1, 1, 10), (2, 2, 3), (3, 9, 12), (4, 15, 18)],
+    'id long, s long, e long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import pack_intervals
+
+def q16(t):
+    return pack_intervals(t['ranges'], 's', 'e').agg(
+        F.coalesce(F.sum(F.col('e') - F.col('s')), F.lit(0)).alias('occupied'))
+
+result = q16(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Pack intervals with the same helper as Q13, sum their disjoint lengths, and coalesce the empty aggregate to zero. Summing original lengths double-counts overlap. This is a global occupied-time measure; per-resource occupancy must partition packing by resource.
 
 ### Expected output
 
@@ -761,6 +1327,41 @@ SELECT p.id,COALESCE((
 ),10) AS price FROM products p ORDER BY p.id;
 ```
 
+### PySpark Q17
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['products'] = spark.createDataFrame(
+    [(1,), (2,), (3,), (4,)],
+    'id long'
+)
+t['changes'] = spark.createDataFrame(
+    [(1, 2, 20), (1, 5, 30), (1, 8, 99), (2, 7, 40), (3, 3, 15)],
+    'product_id long, day_no long, price long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q17(t):
+    latest = (t['changes'].filter('day_no <= 5').withColumn('_rn',
+              F.row_number().over(Window.partitionBy('product_id').orderBy(F.desc('day_no'))))
+              .filter('_rn = 1').select(F.col('product_id').alias('id'), 'price'))
+    return t['products'].join(latest, 'id', 'left').fillna({'price': 10}).orderBy('id')
+
+result = q17(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Filter changes to the as-of date before ranking them newest first per product. Keep one eligible row and left join from the complete product master, filling absent prices with 10. The contract makes (product_id, day_no) unique; real revisions on the same day need an additional tie-break key.
+
 ### Expected output
 
 | id | price |
@@ -797,6 +1398,41 @@ The lower bound is inclusive and the upper bound exclusive. Put eligibility in O
 ### The trap
 
 BETWEEN includes both ends and matches the fact at 5 to two versions.
+
+### PySpark Q18
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['facts'] = spark.createDataFrame(
+    [(1, 1, 4), (2, 1, 5), (3, 1, 10), (4, 2, 5)],
+    'id long, key_id long, at long'
+)
+t['versions'] = spark.createDataFrame(
+    [(1, 1, 5, 'old'), (1, 5, 10, 'new'), (1, 10, None, 'latest')],
+    'key_id long, valid_from long, valid_to long, label string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q18(t):
+    f, v = t['facts'].alias('f'), t['versions'].alias('v')
+    condition = ((F.col('f.key_id') == F.col('v.key_id')) & (F.col('f.at') >= F.col('v.valid_from')) &
+                 ((F.col('f.at') < F.col('v.valid_to')) | F.col('v.valid_to').isNull()))
+    return f.join(v, condition, 'left').select('f.id', 'v.label').orderBy('id')
+
+result = q18(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Put key equality and both validity boundaries in the LEFT join condition. The start is inclusive; the end is exclusive or open when null. Filtering the joined result on validity would drop uncovered facts. Overlapping dimension periods would multiply fact rows and violate the declared contract.
 
 ### Expected output
 
@@ -835,6 +1471,43 @@ The ordering expresses all tie-breakers. This exhaustive candidate version favor
 ### The trap
 
 MIN(ABS(...)) alone can return multiple tied candidates. Ordering by distance alone leaves the winner unspecified.
+
+### PySpark Q19
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['targets'] = spark.createDataFrame(
+    [(1, 5), (2, 10), (3, 0)],
+    'id long, at long'
+)
+t['readings'] = spark.createDataFrame(
+    [(1, 3, 30), (2, 7, 70), (3, 7, 71), (4, 12, 120)],
+    'id long, at long, value long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q19(t):
+    candidates = (t['targets'].alias('t').crossJoin(t['readings'].alias('r'))
+        .select(F.col('t.id').alias('target_id'), F.col('r.id').alias('reading_id'), 'r.value',
+                F.col('r.at').alias('_reading_at'), F.abs(F.col('t.at') - F.col('r.at')).alias('_distance')))
+    w = Window.partitionBy('target_id').orderBy('_distance', '_reading_at', 'reading_id')
+    return (candidates.withColumn('_rn', F.row_number().over(w)).filter('_rn = 1')
+            .select('target_id', 'reading_id', 'value').orderBy('target_id'))
+
+result = q19(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Build target/reading candidates and rank by absolute distance, reading time, then reading ID. This is an exact, readable reference but generates targets × readings candidates. Large datasets need a carefully validated nearest-neighbor/range strategy; a fixed time band alone can incorrectly miss the actual nearest reading.
 
 ### Expected output
 
@@ -878,6 +1551,39 @@ LEFT JOIN purchases p ON p.customer_id=c.id
 WHERE p.id IS NULL ORDER BY c.id;
 ```
 
+### PySpark Q20
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['customers'] = spark.createDataFrame(
+    [(1,), (2,), (3,)],
+    'id long'
+)
+t['purchases'] = spark.createDataFrame(
+    [(1, 1), (2, None)],
+    'id long, customer_id long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q20(t):
+    buyers = t['purchases'].select(F.col('customer_id').alias('id'))
+    return t['customers'].join(buyers, 'id', 'left_anti').orderBy('id')
+
+result = q20(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** A left_anti join returns customers for which no equality match exists. A null purchase customer_id does not match a registered ID and cannot poison the whole result as NOT IN can. Duplicate matching purchases do not duplicate the preserved customers.
+
 ### Expected output
 
 | id |
@@ -911,6 +1617,40 @@ Apply the child eligibility predicate in ON. Count the child key, not the null-e
 ### The trap
 
 WHERE o.status='paid' after the LEFT JOIN eliminates customers 2 and 3. WHERE status='paid' OR status IS NULL still loses customer 2.
+
+### PySpark Q21
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['customers'] = spark.createDataFrame(
+    [(1,), (2,), (3,)],
+    'id long'
+)
+t['orders'] = spark.createDataFrame(
+    [(11, 1, 'paid'), (12, 1, 'cancelled'), (13, 2, 'cancelled')],
+    'id long, customer_id long, status string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q21(t):
+    paid = (t['orders'].filter(F.col('status') == 'paid').groupBy('customer_id')
+            .agg(F.count('*').alias('paid_orders')).withColumnRenamed('customer_id', 'id'))
+    return t['customers'].join(paid, 'id', 'left').fillna({'paid_orders': 0}).orderBy('id')
+
+result = q21(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Filter to paid orders and aggregate them by customer before joining to the customer master. Fill the missing count with zero. A post-join status filter would remove customers with only cancelled orders or no orders.
 
 ### Expected output
 
@@ -947,6 +1687,45 @@ Reduce each child independently to one row per customer before joining. This mak
 ### The trap
 
 The raw join creates 2 x 3 rows for customer 1. SUM(DISTINCT amount) undercounts legitimate equal-value orders and payments.
+
+### PySpark Q22
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['customers'] = spark.createDataFrame(
+    [(1,), (2,)],
+    'id long'
+)
+t['orders'] = spark.createDataFrame(
+    [(1, 1, 50), (2, 1, 50)],
+    'id long, customer_id long, amount long'
+)
+t['payments'] = spark.createDataFrame(
+    [(1, 1, 30), (2, 1, 30), (3, 1, 40)],
+    'id long, customer_id long, amount long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q22(t):
+    o = t['orders'].groupBy('customer_id').agg(F.sum('amount').alias('ordered')).withColumnRenamed('customer_id', 'id')
+    p = t['payments'].groupBy('customer_id').agg(F.sum('amount').alias('paid')).withColumnRenamed('customer_id', 'id')
+    return (t['customers'].join(o, 'id', 'left').join(p, 'id', 'left')
+            .fillna({'ordered': 0, 'paid': 0}).orderBy('id'))
+
+result = q22(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Aggregate orders and payments separately to one row per customer, then join those totals to the master. This restores a common grain before joining the two independent child tables. sumDistinct(amount) is not a valid repair for fan-out because equal transaction amounts are legitimate.
 
 ### Expected output
 
@@ -992,6 +1771,40 @@ SELECT COALESCE(SUM(i.amount),0) AS approved_total
 FROM invoices i JOIN eligible e ON e.invoice_id=i.id;
 ```
 
+### PySpark Q23
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['invoices'] = spark.createDataFrame(
+    [(1, 50), (2, 50), (3, 100)],
+    'id long, amount long'
+)
+t['tags'] = spark.createDataFrame(
+    [(1, 'approved'), (1, 'approved'), (2, 'approved'), (3, 'draft')],
+    'invoice_id long, tag string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q23(t):
+    approved = t['tags'].filter(F.col('tag') == 'approved').select(F.col('invoice_id').alias('id'))
+    return t['invoices'].join(approved, 'id', 'left_semi').agg(
+        F.coalesce(F.sum('amount'), F.lit(0)).alias('approved_total'))
+
+result = q23(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Use a left_semi join against approved tags to preserve each eligible invoice exactly once. Sum the original invoice amounts, keeping identical amounts on distinct invoices. Coalesce the empty aggregate to zero. A regular join can multiply invoices when approved tags repeat.
+
 ### Expected output
 
 | approved_total |
@@ -1032,6 +1845,45 @@ Two disjoint LEFT JOIN branches emulate a full comparison. Presence is tested us
 
 old.val <> new.val misses NULL changes. COALESCE to a magic string conflates real data with a sentinel.
 
+### PySpark Q24
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['old_snapshot'] = spark.createDataFrame(
+    [(1, 'a'), (2, None), (3, 'c'), (5, None)],
+    'id long, val string'
+)
+t['new_snapshot'] = spark.createDataFrame(
+    [(1, 'a'), (2, 'b'), (4, 'd'), (5, None)],
+    'id long, val string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q24(t):
+    o, n = t['old_snapshot'].alias('o'), t['new_snapshot'].alias('n')
+    joined = o.join(n, F.col('o.id') == F.col('n.id'), 'full')
+    return (joined.filter(F.col('o.id').isNull() | F.col('n.id').isNull() |
+                          ~F.col('o.val').eqNullSafe(F.col('n.val')))
+            .select(F.coalesce('o.id', 'n.id').alias('id'),
+                F.when(F.col('o.id').isNull(), 'added').when(F.col('n.id').isNull(), 'removed')
+                    .otherwise('changed').alias('change_kind'),
+                F.col('o.val').alias('old_value'), F.col('n.val').alias('new_value')).orderBy('id'))
+
+result = q24(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** A full outer join exposes additions and removals. Test row presence using the non-null ID, and use eqNullSafe on the values so null-to-null is unchanged while null-to-value changes are visible. Coalesce the two ID columns only for the output identifier, not for detecting row presence.
+
 ### Expected output
 
 | id | change_kind | old_value | new_value |
@@ -1069,6 +1921,40 @@ Treat every old occurrence as minus one and every new occurrence as plus one, th
 ### The trap
 
 EXCEPT with distinct semantics can hide multiplicity changes for a and b. UNION would erase repeated signed occurrences.
+
+### PySpark Q25
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['old_bag'] = spark.createDataFrame(
+    [('a',), ('a',), ('b',), (None,)],
+    'key_name string'
+)
+t['new_bag'] = spark.createDataFrame(
+    [('a',), ('b',), ('b',), ('c',), (None,), (None,)],
+    'key_name string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q25(t):
+    signed = t['old_bag'].withColumn('delta', F.lit(-1)).unionByName(t['new_bag'].withColumn('delta', F.lit(1)))
+    return (signed.groupBy('key_name').agg(F.sum('delta').alias('delta'))
+            .filter('delta <> 0').orderBy(F.col('key_name').asc_nulls_first()))
+
+result = q25(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Assign -1 to every old occurrence and +1 to every new occurrence, union without deduplication, then sum by key. Spark groups null keys together, so their multiplicity is reconciled too. Explicit nulls-first sorting matches the expected output. except/subtract would erase duplicate counts.
 
 ### Expected output
 
@@ -1119,6 +2005,46 @@ HAVING COUNT(DISTINCT r.product)=(SELECT COUNT(*) FROM required)
 ORDER BY c.id;
 ```
 
+### PySpark Q26
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['customers'] = spark.createDataFrame(
+    [(1,), (2,), (3,), (4,)],
+    'id long'
+)
+t['required'] = spark.createDataFrame(
+    [('A',), ('B',)],
+    'product string'
+)
+t['purchases'] = spark.createDataFrame(
+    [(1, 'A'), (1, 'A'), (1, 'B'), (1, 'X'), (2, 'A'), (2, 'A'), (3, 'A'), (3, 'B')],
+    'customer_id long, product string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q26(t):
+    # An anti join finds each missing customer/product pair; another excludes its customer.
+    wanted = t['customers'].crossJoin(t['required'])
+    bought = t['purchases'].select(F.col('customer_id').alias('id'), 'product').distinct()
+    missing = wanted.join(bought, ['id', 'product'], 'left_anti').select('id').distinct()
+    return t['customers'].join(missing, 'id', 'left_anti').orderBy('id')
+
+result = q26(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Form required customer/product pairs, anti join purchased pairs to find missing requirements, then anti join those customers from the master. An empty required set produces no missing pairs and therefore retains everybody. The Cartesian requirement grid is clear for study but can be large; a coverage-count plan can avoid materializing it when its empty-set semantics are preserved.
+
 ### Expected output
 
 | id |
@@ -1159,6 +2085,46 @@ Set equality needs containment in both directions. Coverage alone permits custom
 
 Matching the count of distinct products is insufficient: a basket {A,X} has the same cardinality as {A,B}.
 
+### PySpark Q27
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['customers'] = spark.createDataFrame(
+    [(1,), (2,), (3,), (4,)],
+    'id long'
+)
+t['required'] = spark.createDataFrame(
+    [('A',), ('B',)],
+    'product string'
+)
+t['purchases'] = spark.createDataFrame(
+    [(1, 'A'), (1, 'B'), (1, 'X'), (2, 'A'), (3, 'A'), (3, 'A'), (3, 'B')],
+    'customer_id long, product string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import q26
+
+def q27(t):
+    covered = q26(t)
+    extra = (t['purchases'].join(t['required'], 'product', 'left_anti')
+             .select(F.col('customer_id').alias('id')).distinct())
+    return covered.join(extra, 'id', 'left_anti').orderBy('id')
+
+result = q27(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Start with Q26's complete coverage, then reject anyone with a purchase outside the required set. Coverage alone allows extras and is insufficient for equality. Empty requirements leave only customers with empty baskets. Both stages use anti joins, so purchase duplicates cannot change qualification.
+
 ### Expected output
 
 | id |
@@ -1197,6 +2163,45 @@ Compare missing members in both directions for every candidate pair. Empty baske
 ### The trap
 
 Concatenating products can collide, depend on ordering, or silently drop empty baskets. Equal counts do not establish equal contents.
+
+### PySpark Q28
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['customers'] = spark.createDataFrame(
+    [(1,), (2,), (3,), (4,), (5,)],
+    'id long'
+)
+t['basket'] = spark.createDataFrame(
+    [(1, 'A'), (1, 'A'), (1, 'B'), (2, 'B'), (2, 'A'), (3, 'A')],
+    'customer_id long, product string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q28(t):
+    # collect_set is a per-customer executor aggregation, not DataFrame.collect().
+    baskets = (t['basket'].groupBy('customer_id').agg(F.sort_array(F.collect_set('product')).alias('_basket'))
+               .withColumnRenamed('customer_id', 'id'))
+    empty = F.array().cast('array<string>')
+    customers = t['customers'].join(baskets, 'id', 'left').withColumn('_basket', F.coalesce('_basket', empty))
+    return (customers.alias('a').join(customers.alias('b'),
+            (F.col('a.id') < F.col('b.id')) & (F.col('a._basket') == F.col('b._basket')))
+            .select(F.col('a.id').alias('a'), F.col('b.id').alias('b')).orderBy('a', 'b'))
+
+result = q28(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Aggregate each non-null product set with collect_set, sort the array into a deterministic canonical representation, and fill missing baskets with a typed empty array. Equality of these arrays means exact set equality, including empty baskets. Array state must fit per customer; for huge baskets, compare relational differences instead. A hash-only comparison would need collision handling.
 
 ### Expected output
 
@@ -1237,6 +2242,49 @@ First derive each exam extreme, then exclude anyone appearing at either extreme 
 
 Filtering individual non-extreme rows still leaves student 4 because they were non-extreme in exam 2 but maximal in exam 1.
 
+### PySpark Q29
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['students'] = spark.createDataFrame(
+    [(1,), (2,), (3,), (4,), (5,)],
+    'id long'
+)
+t['scores'] = spark.createDataFrame(
+    [(1, 1, 10),
+ (1, 2, 20),
+ (1, 3, 30),
+ (1, 4, 30),
+ (2, 1, 40),
+ (2, 2, 50),
+ (2, 3, 60),
+ (2, 4, 50)],
+    'exam_id long, student_id long, score long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q29(t):
+    w = Window.partitionBy('exam_id')
+    scores = t['scores'].withColumn('_lo', F.min('score').over(w)).withColumn('_hi', F.max('score').over(w))
+    taken = scores.select(F.col('student_id').alias('id'))
+    extreme = scores.filter((F.col('score') == F.col('_lo')) | (F.col('score') == F.col('_hi'))).select(F.col('student_id').alias('id'))
+    return t['students'].join(taken, 'id', 'left_semi').join(extreme, 'id', 'left_anti').orderBy('id')
+
+result = q29(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Compute minimum and maximum scores per exam, semi join students who participated, and anti join everyone tied at either extreme. Equal extreme scores exclude every tied student. The participation semi join separately excludes students who took no exams.
+
 ### Expected output
 
 | id |
@@ -1272,6 +2320,41 @@ Compute independent frequencies on the original population. Both flags must hold
 
 Filtering by duplicated prior value before counting locations makes policy 3 appear unique because policy 2 has already been removed.
 
+### PySpark Q30
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['policies'] = spark.createDataFrame(
+    [(1, 10, 5, 1, 1),
+ (2, 20, 20, 2, 2),
+ (3, 10, 30, 2, 2),
+ (4, 10, 40, 4, 4),
+ (5, 99, 7, 5, 5)],
+    'id long, prior_value long, current_value long, lat long, lon long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q30(t):
+    flags = (t['policies'].withColumn('_prior_count', F.count('*').over(Window.partitionBy('prior_value')))
+             .withColumn('_location_count', F.count('*').over(Window.partitionBy('lat', 'lon'))))
+    return flags.filter('_prior_count > 1 AND _location_count = 1').agg(
+        F.coalesce(F.sum('current_value'), F.lit(0)).alias('total'))
+
+result = q30(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Compute two window counts at their independent grains: prior_value and (lat, lon). Apply both predicates only after both counts are computed over all policies. Filtering on one condition first would change the population used by the other count.
+
 ### Expected output
 
 | total |
@@ -1304,6 +2387,39 @@ ROWS follows individual row positions under a total ordering. RANGE treats equal
 ### The trap
 
 Adding id to the RANGE ordering changes peer groups. Leaving the frame implicit may produce timestamp-wide jumps when row-by-row accumulation was intended.
+
+### PySpark Q31
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['tx'] = spark.createDataFrame(
+    [(1, 1, 10), (2, 1, 20), (3, 2, 5)],
+    'id long, at long, amount long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q31(t):
+    rows = prefix(Window.orderBy('at', 'id'))
+    peers = Window.orderBy('at').rangeBetween(Window.unboundedPreceding, Window.currentRow)
+    return (t['tx'].withColumn('row_total', F.sum('amount').over(rows))
+            .withColumn('peer_total', F.sum('amount').over(peers)).orderBy('at', 'id')
+            .select('id', 'row_total', 'peer_total'))
+
+result = q31(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Use ROWS with (at, id) for a deterministic row-by-row total. Use RANGE ordered only by at for timestamp peers. Adding id to the RANGE ordering would split timestamp peers and change the requested result. Final output is explicitly sorted because a DataFrame has no inherent row order.
 
 ### Expected output
 
@@ -1340,6 +2456,36 @@ The frame must reach the partition end. The function respects a genuinely NULL f
 
 The default ordered frame ends at the current peer group, so LAST_VALUE often returns the current value. MAX is not the last value.
 
+### PySpark Q32
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['events'] = spark.createDataFrame(
+    [(1, 1, 1, 10), (2, 1, 2, 5), (3, 2, 1, 7), (4, 2, 2, None)],
+    'id long, user_id long, at long, val long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q32(t):
+    w = Window.partitionBy('user_id').orderBy('at', 'id').rowsBetween(
+        Window.unboundedPreceding, Window.unboundedFollowing)
+    return t['events'].select('id', F.last('val', ignorenulls=False).over(w).alias('final_value')).orderBy('id')
+
+result = q32(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** The window spans the complete user partition, from unbounded preceding through unbounded following. last with ignorenulls=False preserves a null final value. A prefix frame would return the last value so far. An unordered groupBy().agg(last(...)) does not implement this deterministic ordered requirement.
+
 ### Expected output
 
 | id | final_value |
@@ -1375,6 +2521,42 @@ Each non-null value starts a new count group. Within a group there is exactly on
 ### The trap
 
 A running MAX over the whole user keeps 10 after the real value decreases to 3.
+
+### PySpark Q33
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['readings'] = spark.createDataFrame(
+    [(1, 1, 1, None),
+ (2, 1, 2, 10),
+ (3, 1, 3, None),
+ (4, 1, 4, 3),
+ (5, 1, 5, None),
+ (6, 2, 1, -2),
+ (7, 2, 2, None)],
+    'id long, user_id long, at long, val long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q33(t):
+    w = prefix(Window.partitionBy('user_id').orderBy('at', 'id'))
+    return t['readings'].select('id', F.last('val', ignorenulls=True).over(w).alias('filled_value')).orderBy('id')
+
+result = q33(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** last with ignorenulls=True over the ordered prefix directly expresses forward fill. Leading nulls have no previous non-null value and stay null. max is wrong when observed values decrease. Include the ID to define ordering for equal timestamps.
 
 ### Expected output
 
@@ -1421,6 +2603,39 @@ Densify the calendar and aggregate transaction grain before a row window. Only t
 
 Three preceding transactions or three observed days do not represent three calendar days. Filtering early removes window history.
 
+### PySpark Q34
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['sales'] = spark.createDataFrame(
+    [(1, 1, 10), (2, 1, 20), (3, 3, 60), (4, 5, 30)],
+    'id long, day_no long, amount long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q34(t):
+    calendar = t['sales'].sparkSession.range(1, 6).select(F.col('id').alias('day_no'))
+    totals = t['sales'].groupBy('day_no').agg(F.sum('amount').alias('amount'))
+    daily = calendar.join(totals, 'day_no', 'left').fillna({'amount': 0})
+    rolled = daily.withColumn('window_total', F.sum('amount').over(Window.orderBy('day_no').rowsBetween(-2, 0)))
+    return (rolled.filter('day_no >= 3').select('day_no', 'window_total',
+            F.round(F.col('window_total') / 3.0, 2).alias('average')).orderBy('day_no'))
+
+result = q34(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Generate the five report days, aggregate sales per day, left join, and fill missing revenue with zero. Only then does a three-row window mean three calendar days. Compute the window before filtering incomplete initial report days, and use fractional division before rounding.
+
 ### Expected output
 
 | day_no | window_total | average |
@@ -1455,6 +2670,41 @@ Distinctness is evaluated over the whole window, not independently for each day.
 ### The trap
 
 Summing daily distinct counts double-counts users active on multiple days. COUNT(DISTINCT ...) as a window aggregate is not available in every SQL engine.
+
+### PySpark Q35
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['calendar'] = spark.createDataFrame(
+    [(1,), (2,), (3,), (4,)],
+    'day_no long'
+)
+t['activity'] = spark.createDataFrame(
+    [(1, 1), (1, 2), (1, 2), (2, 2), (3, 4)],
+    'user_id long, day_no long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q35(t):
+    c, a = t['calendar'].alias('c'), t['activity'].alias('a')
+    condition = (F.col('a.day_no') >= F.col('c.day_no') - 2) & (F.col('a.day_no') <= F.col('c.day_no'))
+    return (c.join(a, condition, 'left').groupBy('c.day_no')
+            .agg(F.countDistinct('a.user_id').alias('active_users')).orderBy('day_no'))
+
+result = q35(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Join each report day to activity in its inclusive three-day range, then count distinct users. The left join preserves zero-activity report days. Adding daily distinct counts would double-count a user active on multiple days. This range join is a correctness reference whose expansion must be assessed for long reporting horizons.
 
 ### Expected output
 
@@ -1493,6 +2743,38 @@ Mark only each user first occurrence, then accumulate those markers. The explici
 ### The trap
 
 A running count of events includes repeats. DENSE_RANK over user_id imposes user-value order, not first-arrival order.
+
+### PySpark Q36
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['events'] = spark.createDataFrame(
+    [(1, 1, 8), (2, 1, 8), (3, 2, 9), (4, 3, None), (5, 4, 8), (6, 5, 10)],
+    'id long, at long, user_id long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q36(t):
+    first = t['events'].withColumn('_occurrence', F.row_number().over(Window.partitionBy('user_id').orderBy('at', 'id')))
+    marker = F.when(F.col('user_id').isNotNull() & (F.col('_occurrence') == 1), 1).otherwise(0)
+    return (first.withColumn('distinct_users', F.sum(marker).over(prefix(Window.orderBy('at', 'id'))))
+            .orderBy('at', 'id').select('id', 'distinct_users'))
+
+result = q36(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Mark only each non-null user's first occurrence in event order, then prefix-sum those markers. Repeated users and null users contribute zero. This avoids a distinct window aggregate and preserves every event. The global event order is a potential single-partition bottleneck at production scale.
 
 ### Expected output
 
@@ -1535,6 +2817,44 @@ Integer division identifies one or two central row positions. A deterministic ID
 
 DENSE_RANK numbers distinct salary values rather than employees, changing the median when salaries repeat.
 
+### PySpark Q37
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['employees'] = spark.createDataFrame(
+    [(1, 'A', 10),
+ (2, 'A', 10),
+ (3, 'A', 30),
+ (4, 'A', 90),
+ (5, 'B', 5),
+ (6, 'B', 15),
+ (7, 'B', 100)],
+    'id long, company string, salary long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q37(t):
+    ordered = (t['employees'].withColumn('_rn', F.row_number().over(Window.partitionBy('company').orderBy('salary', 'id')))
+               .withColumn('_n', F.count('*').over(Window.partitionBy('company'))))
+    middle = ordered.filter((F.col('_rn') >= F.floor((F.col('_n') + 1) / 2)) &
+                            (F.col('_rn') <= F.floor((F.col('_n') + 2) / 2)))
+    return middle.groupBy('company').agg(F.avg('salary').alias('median')).orderBy('company')
+
+result = q37(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Assign positions with a salary-and-ID ordering while retaining duplicate salaries as distinct observations. Select floor((n+1)/2) through floor((n+2)/2), then average those central observations. Spark division does not reproduce SQLite integer truncation automatically, so the floors are explicit. This is exact, not an approximate quantile.
+
 ### Expected output
 
 | company | median |
@@ -1573,6 +2893,42 @@ Each value owns a cumulative rank interval. Locate both central positions within
 ### The trap
 
 Taking the median of distinct values ignores frequency. Expanding very large frequencies wastes work.
+
+### PySpark Q38
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['frequencies'] = spark.createDataFrame(
+    [(10, 2), (20, 1), (30, 3)],
+    'val long, freq long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q38(t):
+    f = t['frequencies']
+    bounds = f.withColumn('_hi', F.sum('freq').over(prefix(Window.orderBy('val'))))
+    n = f.agg(F.sum('freq').alias('_n'))
+    # explode an array of TWO positions only. Repeated middle positions must stay.
+    positions = n.select(F.explode(F.array(F.expr('(_n DIV 2) + (_n % 2)'),
+                                          F.expr('(_n DIV 2) + 1'))).alias('_p'))
+    condition = (F.col('_p') > F.col('_hi') - F.col('freq')) & (F.col('_p') <= F.col('_hi'))
+    return positions.join(bounds, condition).agg(F.avg('val').alias('median'))
+
+result = q38(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Convert frequencies into cumulative rank intervals, then join exactly TWO middle positions to their containing intervals. Do not distinct the positions: an odd-size population intentionally supplies the same central position twice. The algorithm never expands frequency observations. Integer DIV and remainder preserve central positions even above the exact-integer range of a double. Total frequency must still fit LongType; larger populations need explicit decimal arithmetic.
 
 ### Expected output
 
@@ -1615,6 +2971,36 @@ WHERE (SELECT SUM(p.weight) FROM queue p WHERE p.turn<=q.turn)<=1000
 ORDER BY q.turn DESC LIMIT 1;
 ```
 
+### PySpark Q39
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['queue'] = spark.createDataFrame(
+    [(1, 'Ana', 400), (2, 'Ben', 350), (3, 'Cy', 250), (4, 'Di', 1), (5, 'Eli', 10)],
+    'turn long, name string, weight long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q39(t):
+    totals = t['queue'].withColumn('_total', F.sum('weight').over(prefix(Window.orderBy('turn'))))
+    return totals.filter('_total <= 1000').orderBy(F.desc('turn')).limit(1).select('turn', 'name')
+
+result = q39(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** A ROWS prefix sum ordered by unique turn determines eligibility. Positive weights make the total monotone, so the greatest eligible turn is exactly the final admitted person. Zero or negative weights would require a different first-failure treatment. limit(1) returns no row when the first person cannot fit.
+
 ### Expected output
 
 | turn | name |
@@ -1648,6 +3034,37 @@ A running count of reset events creates partitions. Each partition receives its 
 ### The trap
 
 Subtracting a global running minimum is unrelated to resets. Filtering reset rows before assigning groups removes the boundaries.
+
+### PySpark Q40
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['events'] = spark.createDataFrame(
+    [(1, 0, 5), (2, 0, 3), (3, 1, 0), (4, 0, 4), (5, 0, -1), (6, 1, 0), (7, 0, 2)],
+    'seq long, is_reset long, amount long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q40(t):
+    grouped = t['events'].withColumn('_grp', F.sum('is_reset').over(prefix(Window.orderBy('seq'))))
+    w = prefix(Window.partitionBy('_grp').orderBy('seq'))
+    return grouped.select('seq', F.sum('amount').over(w).alias('running_total')).orderBy('seq')
+
+result = q40(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Prefix-sum reset flags into a segment ID, then prefix-sum amounts within that segment. The reset row belongs to the new segment and has zero amount, giving zero displayed total. Negative amounts are retained and do not imply another reset.
 
 ### Expected output
 
@@ -1700,6 +3117,37 @@ WITH n AS (
 SELECT DISTINCT val FROM n WHERE val=v1 AND val=v2 ORDER BY val;
 ```
 
+### PySpark Q41
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['logs'] = spark.createDataFrame(
+    [(10, 7), (20, 7), (40, 7), (50, 8), (60, 7), (70, 8), (80, 8), (90, 8)],
+    'seq long, val long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q41(t):
+    w = Window.orderBy('seq')
+    adjacent = t['logs'].withColumn('_next', F.lead('val', 1).over(w)).withColumn('_next2', F.lead('val', 2).over(w))
+    return (adjacent.filter((F.col('val') == F.col('_next')) & (F.col('val') == F.col('_next2')))
+            .select('val').distinct().orderBy('val'))
+
+result = q41(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** lead looks at the next two ROW POSITIONS in sequence order, independent of gaps in seq values. A run of three or more contains at least one matching three-row window. Ordinary equality excludes nulls under this question's contract, and distinct returns each qualifying value once.
+
 ### Expected output
 
 | val |
@@ -1736,6 +3184,38 @@ Pair ordinal positions, not numeric IDs. The unmatched last position falls back 
 ### The trap
 
 seat_id +/- 1 and ID parity assume dense identifiers. A nullable occupant would require checking partner presence instead of COALESCE.
+
+### PySpark Q42
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['seats'] = spark.createDataFrame(
+    [(10, 'Ana'), (20, 'Ben'), (40, 'Cy'), (70, 'Di'), (90, 'Eli')],
+    'seat_id long, occupant string'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q42(t):
+    w = Window.orderBy('seat_id')
+    seats = (t['seats'].withColumn('_pos', F.row_number().over(w))
+             .withColumn('_next', F.lead('occupant').over(w)).withColumn('_prev', F.lag('occupant').over(w)))
+    return seats.select('seat_id', F.when(F.col('_pos') % 2 == 1,
+        F.coalesce('_next', 'occupant')).otherwise(F.col('_prev')).alias('occupant')).orderBy('seat_id')
+
+result = q42(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Use row_number to establish alternating pair positions rather than parity of sparse seat IDs. Odd positions take the next occupant, even positions take the previous occupant. An odd final row has no next occupant and retains its own, which is non-null by contract.
 
 ### Expected output
 
@@ -1780,6 +3260,45 @@ Unpivot both participant roles before aggregation. Only after scores are complet
 
 Joining only first_player misses half the contributions. UNION can erase two legitimate equal-scoring match contributions.
 
+### PySpark Q43
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['players'] = spark.createDataFrame(
+    [(1, 1), (2, 1), (3, 1), (4, 2), (5, 2)],
+    'id long, group_id long'
+)
+t['matches'] = spark.createDataFrame(
+    [(1, 1, 2, 3, 1), (2, 2, 3, 2, 3)],
+    'id long, first_player long, second_player long, first_score long, second_score long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q43(t):
+    m = t['matches']
+    points = (m.select(F.col('first_player').alias('id'), F.col('first_score').alias('score'))
+              .union(m.select('second_player', 'second_score')))
+    totals = points.groupBy('id').agg(F.sum('score').alias('score'))
+    players = t['players'].join(totals, 'id', 'left').fillna({'score': 0})
+    w = Window.partitionBy('group_id').orderBy(F.desc('score'), 'id')
+    return (players.withColumn('_rn', F.row_number().over(w)).filter('_rn = 1')
+            .select('group_id', F.col('id').alias('winner_id'), 'score').orderBy('group_id'))
+
+result = q43(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Union both player roles into a single (player, score) stream using union, which preserves all match contributions. Aggregate scores and left join registered players, filling missing totals with zero. Rank within group by descending score and ascending ID to make the tie-break deterministic.
+
 ### Expected output
 
 | group_id | winner_id | score |
@@ -1813,6 +3332,42 @@ Each signup contributes one indicator to the average. The source population is t
 ### The trap
 
 An inner join removes inactive users and repeated activity overweights active users. Consecutive activity days are not necessarily day-one retention.
+
+### PySpark Q44
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['users'] = spark.createDataFrame(
+    [(1, 1), (2, 1), (3, 1), (4, 2), (5, 2)],
+    'id long, signup_day long'
+)
+t['activity'] = spark.createDataFrame(
+    [(1, 2), (1, 2), (2, 3), (4, 3), (5, 3)],
+    'user_id long, day_no long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q44(t):
+    u, a = t['users'].alias('u'), t['activity'].distinct().alias('a')
+    condition = (F.col('u.id') == F.col('a.user_id')) & (F.col('a.day_no') == F.col('u.signup_day') + 1)
+    return (u.join(a, condition, 'left').groupBy('u.signup_day')
+            .agg(F.round(F.avg(F.when(F.col('a.user_id').isNotNull(), 1.0).otherwise(0.0)), 2).alias('retention'))
+            .orderBy('signup_day'))
+
+result = q44(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Deduplicate (user_id, day_no) activity before joining the exact signup_day + 1 condition. The left join leaves exactly one row per registered user, so averaging the 0/1 return flag uses the fixed signup denominator. Counting raw activity would overweight users with repeated events.
 
 ### Expected output
 
@@ -1853,6 +3408,48 @@ Monthly aggregation precedes threshold testing. Month ordinals make year transit
 
 Two over-limit observations can be separated by months. Comparing raw month numbers falsely treats December to January as a nonconsecutive transition.
 
+### PySpark Q45
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['accounts'] = spark.createDataFrame(
+    [(1, 100), (2, 100), (3, 100)],
+    'id long, monthly_limit long'
+)
+t['credits'] = spark.createDataFrame(
+    [(1, 24299, 60),
+ (1, 24299, 60),
+ (1, 24300, 110),
+ (2, 24299, 120),
+ (2, 24301, 130),
+ (3, 24299, 100),
+ (3, 24300, 150)],
+    'account_id long, month_index long, amount long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q45(t):
+    monthly = t['credits'].groupBy('account_id', 'month_index').agg(F.sum('amount').alias('_total'))
+    limits = t['accounts'].select(F.col('id').alias('account_id'), 'monthly_limit')
+    over = monthly.join(limits, 'account_id').filter(F.col('_total') > F.col('monthly_limit'))
+    adjacent = over.withColumn('_prev', F.lag('month_index').over(Window.partitionBy('account_id').orderBy('month_index')))
+    return adjacent.filter(F.col('month_index') == F.col('_prev') + 1).select('account_id').distinct().orderBy('account_id')
+
+result = q45(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Sum credits per account/month before comparing with the account limit. Filter strictly over-limit months, then use lag to require the preceding over-limit month to be exactly current - 1. Month ordinals preserve December-to-January adjacency, and missing months break the condition.
+
 ### Expected output
 
 | account_id |
@@ -1887,6 +3484,39 @@ Deduplicate only the reachable identity. Every reachable ID can enter the state 
 ### The trap
 
 A fixed number of self joins assumes a maximum depth. UNION ALL with no visited-state guard keeps expanding the 1 to 2 to 3 to 1 cycle.
+
+### PySpark Q46
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Before running:** configure a checkpoint directory as shown in [graph iteration setup](PYSPARK_GUIDE.md#graph-iteration-and-checkpoints). The local runner handles this automatically.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['reports'] = spark.createDataFrame(
+    [(1, 2), (2, 3), (3, 1), (2, 4), (1, 2), (5, 6)],
+    'manager_id long, employee_id long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import reachability
+
+def q46(t):
+    edges = t['reports'].select(F.col('manager_id').alias('src'), F.col('employee_id').alias('dst'))
+    seed = edges.sparkSession.createDataFrame([(1, 1)], 'root long, node long')
+    return reachability(seed, edges).filter('node <> 1').select(F.col('node').alias('id')).orderBy('id')
+
+result = q46(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Seed manager 1, expand only new reachable nodes, and exclude the seed in the final projection. The shared anti-join frontier helper terminates despite cycles and repeated edges. Checkpoint storage must remain accessible until the result is consumed. This uses directed edges, unlike Q05.
 
 ### Expected output
 
@@ -1923,6 +3553,37 @@ Test root status before child existence so the singleton root is classified corr
 ### The trap
 
 id NOT IN (SELECT parent_id ...) is poisoned by root NULLs. Checking leaf before root misclassifies a singleton.
+
+### PySpark Q47
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['nodes'] = spark.createDataFrame(
+    [(1, None), (2, 1), (3, 1), (4, 2), (9, None)],
+    'id long, parent_id long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q47(t):
+    parents = t['nodes'].select(F.col('parent_id').alias('id')).filter('id IS NOT NULL').distinct().withColumn('_has_child', F.lit(True))
+    return (t['nodes'].join(parents, 'id', 'left').select('id',
+            F.when(F.col('parent_id').isNull(), 'Root').when(F.col('_has_child'), 'Inner')
+                .otherwise('Leaf').alias('node_type')).orderBy('id'))
+
+result = q47(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Build the distinct set of IDs that appear as parents, then left join a child-presence marker. Test parent_id is null FIRST so an isolated root stays Root. A distinct parent set avoids multiplying a node once per child.
 
 ### Expected output
 
@@ -1964,6 +3625,48 @@ Correlated existence checks preserve the ordering relation for a complete sequen
 
 COUNT(DISTINCT kind)=3 admits users 2 and 3. Taking only each kind first event can miss a valid later retry.
 
+### PySpark Q48
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['events'] = spark.createDataFrame(
+    [(1, 1, 'view', 1),
+ (2, 1, 'buy', 2),
+ (3, 1, 'add', 3),
+ (4, 1, 'buy', 4),
+ (5, 2, 'buy', 1),
+ (6, 2, 'add', 2),
+ (7, 2, 'view', 3),
+ (8, 3, 'view', 1),
+ (9, 3, 'add', 1),
+ (10, 3, 'buy', 2)],
+    'id long, user_id long, kind string, at long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+
+def q48(t):
+    e = t['events']
+    first_view = e.filter(F.col('kind') == 'view').groupBy('user_id').agg(F.min('at').alias('_view'))
+    first_add = (e.filter(F.col('kind') == 'add').join(first_view, 'user_id')
+                 .filter(F.col('at') > F.col('_view')).groupBy('user_id').agg(F.min('at').alias('_add')))
+    return (e.filter(F.col('kind') == 'buy').join(first_add, 'user_id').filter(F.col('at') > F.col('_add'))
+            .select('user_id').distinct().orderBy('user_id'))
+
+result = q48(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Find the earliest view, then the earliest add strictly after that view, then any later buy. Choosing the earliest feasible prefix leaves the most room for later stages, so it cannot discard a valid sequence. Taking the earliest add without first requiring it to follow a view would miss valid later attempts. Additional constraints such as a maximum funnel duration need new logic.
+
 ### Expected output
 
 | user_id |
@@ -2002,6 +3705,45 @@ Give supplies and demands half-open spans on a cumulative quantity axis. Their o
 ### The trap
 
 An equality join on cumulative endpoints misses split allocations. This formulation does not enforce receipt-before-demand time unless availability is separately guaranteed.
+
+### PySpark Q49
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['supplies'] = spark.createDataFrame(
+    [(1, 5), (2, 4), (3, 6)],
+    'id long, qty long'
+)
+t['demands'] = spark.createDataFrame(
+    [(1, 7), (2, 5)],
+    'id long, qty long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q49(t):
+    w = prefix(Window.orderBy('id'))
+    s = t['supplies'].withColumn('hi', F.sum('qty').over(w)).alias('s')
+    d = t['demands'].withColumn('hi', F.sum('qty').over(w)).alias('d')
+    lo = F.greatest(F.col('s.hi') - F.col('s.qty'), F.col('d.hi') - F.col('d.qty'))
+    hi = F.least('s.hi', 'd.hi')
+    return (s.join(d, hi > lo).select(F.col('d.id').alias('demand_id'), F.col('s.id').alias('supply_id'),
+            (hi - lo).alias('allocated')).orderBy('demand_id', 'supply_id'))
+
+result = q49(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Prefix quantities turn supplies and demands into intervals on one cumulative quantity axis. Their positive overlap length is allocated quantity. Strict hi > lo excludes zero-sized boundary matches. A general non-equi join can be expensive; this expresses FIFO correctness without collecting inventory to Python or iterating over units.
 
 ### Expected output
 
@@ -2049,6 +3791,47 @@ Total sold consumes a prefix of each product cumulative receipt axis. Only the u
 ### The trap
 
 Multiplying net quantity by an average or latest cost loses batch provenance. Fully consumed products must still return zero.
+
+### PySpark Q50
+
+Use an existing `spark` session and the repository on your Python import path. [Setup, shared helpers, and runtime notes](PYSPARK_GUIDE.md). The output matches the expected table below.
+
+**Create the sample DataFrames**
+
+```python
+t = {}
+t['movements'] = spark.createDataFrame(
+    [(1, 'A', 'IN', 5, 10),
+ (2, 'A', 'IN', 4, 20),
+ (3, 'A', 'OUT', 7, None),
+ (4, 'A', 'IN', 6, 30),
+ (5, 'A', 'OUT', 5, None),
+ (6, 'B', 'IN', 2, 7),
+ (7, 'B', 'OUT', 2, None)],
+    'id long, product string, kind string, qty long, cost long'
+)
+```
+
+**DataFrame solution**
+
+```python
+from pyspark.sql import Window, functions as F
+from pyspark_solutions import prefix
+
+def q50(t):
+    m = t['movements']
+    receipts = m.filter(F.col('kind') == 'IN').withColumn('_hi', F.sum('qty').over(prefix(Window.partitionBy('product').orderBy('id'))))
+    sold = m.groupBy('product').agg(F.sum(F.when(F.col('kind') == 'OUT', F.col('qty')).otherwise(0)).alias('_sold'))
+    remaining = receipts.join(sold, 'product').withColumn('_remaining',
+        F.greatest(F.lit(0), F.least(F.col('qty'), F.col('_hi') - F.col('_sold'))))
+    return (remaining.groupBy('product').agg(F.sum('_remaining').alias('remaining_qty'),
+            F.sum(F.col('_remaining') * F.col('cost')).alias('inventory_value')).orderBy('product'))
+
+result = q50(t)
+result.show(truncate=False)
+```
+
+**How it works and what to watch:** Compute cumulative receipts per product and total units sold. Each receipt keeps max(0, min(batch quantity, cumulative receipt end - sold)); multiply that remainder by its own cost. Fully consumed products still produce zero totals. The no-negative-stock and no-returns contracts justify valuing the final receipt suffix this way. Real currency should use an explicit DecimalType with an overflow policy.
 
 ### Expected output
 

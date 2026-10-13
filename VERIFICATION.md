@@ -1,6 +1,6 @@
 # SQL Catalog Verification
 
-Verified on October 10, 2026 with Python 3.14.7 and SQLite 3.53.4.
+Verified on 2026-10-13 with Python 3.14.7 and SQLite 3.53.4.
 
 All 1993 query checks passed. Every primary solution and documented alternative was executed in a fresh in-memory database and compared with independent expected rows. Embedded document SQL was checked against the executable files. Internal document file and heading links were checked.
 
@@ -31,4 +31,4 @@ Explicit cases include empty inputs, an empty required product set, a singleton 
 
 Run `python3 verify.py` to reproduce the full verification; use `--question Q13` to focus on one exercise. A focused run does not overwrite this full-run report.
 
-These checks verify the reference dialect and declared contracts. They are not execution tests for PostgreSQL, SQL Server, MySQL, or Spark SQL, not a proof for all possible inputs, and not performance benchmarks. SQLite permits some expressions that stricter engines reject, so translation still needs engine-specific review and execution.
+These checks verify the reference dialect and declared contracts. They are not execution tests for PostgreSQL, SQL Server, MySQL, or Spark SQL, not a proof for all possible inputs, and not performance benchmarks. The separate PySpark DataFrame implementations are covered in [PYSPARK_VERIFICATION.md](PYSPARK_VERIFICATION.md). SQLite permits some expressions that stricter engines reject, so translation still needs engine-specific review and execution.

@@ -785,6 +785,7 @@ def outputs(q):
         c=db.execute(q['sql'])
         return [d[0] for d in c.description],c.fetchall()
 def main():
+    from build_pyspark_docs import question_section, solution_section, write_guide
     for q in QUESTIONS:
         q['title']=q['title'].replace('-', ' ')
         q['sql']=clean_sql(q['sql'])
@@ -800,13 +801,13 @@ def main():
       'Practice 50 SQL puzzles where the main challenge is identifying a hidden assumption, preserving the correct data grain, or recognizing a reusable pattern. Basic counts and ordinary highest-salary ranking questions are excluded.',
       '## How to practice',
       'Use one exercise per fresh database. Each question has its own runnable CREATE TABLE and INSERT statements, sample tables, and expected output. Solutions are in [SOLUTIONS.md](SOLUTIONS.md). Numbering matches across both documents. Expected rows are ordered as shown. Difficulty labels are editorial estimates for these variants, not source-platform ratings.',
-      'The reference execution dialect is **SQLite 3.28 or newer**, available through Python standard library sqlite3. Most queries use broadly shared SQL constructs; dialect changes are listed in [SOLUTIONS.md](SOLUTIONS.md#dialect-and-data-conventions). Calendar days, elapsed minutes, and month ordinals are deliberately integers so the pattern is visible without engine-specific date syntax. Day ordinals are not YYYYMMDD values.',
+      'The reference execution dialect is **SQLite 3.28 or newer**, available through Python standard library sqlite3. Every exercise also links to a PySpark DataFrame implementation with explicit input schemas. Most queries use broadly shared SQL constructs; dialect changes are listed in [SOLUTIONS.md](SOLUTIONS.md#dialect-and-data-conventions). Calendar days, elapsed minutes, and month ordinals are deliberately integers so the pattern is visible without engine-specific date syntax. Day ordinals are not YYYYMMDD values.',
       '## Pattern index',
       md_table(['ID','Question','Pattern','Difficulty'],[[q['id'],f"[{q['title']}](#{anchor(q)})",q['pattern'],q['difficulty']] for q in QUESTIONS])]
     solution_parts=['# SQL Trick Question Solutions',
-      'Each solution answers the corresponding exercise in [QUESTIONS.md](QUESTIONS.md). Read the question contract first: duplicate identity, time boundaries, allowed ties, missing rows, and NULL meaning determine whether the SQL is correct.',
+      'Each solution answers the corresponding exercise in [QUESTIONS.md](QUESTIONS.md). Each exercise also includes a **PySpark DataFrame solution** and sample setup; start with [the PySpark guide](PYSPARK_GUIDE.md) for runtime setup and shared helpers. Read the question contract first: duplicate identity, time boundaries, allowed ties, missing rows, and NULL meaning determine whether the SQL is correct.',
       '## Dialect and data conventions',
-      '- Tested reference dialect: SQLite 3.28 or newer. The recorded verification run uses SQLite '+sqlite3.sqlite_version+'. No database server or third-party package is required.\n- Integer `/` in the median queries must truncate for integer operands; `3.0` and `1.0` force fractional arithmetic where required. Adapt with FLOOR or integer division in another dialect.\n- SQL Server: remove the RECURSIVE keyword, use TOP or OFFSET/FETCH instead of LIMIT, use an appropriate string type instead of TEXT, and apply the engine recursion limits deliberately. Recursive UNION-based cycle handling needs a different implementation because SQL Server recursive CTE syntax and restrictions differ.\n- PostgreSQL: these CASE-based endpoint comparisons avoid reliance on SQLite scalar MIN/MAX. PostgreSQL offers LEAST/GREATEST and IS DISTINCT FROM as conveniences. This catalog does not claim engine-by-engine execution testing.\n- MySQL: use 8.0 or newer for window functions and recursive CTEs; median integer divisions need DIV or FLOOR.\n- Spark SQL: date and interval arithmetic differs, and recursive support depends on runtime. Treat the recursive exercises as requiring a supported engine or an explicit iterative implementation.\n- Text comparisons follow the database collation. Endpoints in the pair exercises are non-null and must use a consistent collation.\n- day_no denotes consecutive calendar-day ordinals; minute_no denotes elapsed-minute ordinals. month_index = year*12 + month-1. Convert actual DATE/TIMESTAMP data with dialect-appropriate functions and a declared timezone.\n- [start,end) intervals include start and exclude end. Positive-length intervals are assumed.\n- Fixture DDL is intentionally small; production constraints, indexes, and query plans must match real workload contracts.',
+      '- Tested reference dialect: SQLite 3.28 or newer. See VERIFICATION.md for the recorded runtime version. No database server or third-party package is required.\n- Integer `/` in the median queries must truncate for integer operands; `3.0` and `1.0` force fractional arithmetic where required. Adapt with FLOOR or integer division in another dialect.\n- SQL Server: remove the RECURSIVE keyword, use TOP or OFFSET/FETCH instead of LIMIT, use an appropriate string type instead of TEXT, and apply the engine recursion limits deliberately. Recursive UNION-based cycle handling needs a different implementation because SQL Server recursive CTE syntax and restrictions differ.\n- PostgreSQL: these CASE-based endpoint comparisons avoid reliance on SQLite scalar MIN/MAX. PostgreSQL offers LEAST/GREATEST and IS DISTINCT FROM as conveniences. This catalog does not claim engine-by-engine execution testing.\n- MySQL: use 8.0 or newer for window functions and recursive CTEs; median integer divisions need DIV or FLOOR.\n- Spark SQL: date and interval arithmetic differs, and recursive support depends on runtime. Treat the recursive exercises as requiring a supported engine or an explicit iterative implementation.\n- Text comparisons follow the database collation. Endpoints in the pair exercises are non-null and must use a consistent collation.\n- day_no denotes consecutive calendar-day ordinals; minute_no denotes elapsed-minute ordinals. month_index = year*12 + month-1. Convert actual DATE/TIMESTAMP data with dialect-appropriate functions and a declared timezone.\n- [start,end) intervals include start and exclude end. Positive-length intervals are assumed.\n- Fixture DDL is intentionally small; production constraints, indexes, and query plans must match real workload contracts.',
       '## Solution index',md_table(['ID','Solution','Pattern'],[[q['id'],f"[{q['title']}](#{anchor(q)})",q['pattern']] for q in QUESTIONS])]
     for q in QUESTIONS:
         ident=q['id']; fixture=fixture_sql(q)
@@ -815,15 +816,17 @@ def main():
         qp=[f"## {ident} {q['title']}",f"**Pattern:** {q['pattern']}\n\n**Difficulty:** {q['difficulty']}",source_link(q),q['prompt'],'### Sample data']
         for tab in q['tables']:
             qp.extend([f"**{tab['name']}**",md_table([name for name,_ in tab['columns']],tab['rows'])])
-        qp.extend(['### SQL setup',f'```sql\n{fixture}\n```','### Expected output',md_table(headers[ident],q['expected']),f"[Open the solution](SOLUTIONS.md#{anchor(q)})"])
+        qp.extend(['### SQL setup',f'```sql\n{fixture}\n```','### Expected output',md_table(headers[ident],q['expected']),question_section(q)])
         question_parts.extend(qp)
         sp=[f"## {ident} {q['title']}",f"**Pattern:** {q['pattern']}",f"[Question and dataset](QUESTIONS.md#{anchor(q)})",f"```sql\n{q['sql']}\n```",'### Why it works',q['explanation'],'### The trap',q['trap']]
         for i,(name,query) in enumerate(q['alternatives'],1):
             query=textwrap.dedent(query).strip()
             sp.extend([f'### Alternative {name}',f'```sql\n{query}\n```'])
             (sql_dir/f'{ident}_alternative_{i}.sql').write_text(query+'\n',encoding='utf-8')
+        sp.extend(solution_section(q))
         sp.extend(['### Expected output',md_table(headers[ident],q['expected']),'### Interview follow up',q['followup'],source_link(q)])
         solution_parts.extend(sp)
+    write_guide(QUESTIONS)
     (ROOT/'QUESTIONS.md').write_text('\n\n'.join(question_parts)+'\n',encoding='utf-8')
     (ROOT/'SOLUTIONS.md').write_text('\n\n'.join(solution_parts)+'\n',encoding='utf-8')
     (ROOT/'catalog.json').write_text(json.dumps(QUESTIONS,indent=2)+'\n',encoding='utf-8')
@@ -831,10 +834,12 @@ def main():
     sources='\n'.join(f"- [{SOURCES[s][0]}]({SOURCES[s][1]})" for s in used)
     readme=f'''# SQL Trick Question Catalog
 
-50 exercises organized into {len(set(q['pattern'] for q in QUESTIONS))} patterns, with fresh datasets, expected outputs, and runnable solutions.
+50 exercises organized into {len(set(q['pattern'] for q in QUESTIONS))} patterns, with fresh datasets, expected outputs, and runnable SQL and PySpark DataFrame solutions.
 
 - [Questions and sample datasets](QUESTIONS.md)
-- [Solutions and explanations](SOLUTIONS.md)
+- [SQL and PySpark solutions and explanations](SOLUTIONS.md)
+- [PySpark setup, helpers, and question index](PYSPARK_GUIDE.md)
+- [PySpark verification results](PYSPARK_VERIFICATION.md)
 - [Verification results](VERIFICATION.md)
 
 The focus is reverse-pair deduplication, gaps and islands, nested intervals, temporal joins, anti joins, join multiplicity, relational division, window frames, rolling distinctness, medians, recursion, ordered funnels, and FIFO. Simple count questions and ordinary top-earner ranking exercises are excluded. Some solutions use COUNT or ROW_NUMBER as building blocks; their challenge is the surrounding semantics.
@@ -854,7 +859,9 @@ To run a query manually, load its setup and solution into a fresh SQLite databas
 sqlite3 :memory: '.read sql/Q13_setup.sql' '.read sql/Q13_solution.sql'
 ```
 
-There are two main study documents. The sql folder contains extracted executable copies, catalog.json holds structured metadata and independent expected rows, build_catalog.py generates the documents, and verify.py checks queries and randomized edge cases. These support reproducibility without requiring a server or package install. Do not load all setup files into one database; exercises intentionally reuse table names.
+For PySpark, install `requirements-pyspark.txt` in a virtual environment with Java 17 available, then run `python pyspark_runner.py --question Q01`. See [the setup guide](PYSPARK_GUIDE.md) for full instructions. Every solution includes DataFrame code and explicit sample-data setup; the reverse-route exercise also includes a left-join alternative.
+
+There are two main study documents. The sql folder contains extracted executable copies, catalog.json holds structured metadata and independent expected rows, build_catalog.py generates the documents, and verify.py checks queries and randomized edge cases. The SQL checks need no database server or third-party package. The PySpark checks use the separately installed runtime described above. Do not load all setup files into one database; exercises intentionally reuse table names.
 
 Read the [dialect notes](SOLUTIONS.md#dialect-and-data-conventions) before translating queries to SQL Server, PostgreSQL, MySQL, or Spark SQL. Calendar and elapsed-time ordinals make the algorithm explicit. Actual DATE/TIMESTAMP conversions need the correct dialect and timezone.
 
@@ -879,7 +886,7 @@ Official documentation linked for an original exercise establishes the SQL const
         pattern_rows.append([pat,', '.join(f"[{q['id']}](QUESTIONS.md#{anchor(q)})" for q in qs)])
     readme+=md_table(['Pattern','Exercises'],pattern_rows)+'\n'
     (ROOT/'README.md').write_text(readme,encoding='utf-8')
-    (ROOT/'.gitignore').write_text('__pycache__/\n*.pyc\n*.db\n.DS_Store\n',encoding='utf-8')
+    (ROOT/'.gitignore').write_text('__pycache__/\n*.pyc\n*.db\n.DS_Store\n.venv/\nspark-warehouse/\nartifacts/\n',encoding='utf-8')
     if not (ROOT/'VERIFICATION.md').exists():
         (ROOT/'VERIFICATION.md').write_text('# SQL Catalog Verification\n\nVerification has not yet run. Execute python3 verify.py.\n',encoding='utf-8')
     print(f'Generated {len(QUESTIONS)} questions and {sum(len(q["alternatives"]) for q in QUESTIONS)} alternatives.')

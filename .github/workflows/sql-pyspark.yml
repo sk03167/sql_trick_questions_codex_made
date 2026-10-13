@@ -1,0 +1,38 @@
+name: SQL and PySpark catalogue
+on:
+  push:
+    branches: [main]
+    paths: ['*.py', '*.json', '*.md', 'sql/**', 'requirements-pyspark.txt', '.github/workflows/sql-pyspark.yml']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SPARK_LOCAL_IP: 127.0.0.1
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-pyspark.txt
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Check generated documents and snippets
+        run: |
+          python build_catalog.py
+          git diff --exit-code -- README.md QUESTIONS.md SOLUTIONS.md PYSPARK_GUIDE.md catalog.json sql .gitignore
+          python validate_pyspark_docs.py
+      - name: Execute SQLite reference suite
+        run: python verify.py
+      - name: Install pinned PySpark runtime
+        run: python -m pip install -r requirements-pyspark.txt
+      - name: Execute PySpark samples, edge oracles and repartitioned inputs
+        run: python verify_pyspark.py

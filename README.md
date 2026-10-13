@@ -1,9 +1,11 @@
 # SQL Trick Question Catalog
 
-50 exercises organized into 25 patterns, with fresh datasets, expected outputs, and runnable solutions.
+50 exercises organized into 25 patterns, with fresh datasets, expected outputs, and runnable SQL and PySpark DataFrame solutions.
 
 - [Questions and sample datasets](QUESTIONS.md)
-- [Solutions and explanations](SOLUTIONS.md)
+- [SQL and PySpark solutions and explanations](SOLUTIONS.md)
+- [PySpark setup, helpers, and question index](PYSPARK_GUIDE.md)
+- [PySpark verification results](PYSPARK_VERIFICATION.md)
 - [Verification results](VERIFICATION.md)
 
 The focus is reverse-pair deduplication, gaps and islands, nested intervals, temporal joins, anti joins, join multiplicity, relational division, window frames, rolling distinctness, medians, recursion, ordered funnels, and FIFO. Simple count questions and ordinary top-earner ranking exercises are excluded. Some solutions use COUNT or ROW_NUMBER as building blocks; their challenge is the surrounding semantics.
@@ -23,7 +25,9 @@ To run a query manually, load its setup and solution into a fresh SQLite databas
 sqlite3 :memory: '.read sql/Q13_setup.sql' '.read sql/Q13_solution.sql'
 ```
 
-There are two main study documents. The sql folder contains extracted executable copies, catalog.json holds structured metadata and independent expected rows, build_catalog.py generates the documents, and verify.py checks queries and randomized edge cases. These support reproducibility without requiring a server or package install. Do not load all setup files into one database; exercises intentionally reuse table names.
+For PySpark, install `requirements-pyspark.txt` in a virtual environment with Java 17 available, then run `python pyspark_runner.py --question Q01`. See [the setup guide](PYSPARK_GUIDE.md) for full instructions. Every solution includes DataFrame code and explicit sample-data setup; the reverse-route exercise also includes a left-join alternative.
+
+There are two main study documents. The sql folder contains extracted executable copies, catalog.json holds structured metadata and independent expected rows, build_catalog.py generates the documents, and verify.py checks queries and randomized edge cases. The SQL checks need no database server or third-party package. The PySpark checks use the separately installed runtime described above. Do not load all setup files into one database; exercises intentionally reuse table names.
 
 Read the [dialect notes](SOLUTIONS.md#dialect-and-data-conventions) before translating queries to SQL Server, PostgreSQL, MySQL, or Spark SQL. Calendar and elapsed-time ordinals make the algorithm explicit. Actual DATE/TIMESTAMP conversions need the correct dialect and timezone.
 

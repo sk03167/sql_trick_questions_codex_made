@@ -6,7 +6,7 @@ Practice 50 SQL puzzles where the main challenge is identifying a hidden assumpt
 
 Use one exercise per fresh database. Each question has its own runnable CREATE TABLE and INSERT statements, sample tables, and expected output. Solutions are in [SOLUTIONS.md](SOLUTIONS.md). Numbering matches across both documents. Expected rows are ordered as shown. Difficulty labels are editorial estimates for these variants, not source-platform ratings.
 
-The reference execution dialect is **SQLite 3.28 or newer**, available through Python standard library sqlite3. Most queries use broadly shared SQL constructs; dialect changes are listed in [SOLUTIONS.md](SOLUTIONS.md#dialect-and-data-conventions). Calendar days, elapsed minutes, and month ordinals are deliberately integers so the pattern is visible without engine-specific date syntax. Day ordinals are not YYYYMMDD values.
+The reference execution dialect is **SQLite 3.28 or newer**, available through Python standard library sqlite3. Every exercise also links to a PySpark DataFrame implementation with explicit input schemas. Most queries use broadly shared SQL constructs; dialect changes are listed in [SOLUTIONS.md](SOLUTIONS.md#dialect-and-data-conventions). Calendar days, elapsed minutes, and month ordinals are deliberately integers so the pattern is visible without engine-specific date syntax. Day ordinals are not YYYYMMDD values.
 
 ## Pattern index
 
@@ -117,7 +117,7 @@ INSERT INTO routes (row_id, src, dst, dist) VALUES
 | 6 | A | A | 0 |
 | 7 | B | A | 12 |
 
-[Open the solution](SOLUTIONS.md#q01-deduplicate-reverse-routes-while-preserving-an-original-row)
+[SQL solution](SOLUTIONS.md#q01-deduplicate-reverse-routes-while-preserving-an-original-row) · [PySpark solution](SOLUTIONS.md#pyspark-q01)
 
 ## Q02 Find reciprocal pairs without matching a row to itself
 
@@ -169,7 +169,7 @@ INSERT INTO pairs (id, x, y) VALUES
 | 1 | 2 |
 | 4 | 4 |
 
-[Open the solution](SOLUTIONS.md#q02-find-reciprocal-pairs-without-matching-a-row-to-itself)
+[SQL solution](SOLUTIONS.md#q02-find-reciprocal-pairs-without-matching-a-row-to-itself) · [PySpark solution](SOLUTIONS.md#pyspark-q02)
 
 ## Q03 Count undirected neighbors despite duplicated edge directions
 
@@ -237,7 +237,7 @@ INSERT INTO edges (a, b) VALUES
 | 3 | 1 |
 | 4 | 0 |
 
-[Open the solution](SOLUTIONS.md#q03-count-undirected-neighbors-despite-duplicated-edge-directions)
+[SQL solution](SOLUTIONS.md#q03-count-undirected-neighbors-despite-duplicated-edge-directions) · [PySpark solution](SOLUTIONS.md#pyspark-q03)
 
 ## Q04 Find graph triangles exactly once
 
@@ -288,7 +288,7 @@ INSERT INTO edges (src, dst) VALUES
 | 1 | 2 | 3 |
 | 1 | 3 | 4 |
 
-[Open the solution](SOLUTIONS.md#q04-find-graph-triangles-exactly-once)
+[SQL solution](SOLUTIONS.md#q04-find-graph-triangles-exactly-once) · [PySpark solution](SOLUTIONS.md#pyspark-q04)
 
 ## Q05 Assign connected components including isolated nodes
 
@@ -362,7 +362,7 @@ INSERT INTO edges (a, b) VALUES
 | 5 | 4 |
 | 6 | 6 |
 
-[Open the solution](SOLUTIONS.md#q05-assign-connected-components-including-isolated-nodes)
+[SQL solution](SOLUTIONS.md#q05-assign-connected-components-including-isolated-nodes) · [PySpark solution](SOLUTIONS.md#pyspark-q05)
 
 ## Q06 Compress integer sequences with duplicate input values
 
@@ -413,7 +413,7 @@ INSERT INTO observations (value) VALUES
 | 7 | 8 | 2 |
 | 10 | 10 | 1 |
 
-[Open the solution](SOLUTIONS.md#q06-compress-integer-sequences-with-duplicate-input-values)
+[SQL solution](SOLUTIONS.md#q06-compress-integer-sequences-with-duplicate-input-values) · [PySpark solution](SOLUTIONS.md#pyspark-q06)
 
 ## Q07 Find every longest login streak with duplicate logins
 
@@ -467,7 +467,7 @@ INSERT INTO logins (user_id, day_no) VALUES
 | 1 | 4 | 5 | 2 |
 | 2 | 2 | 4 | 3 |
 
-[Open the solution](SOLUTIONS.md#q07-find-every-longest-login-streak-with-duplicate-logins)
+[SQL solution](SOLUTIONS.md#q07-find-every-longest-login-streak-with-duplicate-logins) · [PySpark solution](SOLUTIONS.md#pyspark-q07)
 
 ## Q08 Find missing ranges including the boundaries
 
@@ -513,7 +513,7 @@ INSERT INTO ids (id) VALUES
 | 9 | 9 |
 | 11 | 12 |
 
-[Open the solution](SOLUTIONS.md#q08-find-missing-ranges-including-the-boundaries)
+[SQL solution](SOLUTIONS.md#q08-find-missing-ranges-including-the-boundaries) · [PySpark solution](SOLUTIONS.md#pyspark-q08)
 
 ## Q09 Sessionize events with an exact inactivity threshold
 
@@ -565,7 +565,7 @@ INSERT INTO events (event_id, user_id, minute_no) VALUES
 | 2 | 1 | 5 | 5 | 1 |
 | 2 | 2 | 40 | 40 | 1 |
 
-[Open the solution](SOLUTIONS.md#q09-sessionize-events-with-an-exact-inactivity-threshold)
+[SQL solution](SOLUTIONS.md#q09-sessionize-events-with-an-exact-inactivity-threshold) · [PySpark solution](SOLUTIONS.md#pyspark-q09)
 
 ## Q10 Group status runs with NULL states and missing days
 
@@ -616,7 +616,7 @@ INSERT INTO daily (day_no, status) VALUES
 | NULL | 6 | 6 |
 | up | 7 | 7 |
 
-[Open the solution](SOLUTIONS.md#q10-group-status-runs-with-null-states-and-missing-days)
+[SQL solution](SOLUTIONS.md#q10-group-status-runs-with-null-states-and-missing-days) · [PySpark solution](SOLUTIONS.md#pyspark-q10)
 
 ## Q11 Return every row in qualifying ID streaks
 
@@ -671,7 +671,7 @@ INSERT INTO visits (id, day_no, people) VALUES
 | 6 | 6 | 140 |
 | 7 | 9 | 150 |
 
-[Open the solution](SOLUTIONS.md#q11-return-every-row-in-qualifying-id-streaks)
+[SQL solution](SOLUTIONS.md#q11-return-every-row-in-qualifying-id-streaks) · [PySpark solution](SOLUTIONS.md#pyspark-q11)
 
 ## Q12 Reconstruct projects from one day tasks
 
@@ -722,7 +722,7 @@ INSERT INTO tasks (id, start_day, end_day) VALUES
 | 1 | 3 | 2 |
 | 8 | 11 | 3 |
 
-[Open the solution](SOLUTIONS.md#q12-reconstruct-projects-from-one-day-tasks)
+[SQL solution](SOLUTIONS.md#q12-reconstruct-projects-from-one-day-tasks) · [PySpark solution](SOLUTIONS.md#pyspark-q12)
 
 ## Q13 Merge overlapping intervals even when they are nested
 
@@ -770,7 +770,7 @@ INSERT INTO intervals (id, start_at, end_at) VALUES
 | 1 | 12 |
 | 15 | 17 |
 
-[Open the solution](SOLUTIONS.md#q13-merge-overlapping-intervals-even-when-they-are-nested)
+[SQL solution](SOLUTIONS.md#q13-merge-overlapping-intervals-even-when-they-are-nested) · [PySpark solution](SOLUTIONS.md#pyspark-q13)
 
 ## Q14 Find free time between overlapping bookings
 
@@ -817,7 +817,7 @@ INSERT INTO bookings (id, start_at, end_at) VALUES
 | 7 | 10 |
 | 16 | 20 |
 
-[Open the solution](SOLUTIONS.md#q14-find-free-time-between-overlapping-bookings)
+[SQL solution](SOLUTIONS.md#q14-find-free-time-between-overlapping-bookings) · [PySpark solution](SOLUTIONS.md#pyspark-q14)
 
 ## Q15 Find peak simultaneous meetings with tied event times
 
@@ -862,7 +862,7 @@ INSERT INTO meetings (id, start_at, end_at) VALUES
 | --- | --- | --- |
 | 4 | 5 | 3 |
 
-[Open the solution](SOLUTIONS.md#q15-find-peak-simultaneous-meetings-with-tied-event-times)
+[SQL solution](SOLUTIONS.md#q15-find-peak-simultaneous-meetings-with-tied-event-times) · [PySpark solution](SOLUTIONS.md#pyspark-q15)
 
 ## Q16 Measure occupied duration without counting overlaps twice
 
@@ -907,7 +907,7 @@ INSERT INTO ranges (id, s, e) VALUES
 | --- |
 | 14 |
 
-[Open the solution](SOLUTIONS.md#q16-measure-occupied-duration-without-counting-overlaps-twice)
+[SQL solution](SOLUTIONS.md#q16-measure-occupied-duration-without-counting-overlaps-twice) · [PySpark solution](SOLUTIONS.md#pyspark-q16)
 
 ## Q17 Resolve prices as of a date while keeping products without history
 
@@ -976,7 +976,7 @@ INSERT INTO changes (product_id, day_no, price) VALUES
 | 3 | 15 |
 | 4 | 10 |
 
-[Open the solution](SOLUTIONS.md#q17-resolve-prices-as-of-a-date-while-keeping-products-without-history)
+[SQL solution](SOLUTIONS.md#q17-resolve-prices-as-of-a-date-while-keeping-products-without-history) · [PySpark solution](SOLUTIONS.md#pyspark-q17)
 
 ## Q18 Join facts to effective dated dimensions at a shared boundary
 
@@ -1044,7 +1044,7 @@ INSERT INTO versions (key_id, valid_from, valid_to, label) VALUES
 | 3 | latest |
 | 4 | NULL |
 
-[Open the solution](SOLUTIONS.md#q18-join-facts-to-effective-dated-dimensions-at-a-shared-boundary)
+[SQL solution](SOLUTIONS.md#q18-join-facts-to-effective-dated-dimensions-at-a-shared-boundary) · [PySpark solution](SOLUTIONS.md#pyspark-q18)
 
 ## Q19 Choose the closest observation with a deterministic tie rule
 
@@ -1109,7 +1109,7 @@ INSERT INTO readings (id, at, value) VALUES
 | 2 | 4 | 120 |
 | 3 | 1 | 30 |
 
-[Open the solution](SOLUTIONS.md#q19-choose-the-closest-observation-with-a-deterministic-tie-rule)
+[SQL solution](SOLUTIONS.md#q19-choose-the-closest-observation-with-a-deterministic-tie-rule) · [PySpark solution](SOLUTIONS.md#pyspark-q19)
 
 ## Q20 Find nonbuyers when the purchase table contains NULL
 
@@ -1167,7 +1167,7 @@ INSERT INTO purchases (id, customer_id) VALUES
 | 2 |
 | 3 |
 
-[Open the solution](SOLUTIONS.md#q20-find-nonbuyers-when-the-purchase-table-contains-null)
+[SQL solution](SOLUTIONS.md#q20-find-nonbuyers-when-the-purchase-table-contains-null) · [PySpark solution](SOLUTIONS.md#pyspark-q20)
 
 ## Q21 Keep parents that have no qualifying child rows
 
@@ -1229,7 +1229,7 @@ INSERT INTO orders (id, customer_id, status) VALUES
 | 2 | 0 |
 | 3 | 0 |
 
-[Open the solution](SOLUTIONS.md#q21-keep-parents-that-have-no-qualifying-child-rows)
+[SQL solution](SOLUTIONS.md#q21-keep-parents-that-have-no-qualifying-child-rows) · [PySpark solution](SOLUTIONS.md#pyspark-q21)
 
 ## Q22 Aggregate orders and payments without join fan out
 
@@ -1305,7 +1305,7 @@ INSERT INTO payments (id, customer_id, amount) VALUES
 | 1 | 100 | 100 |
 | 2 | 0 | 0 |
 
-[Open the solution](SOLUTIONS.md#q22-aggregate-orders-and-payments-without-join-fan-out)
+[SQL solution](SOLUTIONS.md#q22-aggregate-orders-and-payments-without-join-fan-out) · [PySpark solution](SOLUTIONS.md#pyspark-q22)
 
 ## Q23 Preserve independent transaction amounts when duplicate values are valid
 
@@ -1367,7 +1367,7 @@ INSERT INTO tags (invoice_id, tag) VALUES
 | --- |
 | 100 |
 
-[Open the solution](SOLUTIONS.md#q23-preserve-independent-transaction-amounts-when-duplicate-values-are-valid)
+[SQL solution](SOLUTIONS.md#q23-preserve-independent-transaction-amounts-when-duplicate-values-are-valid) · [PySpark solution](SOLUTIONS.md#pyspark-q23)
 
 ## Q24 Reconcile two snapshots including NULL valued changes
 
@@ -1433,7 +1433,7 @@ INSERT INTO new_snapshot (id, val) VALUES
 | 3 | removed | c | NULL |
 | 4 | added | NULL | d |
 
-[Open the solution](SOLUTIONS.md#q24-reconcile-two-snapshots-including-null-valued-changes)
+[SQL solution](SOLUTIONS.md#q24-reconcile-two-snapshots-including-null-valued-changes) · [PySpark solution](SOLUTIONS.md#pyspark-q24)
 
 ## Q25 Reconcile duplicate counts rather than just distinct rows
 
@@ -1502,7 +1502,7 @@ INSERT INTO new_bag (key_name) VALUES
 | b | 1 |
 | c | 1 |
 
-[Open the solution](SOLUTIONS.md#q25-reconcile-duplicate-counts-rather-than-just-distinct-rows)
+[SQL solution](SOLUTIONS.md#q25-reconcile-duplicate-counts-rather-than-just-distinct-rows) · [PySpark solution](SOLUTIONS.md#pyspark-q25)
 
 ## Q26 Find customers covering every required product
 
@@ -1589,7 +1589,7 @@ INSERT INTO purchases (customer_id, product) VALUES
 | 1 |
 | 3 |
 
-[Open the solution](SOLUTIONS.md#q26-find-customers-covering-every-required-product)
+[SQL solution](SOLUTIONS.md#q26-find-customers-covering-every-required-product) · [PySpark solution](SOLUTIONS.md#pyspark-q26)
 
 ## Q27 Find customers whose basket exactly equals the required set
 
@@ -1673,7 +1673,7 @@ INSERT INTO purchases (customer_id, product) VALUES
 | --- |
 | 3 |
 
-[Open the solution](SOLUTIONS.md#q27-find-customers-whose-basket-exactly-equals-the-required-set)
+[SQL solution](SOLUTIONS.md#q27-find-customers-whose-basket-exactly-equals-the-required-set) · [PySpark solution](SOLUTIONS.md#pyspark-q27)
 
 ## Q28 Find pairs of customers with identical baskets including empty ones
 
@@ -1743,7 +1743,7 @@ INSERT INTO basket (customer_id, product) VALUES
 | 1 | 2 |
 | 4 | 5 |
 
-[Open the solution](SOLUTIONS.md#q28-find-pairs-of-customers-with-identical-baskets-including-empty-ones)
+[SQL solution](SOLUTIONS.md#q28-find-pairs-of-customers-with-identical-baskets-including-empty-ones) · [PySpark solution](SOLUTIONS.md#pyspark-q28)
 
 ## Q29 Find students who never scored an exam extreme
 
@@ -1817,7 +1817,7 @@ INSERT INTO scores (exam_id, student_id, score) VALUES
 | --- |
 | 2 |
 
-[Open the solution](SOLUTIONS.md#q29-find-students-who-never-scored-an-exam-extreme)
+[SQL solution](SOLUTIONS.md#q29-find-students-who-never-scored-an-exam-extreme) · [PySpark solution](SOLUTIONS.md#pyspark-q29)
 
 ## Q30 Combine duplicate and unique conditions at different grains
 
@@ -1866,7 +1866,7 @@ INSERT INTO policies (id, prior_value, current_value, lat, lon) VALUES
 | --- |
 | 45 |
 
-[Open the solution](SOLUTIONS.md#q30-combine-duplicate-and-unique-conditions-at-different-grains)
+[SQL solution](SOLUTIONS.md#q30-combine-duplicate-and-unique-conditions-at-different-grains) · [PySpark solution](SOLUTIONS.md#pyspark-q30)
 
 ## Q31 Explain peer expansion in ROWS versus RANGE
 
@@ -1911,7 +1911,7 @@ INSERT INTO tx (id, at, amount) VALUES
 | 2 | 30 | 30 |
 | 3 | 35 | 35 |
 
-[Open the solution](SOLUTIONS.md#q31-explain-peer-expansion-in-rows-versus-range)
+[SQL solution](SOLUTIONS.md#q31-explain-peer-expansion-in-rows-versus-range) · [PySpark solution](SOLUTIONS.md#pyspark-q31)
 
 ## Q32 Get the true last value rather than the last value so far
 
@@ -1960,7 +1960,7 @@ INSERT INTO events (id, user_id, at, val) VALUES
 | 3 | NULL |
 | 4 | NULL |
 
-[Open the solution](SOLUTIONS.md#q32-get-the-true-last-value-rather-than-the-last-value-so-far)
+[SQL solution](SOLUTIONS.md#q32-get-the-true-last-value-rather-than-the-last-value-so-far) · [PySpark solution](SOLUTIONS.md#pyspark-q32)
 
 ## Q33 Forward fill NULLs even when values decrease
 
@@ -2018,7 +2018,7 @@ INSERT INTO readings (id, user_id, at, val) VALUES
 | 6 | -2 |
 | 7 | -2 |
 
-[Open the solution](SOLUTIONS.md#q33-forward-fill-nulls-even-when-values-decrease)
+[SQL solution](SOLUTIONS.md#q33-forward-fill-nulls-even-when-values-decrease) · [PySpark solution](SOLUTIONS.md#pyspark-q33)
 
 ## Q34 Compute a calendar rolling average with missing days
 
@@ -2065,7 +2065,7 @@ INSERT INTO sales (id, day_no, amount) VALUES
 | 4 | 60 | 20.0 |
 | 5 | 90 | 30.0 |
 
-[Open the solution](SOLUTIONS.md#q34-compute-a-calendar-rolling-average-with-missing-days)
+[SQL solution](SOLUTIONS.md#q34-compute-a-calendar-rolling-average-with-missing-days) · [PySpark solution](SOLUTIONS.md#pyspark-q34)
 
 ## Q35 Count distinct active users across a rolling calendar window
 
@@ -2133,7 +2133,7 @@ INSERT INTO activity (user_id, day_no) VALUES
 | 3 | 2 |
 | 4 | 3 |
 
-[Open the solution](SOLUTIONS.md#q35-count-distinct-active-users-across-a-rolling-calendar-window)
+[SQL solution](SOLUTIONS.md#q35-count-distinct-active-users-across-a-rolling-calendar-window) · [PySpark solution](SOLUTIONS.md#pyspark-q35)
 
 ## Q36 Maintain a cumulative distinct count without a distinct window aggregate
 
@@ -2187,7 +2187,7 @@ INSERT INTO events (id, at, user_id) VALUES
 | 5 | 2 |
 | 6 | 3 |
 
-[Open the solution](SOLUTIONS.md#q36-maintain-a-cumulative-distinct-count-without-a-distinct-window-aggregate)
+[SQL solution](SOLUTIONS.md#q36-maintain-a-cumulative-distinct-count-without-a-distinct-window-aggregate) · [PySpark solution](SOLUTIONS.md#pyspark-q36)
 
 ## Q37 Compute group medians without losing duplicate observations
 
@@ -2239,7 +2239,7 @@ INSERT INTO employees (id, company, salary) VALUES
 | A | 20.0 |
 | B | 15.0 |
 
-[Open the solution](SOLUTIONS.md#q37-compute-group-medians-without-losing-duplicate-observations)
+[SQL solution](SOLUTIONS.md#q37-compute-group-medians-without-losing-duplicate-observations) · [PySpark solution](SOLUTIONS.md#pyspark-q37)
 
 ## Q38 Find the median from value frequencies without expanding rows
 
@@ -2281,7 +2281,7 @@ INSERT INTO frequencies (val, freq) VALUES
 | --- |
 | 25.0 |
 
-[Open the solution](SOLUTIONS.md#q38-find-the-median-from-value-frequencies-without-expanding-rows)
+[SQL solution](SOLUTIONS.md#q38-find-the-median-from-value-frequencies-without-expanding-rows) · [PySpark solution](SOLUTIONS.md#pyspark-q38)
 
 ## Q39 Find the last person in a capacity limited boarding prefix
 
@@ -2328,7 +2328,7 @@ INSERT INTO queue (turn, name, weight) VALUES
 | --- | --- |
 | 3 | Cy |
 
-[Open the solution](SOLUTIONS.md#q39-find-the-last-person-in-a-capacity-limited-boarding-prefix)
+[SQL solution](SOLUTIONS.md#q39-find-the-last-person-in-a-capacity-limited-boarding-prefix) · [PySpark solution](SOLUTIONS.md#pyspark-q39)
 
 ## Q40 Reset running totals at reset events
 
@@ -2385,7 +2385,7 @@ INSERT INTO events (seq, is_reset, amount) VALUES
 | 6 | 0 |
 | 7 | 2 |
 
-[Open the solution](SOLUTIONS.md#q40-reset-running-totals-at-reset-events)
+[SQL solution](SOLUTIONS.md#q40-reset-running-totals-at-reset-events) · [PySpark solution](SOLUTIONS.md#pyspark-q40)
 
 ## Q41 Detect repeated values by row adjacency rather than ID arithmetic
 
@@ -2438,7 +2438,7 @@ INSERT INTO logs (seq, val) VALUES
 | 7 |
 | 8 |
 
-[Open the solution](SOLUTIONS.md#q41-detect-repeated-values-by-row-adjacency-rather-than-id-arithmetic)
+[SQL solution](SOLUTIONS.md#q41-detect-repeated-values-by-row-adjacency-rather-than-id-arithmetic) · [PySpark solution](SOLUTIONS.md#pyspark-q41)
 
 ## Q42 Swap neighboring seats when seat IDs are sparse
 
@@ -2488,7 +2488,7 @@ INSERT INTO seats (seat_id, occupant) VALUES
 | 70 | Cy |
 | 90 | Eli |
 
-[Open the solution](SOLUTIONS.md#q42-swap-neighboring-seats-when-seat-ids-are-sparse)
+[SQL solution](SOLUTIONS.md#q42-swap-neighboring-seats-when-seat-ids-are-sparse) · [PySpark solution](SOLUTIONS.md#pyspark-q42)
 
 ## Q43 Choose tournament winners when players occupy either match column
 
@@ -2554,7 +2554,7 @@ INSERT INTO matches (id, first_player, second_player, first_score, second_score)
 | 1 | 1 | 3 |
 | 2 | 4 | 0 |
 
-[Open the solution](SOLUTIONS.md#q43-choose-tournament-winners-when-players-occupy-either-match-column)
+[SQL solution](SOLUTIONS.md#q43-choose-tournament-winners-when-players-occupy-either-match-column) · [PySpark solution](SOLUTIONS.md#pyspark-q43)
 
 ## Q44 Compute cohort retention with a fixed signup denominator
 
@@ -2623,7 +2623,7 @@ INSERT INTO activity (user_id, day_no) VALUES
 | 1 | 0.33 |
 | 2 | 1.0 |
 
-[Open the solution](SOLUTIONS.md#q44-compute-cohort-retention-with-a-fixed-signup-denominator)
+[SQL solution](SOLUTIONS.md#q44-compute-cohort-retention-with-a-fixed-signup-denominator) · [PySpark solution](SOLUTIONS.md#pyspark-q44)
 
 ## Q45 Find consecutive over limit months across a year boundary
 
@@ -2692,7 +2692,7 @@ INSERT INTO credits (account_id, month_index, amount) VALUES
 | --- |
 | 1 |
 
-[Open the solution](SOLUTIONS.md#q45-find-consecutive-over-limit-months-across-a-year-boundary)
+[SQL solution](SOLUTIONS.md#q45-find-consecutive-over-limit-months-across-a-year-boundary) · [PySpark solution](SOLUTIONS.md#pyspark-q45)
 
 ## Q46 Find all descendants without looping on cyclic relationships
 
@@ -2742,7 +2742,7 @@ INSERT INTO reports (manager_id, employee_id) VALUES
 | 3 |
 | 4 |
 
-[Open the solution](SOLUTIONS.md#q46-find-all-descendants-without-looping-on-cyclic-relationships)
+[SQL solution](SOLUTIONS.md#q46-find-all-descendants-without-looping-on-cyclic-relationships) · [PySpark solution](SOLUTIONS.md#pyspark-q46)
 
 ## Q47 Classify tree nodes with root precedence
 
@@ -2792,7 +2792,7 @@ INSERT INTO nodes (id, parent_id) VALUES
 | 4 | Leaf |
 | 9 | Root |
 
-[Open the solution](SOLUTIONS.md#q47-classify-tree-nodes-with-root-precedence)
+[SQL solution](SOLUTIONS.md#q47-classify-tree-nodes-with-root-precedence) · [PySpark solution](SOLUTIONS.md#pyspark-q47)
 
 ## Q48 Find ordered funnel completions rather than mere event presence
 
@@ -2850,7 +2850,7 @@ INSERT INTO events (id, user_id, kind, at) VALUES
 | --- |
 | 1 |
 
-[Open the solution](SOLUTIONS.md#q48-find-ordered-funnel-completions-rather-than-mere-event-presence)
+[SQL solution](SOLUTIONS.md#q48-find-ordered-funnel-completions-rather-than-mere-event-presence) · [PySpark solution](SOLUTIONS.md#pyspark-q48)
 
 ## Q49 Allocate supply to demand in FIFO order without a cursor
 
@@ -2911,7 +2911,7 @@ INSERT INTO demands (id, qty) VALUES
 | 2 | 2 | 2 |
 | 2 | 3 | 3 |
 
-[Open the solution](SOLUTIONS.md#q49-allocate-supply-to-demand-in-fifo-order-without-a-cursor)
+[SQL solution](SOLUTIONS.md#q49-allocate-supply-to-demand-in-fifo-order-without-a-cursor) · [PySpark solution](SOLUTIONS.md#pyspark-q49)
 
 ## Q50 Value remaining FIFO inventory with a partially consumed batch
 
@@ -2965,4 +2965,4 @@ INSERT INTO movements (id, product, kind, qty, cost) VALUES
 | A | 3 | 90 |
 | B | 0 | 0 |
 
-[Open the solution](SOLUTIONS.md#q50-value-remaining-fifo-inventory-with-a-partially-consumed-batch)
+[SQL solution](SOLUTIONS.md#q50-value-remaining-fifo-inventory-with-a-partially-consumed-batch) · [PySpark solution](SOLUTIONS.md#pyspark-q50)
