@@ -1,0 +1,350 @@
+[
+  {
+    "id": "01-platform-and-lab-1",
+    "path": "databricks_guide/chapters/01-platform-and-lab.md",
+    "source": "flowchart LR\n A[\"Files, database CDC, Kafka, APIs\"] --> B[\"Bronze: source evidence\"]\n B --> C[\"Silver: validation and ordered changes\"]\n C --> D[\"Gold: revenue and serving tables\"]\n D --> E[\"SQL warehouse and consumers\"]\n U[\"Unity Catalog: identities and grants\"] --> B\n U --> C\n U --> D\n J[\"Lakeflow Jobs or declarative pipeline\"] --> B\n J --> C\n J --> D",
+    "summary": "01. Platform map and the shared lab"
+  },
+  {
+    "id": "02-workspace-compute-1",
+    "path": "databricks_guide/chapters/02-workspace-compute.md",
+    "source": "flowchart TD\n A[\"Choose workload\"] --> B{\"SQL serving?\"}\n B -->|Yes| C[\"SQL warehouse\"]\n B -->|No| D{\"Declarative tables?\"}\n D -->|Yes| E[\"Lakeflow pipeline\"]\n D -->|No| F[\"Notebook or wheel job\"]\n F --> G{\"Needs unsupported serverless feature?\"}\n G -->|Yes| H[\"Classic compute and policy\"]\n G -->|No| I[\"Serverless when available\"]",
+    "summary": "02. Workspace prerequisites and compute choices"
+  },
+  {
+    "id": "03-azure-storage-identity-1",
+    "path": "databricks_guide/chapters/03-azure-storage-identity.md",
+    "source": "flowchart LR\n P[\"Run-as service principal\"] --> U[\"Unity Catalog grants\"]\n U --> L[\"External location\"]\n L --> C[\"Storage credential\"]\n C --> I[\"Access Connector identity\"]\n I --> A[\"ADLS IAM and network\"]\n A --> F[\"Landing files or managed storage\"]",
+    "summary": "03. Azure storage identity and external locations"
+  },
+  {
+    "id": "04-catalogs-volumes-grants-1",
+    "path": "databricks_guide/chapters/04-catalogs-volumes-grants.md",
+    "source": "flowchart TD\n C[\"de_lab_dev catalog\"] --> B[\"bronze schema\"]\n C --> S[\"silver schema\"]\n C --> G[\"gold schema\"]\n C --> O[\"ops schema\"]\n O --> L[\"landing volume: source files\"]\n O --> T[\"state volume: checkpoints and schemas\"]",
+    "summary": "04. Catalogs, schemas, volumes, and minimum grants"
+  },
+  {
+    "id": "05-parameter-cheatsheet-1",
+    "path": "databricks_guide/chapters/05-parameter-cheatsheet.md",
+    "source": "sequenceDiagram\n participant CLI as Bundle CLI\n participant JOB as Job service\n participant NB as Notebook\n CLI->>JOB: Resolve var.catalog and deploy job default\n JOB->>JOB: Apply run override and dynamic references\n JOB->>NB: Pass catalog and run_date as strings\n NB->>NB: Read widgets and validate types\n NB-->>JOB: Emit small JSON task value",
+    "summary": "05. Parameters: which syntax belongs where"
+  },
+  {
+    "id": "06-widgets-and-sql-1",
+    "path": "databricks_guide/chapters/06-widgets-and-sql.md",
+    "source": "flowchart LR\n U[\"Widget or job input\"] --> V[\"Validate name and date\"]\n V --> P[\"Bind SQL values\"]\n V --> I[\"IDENTIFIER for object names\"]\n P --> Q[\"Query allowed Unity Catalog table\"]\n I --> Q",
+    "summary": "06. Notebook widgets and safe SQL parameter binding"
+  },
+  {
+    "id": "07-jobs-task-values-1",
+    "path": "databricks_guide/chapters/07-jobs-task-values.md",
+    "source": "flowchart LR\n I[\"ingest\"] --> M[\"merge_current\"]\n M --> G[\"publish_gold\"]\n G --> Q[\"assert_quality\"]\n I -.-> T[\"Task value: bronze_rows\"]\n T -.-> Q",
+    "summary": "07. Lakeflow Jobs, dependencies, task values, and loops"
+  },
+  {
+    "id": "08-batch-copy-into-1",
+    "path": "databricks_guide/chapters/08-batch-copy-into.md",
+    "source": "flowchart LR\n F[\"Immutable delivery files\"] --> C[\"COPY INTO\"]\n C --> B[\"Bronze Delta table\"]\n B --> D[\"Event deduplication and validation\"]\n D --> S[\"Silver state\"]",
+    "summary": "08. Batch files with COPY INTO"
+  },
+  {
+    "id": "09-auto-loader-1",
+    "path": "databricks_guide/chapters/09-auto-loader.md",
+    "source": "flowchart LR\n F[\"Landing JSON files\"] --> A[\"Auto Loader cloudFiles\"]\n S[\"Schema policy / schema location\"] --> A\n C[\"Persistent stream checkpoint\"] --> A\n A --> B[\"Bronze order_events Delta\"]",
+    "summary": "09. Auto Loader: schema, checkpoints, triggers, and replay"
+  },
+  {
+    "id": "10-jdbc-and-incremental-1",
+    "path": "databricks_guide/chapters/10-jdbc-and-incremental.md",
+    "source": "sequenceDiagram\n participant DB as Source database\n participant ETL as Databricks extraction\n participant T as Target Delta\n participant W as Watermark store\n W->>ETL: Last committed boundary\n ETL->>DB: Snapshot or bounded change pull\n DB-->>ETL: Rows and deletion records if supported\n ETL->>T: Idempotent merge\n T-->>ETL: Committed\n ETL->>W: Advance boundary",
+    "summary": "10. Database snapshots, JDBC, and incremental extraction"
+  },
+  {
+    "id": "11-managed-cdc-1",
+    "path": "databricks_guide/chapters/11-managed-cdc.md",
+    "source": "flowchart LR\n D[\"SQL Server primary and retained change log\"] --> G[\"Continuously running gateway\"]\n G --> V[\"Managed staging volume\"]\n V --> P[\"Scheduled ingestion pipeline\"]\n P --> B[\"Governed destination tables\"]",
+    "summary": "11. Lakeflow Connect: managed SQL Server CDC"
+  },
+  {
+    "id": "12-apis-saas-1",
+    "path": "databricks_guide/chapters/12-apis-saas.md",
+    "source": "flowchart LR\n A[\"SaaS REST API\"] --> E[\"Bounded extractor\"]\n E --> R[\"Raw page files and manifest\"]\n R --> B[\"Auto Loader bronze\"]\n B --> S[\"Schema and business validation\"]\n E --> W[\"Committed cursor after durable landing\"]",
+    "summary": "12. APIs and SaaS: pagination, limits, and durable landing"
+  },
+  {
+    "id": "13-kafka-event-hubs-1",
+    "path": "databricks_guide/chapters/13-kafka-event-hubs.md",
+    "source": "flowchart LR\n P[\"Producer event ID\"] --> K[\"Kafka or Event Hubs\"]\n K --> B[\"Bronze: payload and offset evidence\"]\n B --> V[\"Parse and validate\"]\n V --> D[\"Event-time watermark and dedup\"]\n D --> S[\"Silver and serving sink\"]\n C[\"Stable checkpoint\"] --> B",
+    "summary": "13. Kafka and Event Hubs: offsets, authentication, and sinks"
+  },
+  {
+    "id": "14-declarative-pipelines-1",
+    "path": "databricks_guide/chapters/14-declarative-pipelines.md",
+    "source": "flowchart LR\n F[\"Landing JSON\"] --> B[\"order_events_pipeline: streaming table\"]\n B --> V[\"valid_order_events: expectations and casts\"]\n V --> C[\"orders_current_pipeline: AUTO CDC\"]\n C --> M[\"daily_revenue_pipeline: materialized view\"]\n B --> Q[\"invalid_order_events: quarantine\"]",
+    "summary": "14. Lakeflow declarative pipelines: Python, SQL, and configuration"
+  },
+  {
+    "id": "15-cdc-scd-merge-1",
+    "path": "databricks_guide/chapters/15-cdc-scd-merge.md",
+    "source": "flowchart LR\n E[\"Bronze event history\"] --> V[\"Validate duplicates and sequence conflicts\"]\n V --> L[\"Latest event per order\"]\n L --> T[\"MERGE with higher sequence guard\"]\n T --> S[\"State table retains tombstones\"]\n S --> C[\"Current view excludes deleted rows\"]",
+    "summary": "15. Ordered CDC, MERGE, hard deletes, and SCD history"
+  },
+  {
+    "id": "16-stream-state-and-external-sinks-1",
+    "path": "databricks_guide/chapters/16-stream-state-and-external-sinks.md",
+    "source": "flowchart LR\n B[\"Raw retained events\"] --> W[\"Watermark and bounded state\"]\n W --> A[\"Windowed aggregates or joins\"]\n A --> D[\"Delta result\"]\n D --> O[\"Outbox with stable event keys\"]\n O --> X[\"External idempotent consumer\"]",
+    "summary": "16. Watermarks, state, streaming joins, and external sink delivery"
+  },
+  {
+    "id": "17-gold-and-sql-serving-1",
+    "path": "databricks_guide/chapters/17-gold-and-sql-serving.md",
+    "source": "flowchart LR\n S[\"Current silver view\"] --> G[\"Daily revenue gold table\"]\n G --> W[\"SQL warehouse\"]\n W --> B[\"Dashboard or JDBC/ODBC BI\"]\n G --> E[\"Versioned export or sharing\"]",
+    "summary": "17. Gold tables, SQL warehouses, dbt, and exports"
+  },
+  {
+    "id": "18-secrets-and-service-principals-1",
+    "path": "databricks_guide/chapters/18-secrets-and-service-principals.md",
+    "source": "flowchart LR\n H[\"Developer OAuth\"] --> D[\"Dev deployment\"]\n C[\"CI federated identity\"] --> P[\"Prod deployment permission\"]\n P --> J[\"Job configuration\"]\n J --> R[\"Run-as service principal\"]\n R --> U[\"UC data privileges\"]\n R --> S[\"Source secret or governed connection\"]",
+    "summary": "18. Secrets, service principals, Run as, and authentication"
+  },
+  {
+    "id": "19-fine-grained-governance-1",
+    "path": "databricks_guide/chapters/19-fine-grained-governance.md",
+    "source": "flowchart LR\n Q[\"Caller identity\"] --> P[\"UC grants\"]\n P --> R[\"Row filter\"]\n R --> M[\"Column mask\"]\n M --> D[\"Returned rows and values\"]\n T[\"Governed tags and ABAC policy\"] -.-> R\n T -.-> M",
+    "summary": "19. Governance: row filters, masking, lineage, tags, and ABAC"
+  },
+  {
+    "id": "20-bundles-1",
+    "path": "databricks_guide/chapters/20-bundles.md",
+    "source": "flowchart LR\n Y[\"databricks.yml and resource YAML\"] --> V[\"Variable and target resolution\"]\n V --> C[\"Bundle validate\"]\n C --> D[\"Deploy workspace code and jobs\"]\n D --> R[\"Run with runtime parameters\"]",
+    "summary": "20. Bundles: variables, targets, resources, and deployment commands"
+  },
+  {
+    "id": "21-github-actions-1",
+    "path": "databricks_guide/chapters/21-github-actions.md",
+    "source": "flowchart LR\n P[\"Pull request\"] --> L[\"Local tests and configuration checks\"]\n L --> M[\"Reviewed commit\"]\n M --> E[\"Protected deployment environment\"]\n E --> O[\"GitHub OIDC token exchange\"]\n O --> V[\"Bundle validate and deploy\"]\n V --> T[\"Workspace integration tests\"]",
+    "summary": "21. GitHub Actions deployment with workload identity federation"
+  },
+  {
+    "id": "22-other-ci-systems-1",
+    "path": "databricks_guide/chapters/22-other-ci-systems.md",
+    "source": "flowchart LR\n A[\"GitHub Actions\"] --> C[\"Shared bundle CLI commands\"]\n D[\"Azure DevOps\"] --> C\n J[\"Jenkins\"] --> C\n G[\"GitLab CI\"] --> C\n C --> W[\"Dev or prod workspace\"]\n W --> T[\"Runtime tests and evidence\"]",
+    "summary": "22. Azure DevOps, Jenkins, GitLab, and orchestration alternatives"
+  },
+  {
+    "id": "23-terraform-and-network-1",
+    "path": "databricks_guide/chapters/23-terraform-and-network.md",
+    "source": "flowchart TD\n P[\"Platform PR and Terraform plan\"] --> N[\"Cloud IAM and network\"]\n P --> U[\"Workspace, UC, compute policy\"]\n N --> B[\"Application bundle deployment\"]\n U --> B\n B --> T[\"Connectivity and data tests\"]",
+    "summary": "23. Terraform, policies, cloud networking, and resource ownership"
+  },
+  {
+    "id": "24-git-and-maintenance-1",
+    "path": "databricks_guide/chapters/24-git-and-maintenance.md",
+    "source": "flowchart LR\n N[\"Thin notebook / wheel entry\"] --> P[\"Typed transformation module\"]\n P --> D[\"DataFrame inputs and outputs\"]\n T[\"Fixtures and unit tests\"] --> P\n B[\"Bundle target and resource YAML\"] --> N",
+    "summary": "24. Git folders, code structure, packages, and runtime upgrades"
+  },
+  {
+    "id": "25-test-strategy-1",
+    "path": "databricks_guide/chapters/25-test-strategy.md",
+    "source": "flowchart LR\n U[\"Local unit and config\"] --> S[\"Spark transformations\"]\n S --> I[\"Workspace integration\"]\n I --> R[\"Reconciliation and access checks\"]\n R --> P[\"Production release\"]",
+    "summary": "25. Tests: local, Spark, workspace, contracts, and production gates"
+  },
+  {
+    "id": "26-observability-cost-1",
+    "path": "databricks_guide/chapters/26-observability-cost.md",
+    "source": "flowchart LR\n J[\"Jobs and stream progress\"] --> M[\"Operational metrics\"]\n D[\"Data freshness and reconciliation\"] --> M\n A[\"Audit and lineage\"] --> M\n B[\"Billable usage system tables\"] --> M\n M --> N[\"Alert with owner and runbook\"]",
+    "summary": "26. Monitoring, audit, freshness, and cost"
+  },
+  {
+    "id": "27-performance-delta-1",
+    "path": "databricks_guide/chapters/27-performance-delta.md",
+    "source": "flowchart LR\n Q[\"Representative query and input\"] --> P[\"Plan and metrics\"]\n P --> T[\"Change one tuning choice\"]\n T --> B[\"Benchmark output, latency, cost\"]\n B --> K[\"Keep or revert measured change\"]",
+    "summary": "27. Performance, liquid clustering, file sizes, and table maintenance"
+  },
+  {
+    "id": "28-worked-orders-lab-1",
+    "path": "databricks_guide/chapters/28-worked-orders-lab.md",
+    "source": "flowchart LR\n F[\"Fixture upload to landing/orders\"] --> I[\"ingest_orders: Auto Loader\"]\n I --> B[\"bronze.order_events\"]\n B --> M[\"merge_current: validation and tombstones\"]\n M --> S[\"silver.orders_current view\"]\n S --> G[\"gold.daily_revenue\"]\n G --> A[\"assert_quality workspace task\"]",
+    "summary": "28. Worked orders lab: from fixture upload to published revenue"
+  },
+  {
+    "id": "29-adf-integration-1",
+    "path": "databricks_guide/chapters/29-adf-integration.md",
+    "source": "sequenceDiagram\n participant ADF as ADF pipeline\n participant LS as Databricks linked service\n participant NB as Notebook\n ADF->>LS: Resolve connection and compute\n ADF->>NB: Base Parameters catalog and run_date\n NB->>NB: Read widgets, transform, verify\n NB-->>ADF: notebook.exit JSON result\n ADF->>ADF: Evaluate runOutput for next activity",
+    "summary": "29. ADF integration: linked service, Base Parameters, and return values"
+  },
+  {
+    "id": "30-clouds-and-recovery-1",
+    "path": "databricks_guide/chapters/30-clouds-and-recovery.md",
+    "source": "flowchart LR\n F[\"Retained raw or source CDC\"] --> N[\"New isolated target and checkpoint\"]\n N --> R[\"Replay to known boundary\"]\n R --> V[\"Reconcile and permission-test\"]\n V --> C[\"Cut over consumers\"]\n O[\"Old target retained for recovery\"] -.-> V",
+    "summary": "30. Cloud substitutions, federation, sharing, and recovery"
+  },
+  {
+    "id": "31-change-data-feed-1",
+    "path": "databricks_guide/chapters/31-change-data-feed.md",
+    "source": "flowchart LR\n T[\"Versioned Delta table\"] --> C[\"CDF changes and metadata\"]\n C --> F[\"Select postimages, inserts, deletes\"]\n F --> S[\"Idempotent downstream state\"]\n C --> A[\"Retained archive if required\"]",
+    "summary": "31. Delta change data feed and version-bound recovery"
+  },
+  {
+    "id": "32-nosql-json-1",
+    "path": "databricks_guide/chapters/32-nosql-json.md",
+    "source": "flowchart LR\n N[\"Document store change/export contract\"] --> B[\"Raw document bronze\"]\n B --> P[\"Parse, validate, retain unknown fields\"]\n P --> H[\"Order header grain\"]\n P --> L[\"Order line grain\"]\n H --> G[\"Header revenue without join multiplication\"]\n L --> I[\"Item-level analytics\"]",
+    "summary": "32. NoSQL, nested JSON, schema drift, and grain changes"
+  },
+  {
+    "id": "33-federation-sharing-1",
+    "path": "databricks_guide/chapters/33-federation-sharing.md",
+    "source": "flowchart LR\n Q[\"Databricks federated query\"] --> U[\"UC connection and foreign catalog\"]\n U --> D[\"Remote PostgreSQL read\"]\n T[\"Approved gold table\"] --> S[\"Share\"]\n S --> R[\"Authorized recipient\"]",
+    "summary": "33. Federation connections, foreign catalogs, and governed sharing"
+  },
+  {
+    "id": "34-troubleshooting-1",
+    "path": "databricks_guide/chapters/34-troubleshooting.md",
+    "source": "flowchart TD\n S[\"Symptom\"] --> I[\"Inspect identity and resolved parameters\"]\n I --> C[\"Inspect source, state, and table versions\"]\n C --> R[\"Reproduce in isolated target\"]\n R --> F[\"Apply narrow fix\"]\n F --> T[\"Regression test and document evidence\"]",
+    "summary": "34. Troubleshooting by symptom, field, and evidence"
+  },
+  {
+    "id": "01-on-prem-migration-1",
+    "path": "databricks_guide/scenarios/01-on-prem-migration.md",
+    "source": "flowchart LR\n A[\"On-prem SQL Server warehouse\"] --> B[\"Consistent snapshot plus retained source CDC\"]\n B --> C[\"Databricks bronze and ordered silver\"]\n C --> D[\"Gold marts and BI cutover\"]",
+    "summary": "On-prem warehouse migration with parallel reconciliation"
+  },
+  {
+    "id": "01-on-prem-migration-2",
+    "path": "databricks_guide/scenarios/01-on-prem-migration.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "On-prem warehouse migration with parallel reconciliation"
+  },
+  {
+    "id": "02-daily-files-sla-1",
+    "path": "databricks_guide/scenarios/02-daily-files-sla.md",
+    "source": "flowchart LR\n A[\"Immutable nightly order files\"] --> B[\"Auto Loader AvailableNow and bronze\"]\n B --> C[\"Incremental validation and ordered state\"]\n C --> D[\"6 a.m. validated gold publication\"]",
+    "summary": "Daily files: 100 million orders ready by 6 a.m."
+  },
+  {
+    "id": "02-daily-files-sla-2",
+    "path": "databricks_guide/scenarios/02-daily-files-sla.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "Daily files: 100 million orders ready by 6 a.m."
+  },
+  {
+    "id": "03-cdc-and-scd2-1",
+    "path": "databricks_guide/scenarios/03-cdc-and-scd2.md",
+    "source": "flowchart LR\n A[\"Database CDC operations\"] --> B[\"Managed Connect or retained change events\"]\n B --> C[\"AUTO CDC or guarded MERGE\"]\n C --> D[\"Current state and customer history\"]",
+    "summary": "CDC with hard deletes and customer history"
+  },
+  {
+    "id": "03-cdc-and-scd2-2",
+    "path": "databricks_guide/scenarios/03-cdc-and-scd2.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "CDC with hard deletes and customer history"
+  },
+  {
+    "id": "04-streaming-events-1",
+    "path": "databricks_guide/scenarios/04-streaming-events.md",
+    "source": "flowchart LR\n A[\"Kafka or Event Hubs producers\"] --> B[\"Raw message bronze with offsets\"]\n B --> C[\"Event-time dedup and bounded joins\"]\n C --> D[\"Fresh aggregates or external outbox\"]",
+    "summary": "Kafka/Event Hubs events and near-real-time aggregates"
+  },
+  {
+    "id": "04-streaming-events-2",
+    "path": "databricks_guide/scenarios/04-streaming-events.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "Kafka/Event Hubs events and near-real-time aggregates"
+  },
+  {
+    "id": "05-saas-api-1",
+    "path": "databricks_guide/scenarios/05-saas-api.md",
+    "source": "flowchart LR\n A[\"SaaS API\"] --> B[\"Bounded paginated extractor\"]\n B --> C[\"Completed manifest and Auto Loader\"]\n C --> D[\"Curated business tables\"]",
+    "summary": "SaaS REST ingestion with pagination and rate limits"
+  },
+  {
+    "id": "05-saas-api-2",
+    "path": "databricks_guide/scenarios/05-saas-api.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "SaaS REST ingestion with pagination and rate limits"
+  },
+  {
+    "id": "06-document-nosql-1",
+    "path": "databricks_guide/scenarios/06-document-nosql.md",
+    "source": "flowchart LR\n A[\"Document store export/change feed\"] --> B[\"Raw JSON document bronze\"]\n B --> C[\"Header/line normalization\"]\n C --> D[\"Separate header and item marts\"]",
+    "summary": "Document/NoSQL source to header and line facts"
+  },
+  {
+    "id": "06-document-nosql-2",
+    "path": "databricks_guide/scenarios/06-document-nosql.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "Document/NoSQL source to header and line facts"
+  },
+  {
+    "id": "07-tenant-governance-1",
+    "path": "databricks_guide/scenarios/07-tenant-governance.md",
+    "source": "flowchart LR\n A[\"Restricted tenant raw sources\"] --> B[\"Tenant-keyed bronze and silver\"]\n B --> C[\"UC row filtering and column masking\"]\n C --> D[\"Approved consumer rows and values\"]",
+    "summary": "Multi-tenant PII platform with row and column controls"
+  },
+  {
+    "id": "07-tenant-governance-2",
+    "path": "databricks_guide/scenarios/07-tenant-governance.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "Multi-tenant PII platform with row and column controls"
+  },
+  {
+    "id": "08-cloud-substitutions-1",
+    "path": "databricks_guide/scenarios/08-cloud-substitutions.md",
+    "source": "flowchart LR\n A[\"ADLS, S3, or GCS and Kafka service\"] --> B[\"Cloud-specific access bootstrap\"]\n B --> C[\"Common UC tables and transformations\"]\n C --> D[\"Common gold consumption contract\"]",
+    "summary": "Same file/Kafka lakehouse across Azure, AWS, and GCP"
+  },
+  {
+    "id": "08-cloud-substitutions-2",
+    "path": "databricks_guide/scenarios/08-cloud-substitutions.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "Same file/Kafka lakehouse across Azure, AWS, and GCP"
+  },
+  {
+    "id": "09-warehouse-bi-1",
+    "path": "databricks_guide/scenarios/09-warehouse-bi.md",
+    "source": "flowchart LR\n A[\"Databases and delivery files\"] --> B[\"Governed bronze/silver lakehouse\"]\n B --> C[\"SQL/dbt models and gold marts\"]\n C --> D[\"SQL warehouse and dashboards\"]",
+    "summary": "Warehouse modernization: SQL/dbt marts and concurrent BI"
+  },
+  {
+    "id": "09-warehouse-bi-2",
+    "path": "databricks_guide/scenarios/09-warehouse-bi.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "Warehouse modernization: SQL/dbt marts and concurrent BI"
+  },
+  {
+    "id": "10-replay-disaster-recovery-1",
+    "path": "databricks_guide/scenarios/10-replay-disaster-recovery.md",
+    "source": "flowchart LR\n A[\"Retained raw events or snapshot/CDC\"] --> B[\"Isolated recovery target and new checkpoint\"]\n B --> C[\"Ordered replay and reconciliation\"]\n C --> D[\"Controlled consumer cutover\"]",
+    "summary": "Backfill, lost checkpoints, and region recovery"
+  },
+  {
+    "id": "10-replay-disaster-recovery-2",
+    "path": "databricks_guide/scenarios/10-replay-disaster-recovery.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "Backfill, lost checkpoints, and region recovery"
+  },
+  {
+    "id": "11-federation-and-sharing-1",
+    "path": "databricks_guide/scenarios/11-federation-and-sharing.md",
+    "source": "flowchart LR\n A[\"Remote PostgreSQL or supported database\"] --> B[\"UC connection and foreign catalog\"]\n B --> C[\"Optional materialized approved gold\"]\n C --> D[\"Authorized share recipient\"]",
+    "summary": "Federated migration discovery and partner data sharing"
+  },
+  {
+    "id": "11-federation-and-sharing-2",
+    "path": "databricks_guide/scenarios/11-federation-and-sharing.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "Federated migration discovery and partner data sharing"
+  },
+  {
+    "id": "12-promotion-and-upgrades-1",
+    "path": "databricks_guide/scenarios/12-promotion-and-upgrades.md",
+    "source": "flowchart LR\n A[\"Feature branch and fixtures\"] --> B[\"Local code/config tests\"]\n B --> C[\"Workspace integration and reconciliation\"]\n C --> D[\"Protected production deployment\"]",
+    "summary": "Dev/test/prod CI/CD, schema evolution, and runtime upgrades"
+  },
+  {
+    "id": "12-promotion-and-upgrades-2",
+    "path": "databricks_guide/scenarios/12-promotion-and-upgrades.md",
+    "source": "flowchart LR\n P[\"Reviewed platform prerequisites\"] --> B[\"Target-specific bundle deploy\"]\n B --> I[\"Integration and business acceptance\"]\n I --> R[\"Approved schedule or cutover\"]",
+    "summary": "Dev/test/prod CI/CD, schema evolution, and runtime upgrades"
+  }
+]

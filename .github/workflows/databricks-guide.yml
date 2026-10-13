@@ -1,0 +1,35 @@
+name: Databricks guide local validation
+on:
+  push:
+    branches: [databricks-practical-guide]
+    paths: ['databricks_guide/**', 'DATABRICKS_GUIDE_INDEX.md', '.github/workflows/databricks-guide.yml']
+  pull_request:
+    paths: ['databricks_guide/**', 'DATABRICKS_GUIDE_INDEX.md', '.github/workflows/databricks-guide.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  local-validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Local fixture and API tests
+        run: python3 -m unittest discover -s databricks_guide/examples/tests -v
+      - name: Install offline configuration validators
+        run: python3 -m pip install -r databricks_guide/tools/requirements.txt
+      - name: Validate bundle configuration shape
+        run: python3 databricks_guide/tools/validate_config.py
+      - name: Check documentation and code syntax
+        run: python3 databricks_guide/tools/validate_guide.py
+      - name: Install pinned diagram dependencies
+        run: npm ci --prefix databricks_guide/tools --ignore-scripts --no-audit --no-fund
+      - name: Install isolated test browser
+        run: npm exec --prefix databricks_guide/tools -- playwright install --with-deps chromium
+      - name: Parse, render, and check all diagrams
+        run: node databricks_guide/tools/render_diagrams.cjs
+      - name: Confirm diagram report matches sources
+        run: python3 databricks_guide/tools/validate_guide.py

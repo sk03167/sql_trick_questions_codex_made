@@ -1,0 +1,271 @@
+{
+  "researched_on": "2026-10-13",
+  "chapters": [
+    {
+      "number": 1,
+      "path": "databricks_guide/chapters/01-platform-and-lab.md",
+      "title": "Platform map and the shared lab",
+      "summary": "Know what runs where, and use one consistent set of names throughout the guide."
+    },
+    {
+      "number": 2,
+      "path": "databricks_guide/chapters/02-workspace-compute.md",
+      "title": "Workspace prerequisites and compute choices",
+      "summary": "Choose a runtime, identity, and execution surface before copying connector code."
+    },
+    {
+      "number": 3,
+      "path": "databricks_guide/chapters/03-azure-storage-identity.md",
+      "title": "Azure storage identity and external locations",
+      "summary": "Connect ADLS Gen2 with an Access Connector, then expose storage through Unity Catalog."
+    },
+    {
+      "number": 4,
+      "path": "databricks_guide/chapters/04-catalogs-volumes-grants.md",
+      "title": "Catalogs, schemas, volumes, and minimum grants",
+      "summary": "Create the lab namespace and make its file paths usable by the workload."
+    },
+    {
+      "number": 5,
+      "path": "databricks_guide/chapters/05-parameter-cheatsheet.md",
+      "title": "Parameters: which syntax belongs where",
+      "summary": "A concrete map of deployment values, runtime values, and notebook inputs."
+    },
+    {
+      "number": 6,
+      "path": "databricks_guide/chapters/06-widgets-and-sql.md",
+      "title": "Notebook widgets and safe SQL parameter binding",
+      "summary": "Create inputs through buttons or code and use identifiers safely."
+    },
+    {
+      "number": 7,
+      "path": "databricks_guide/chapters/07-jobs-task-values.md",
+      "title": "Lakeflow Jobs, dependencies, task values, and loops",
+      "summary": "Configure a job through the UI and connect the parameter flow to a reviewed bundle."
+    },
+    {
+      "number": 8,
+      "path": "databricks_guide/chapters/08-batch-copy-into.md",
+      "title": "Batch files with COPY INTO",
+      "summary": "Load a bounded delivery with file-level replay tracking and a defined schema."
+    },
+    {
+      "number": 9,
+      "path": "databricks_guide/chapters/09-auto-loader.md",
+      "title": "Auto Loader: schema, checkpoints, triggers, and replay",
+      "summary": "Incrementally ingest JSON files with a stable checkpoint and a deliberate schema policy."
+    },
+    {
+      "number": 10,
+      "path": "databricks_guide/chapters/10-jdbc-and-incremental.md",
+      "title": "Database snapshots, JDBC, and incremental extraction",
+      "summary": "Understand source load, watermark correctness, and how deletes are represented."
+    },
+    {
+      "number": 11,
+      "path": "databricks_guide/chapters/11-managed-cdc.md",
+      "title": "Lakeflow Connect: managed SQL Server CDC",
+      "summary": "Set up a managed ingestion gateway and pipeline, with log-retention tests."
+    },
+    {
+      "number": 12,
+      "path": "databricks_guide/chapters/12-apis-saas.md",
+      "title": "APIs and SaaS: pagination, limits, and durable landing",
+      "summary": "Extract outside Spark tasks when appropriate, then use the same governed file ingestion."
+    },
+    {
+      "number": 13,
+      "path": "databricks_guide/chapters/13-kafka-event-hubs.md",
+      "title": "Kafka and Event Hubs: offsets, authentication, and sinks",
+      "summary": "Persist raw messages and use event-time logic without confusing it with ingestion time."
+    },
+    {
+      "number": 14,
+      "path": "databricks_guide/chapters/14-declarative-pipelines.md",
+      "title": "Lakeflow declarative pipelines: Python, SQL, and configuration",
+      "summary": "Build a managed DAG, with a deliberate choice of parameter mechanism."
+    },
+    {
+      "number": 15,
+      "path": "databricks_guide/chapters/15-cdc-scd-merge.md",
+      "title": "Ordered CDC, MERGE, hard deletes, and SCD history",
+      "summary": "Prevent retries and late updates from corrupting current state."
+    },
+    {
+      "number": 16,
+      "path": "databricks_guide/chapters/16-stream-state-and-external-sinks.md",
+      "title": "Watermarks, state, streaming joins, and external sink delivery",
+      "summary": "Make late-data and retry behavior explicit instead of relying on an exactly-once label."
+    },
+    {
+      "number": 17,
+      "path": "databricks_guide/chapters/17-gold-and-sql-serving.md",
+      "title": "Gold tables, SQL warehouses, dbt, and exports",
+      "summary": "Publish reconciled results with a clear refresh and serving contract."
+    },
+    {
+      "number": 18,
+      "path": "databricks_guide/chapters/18-secrets-and-service-principals.md",
+      "title": "Secrets, service principals, Run as, and authentication",
+      "summary": "Separate deployment identity, execution identity, and source-system credentials."
+    },
+    {
+      "number": 19,
+      "path": "databricks_guide/chapters/19-fine-grained-governance.md",
+      "title": "Governance: row filters, masking, lineage, tags, and ABAC",
+      "summary": "Implement a small explicit policy before scaling policy administration."
+    },
+    {
+      "number": 20,
+      "path": "databricks_guide/chapters/20-bundles.md",
+      "title": "Bundles: variables, targets, resources, and deployment commands",
+      "summary": "Deploy the same reviewed job to separate environments with explicit runtime inputs."
+    },
+    {
+      "number": 21,
+      "path": "databricks_guide/chapters/21-github-actions.md",
+      "title": "GitHub Actions deployment with workload identity federation",
+      "summary": "Configure exact trust fields and runner variables; keep deployment opt-in."
+    },
+    {
+      "number": 22,
+      "path": "databricks_guide/chapters/22-other-ci-systems.md",
+      "title": "Azure DevOps, Jenkins, GitLab, and orchestration alternatives",
+      "summary": "Use equivalent validation and deployment stages with different runners and identity adapters."
+    },
+    {
+      "number": 23,
+      "path": "databricks_guide/chapters/23-terraform-and-network.md",
+      "title": "Terraform, policies, cloud networking, and resource ownership",
+      "summary": "Automate the platform before deploying the data application."
+    },
+    {
+      "number": 24,
+      "path": "databricks_guide/chapters/24-git-and-maintenance.md",
+      "title": "Git folders, code structure, packages, and runtime upgrades",
+      "summary": "Make notebook changes reviewable and avoid mutable personal production code."
+    },
+    {
+      "number": 25,
+      "path": "databricks_guide/chapters/25-test-strategy.md",
+      "title": "Tests: local, Spark, workspace, contracts, and production gates",
+      "summary": "Choose assertions that detect business corruption as well as platform failures."
+    },
+    {
+      "number": 26,
+      "path": "databricks_guide/chapters/26-observability-cost.md",
+      "title": "Monitoring, audit, freshness, and cost",
+      "summary": "Track correctness and lag alongside run status and compute consumption."
+    },
+    {
+      "number": 27,
+      "path": "databricks_guide/chapters/27-performance-delta.md",
+      "title": "Performance, liquid clustering, file sizes, and table maintenance",
+      "summary": "Tune after proving correctness and use measurements tied to a workload."
+    },
+    {
+      "number": 28,
+      "path": "databricks_guide/chapters/28-worked-orders-lab.md",
+      "title": "Worked orders lab: from fixture upload to published revenue",
+      "summary": "Run the connected examples, verify exact outputs, and exercise a late-delete retry."
+    },
+    {
+      "number": 29,
+      "path": "databricks_guide/chapters/29-adf-integration.md",
+      "title": "ADF integration: linked service, Base Parameters, and return values",
+      "summary": "Pass ADF variables to Databricks without confusing its expression language with job syntax."
+    },
+    {
+      "number": 30,
+      "path": "databricks_guide/chapters/30-clouds-and-recovery.md",
+      "title": "Cloud substitutions, federation, sharing, and recovery",
+      "summary": "Change one technology deliberately, and know which state you must restore."
+    },
+    {
+      "number": 31,
+      "path": "databricks_guide/chapters/31-change-data-feed.md",
+      "title": "Delta change data feed and version-bound recovery",
+      "summary": "Read inserts, updates, and deletes downstream without treating CDF as a permanent audit log."
+    },
+    {
+      "number": 32,
+      "path": "databricks_guide/chapters/32-nosql-json.md",
+      "title": "NoSQL, nested JSON, schema drift, and grain changes",
+      "summary": "Ingest document changes and transform nested records without multiplying amounts accidentally."
+    },
+    {
+      "number": 33,
+      "path": "databricks_guide/chapters/33-federation-sharing.md",
+      "title": "Federation connections, foreign catalogs, and governed sharing",
+      "summary": "Read remote PostgreSQL without ingestion, and distribute approved tables to recipients."
+    },
+    {
+      "number": 34,
+      "path": "databricks_guide/chapters/34-troubleshooting.md",
+      "title": "Troubleshooting by symptom, field, and evidence",
+      "summary": "Use a concrete diagnostic order before changing permissions or resetting state."
+    }
+  ],
+  "scenarios": [
+    {
+      "path": "databricks_guide/scenarios/01-on-prem-migration.md",
+      "title": "On-prem warehouse migration with parallel reconciliation",
+      "summary": "Replace a legacy warehouse while controlling write cutover, reconciliation, and recovery."
+    },
+    {
+      "path": "databricks_guide/scenarios/02-daily-files-sla.md",
+      "title": "Daily files: 100 million orders ready by 6 a.m.",
+      "summary": "Design a bounded ingest-and-transform workload against a deadline and a measurable capacity model."
+    },
+    {
+      "path": "databricks_guide/scenarios/03-cdc-and-scd2.md",
+      "title": "CDC with hard deletes and customer history",
+      "summary": "Choose current state versus type-2 history and explicitly handle out-of-order changes."
+    },
+    {
+      "path": "databricks_guide/scenarios/04-streaming-events.md",
+      "title": "Kafka/Event Hubs events and near-real-time aggregates",
+      "summary": "Build streaming analytics with bounded state, raw replay, and a stated freshness target."
+    },
+    {
+      "path": "databricks_guide/scenarios/05-saas-api.md",
+      "title": "SaaS REST ingestion with pagination and rate limits",
+      "summary": "Ingest a vendor API while preserving raw response evidence and completion boundaries."
+    },
+    {
+      "path": "databricks_guide/scenarios/06-document-nosql.md",
+      "title": "Document/NoSQL source to header and line facts",
+      "summary": "Flatten nested records without losing deletes, schema changes, or business grain."
+    },
+    {
+      "path": "databricks_guide/scenarios/07-tenant-governance.md",
+      "title": "Multi-tenant PII platform with row and column controls",
+      "summary": "Let teams query shared curated tables under explicit policy and workspace isolation."
+    },
+    {
+      "path": "databricks_guide/scenarios/08-cloud-substitutions.md",
+      "title": "Same file/Kafka lakehouse across Azure, AWS, and GCP",
+      "summary": "Reuse the logical design while replacing cloud-specific identity, network, and service settings."
+    },
+    {
+      "path": "databricks_guide/scenarios/09-warehouse-bi.md",
+      "title": "Warehouse modernization: SQL/dbt marts and concurrent BI",
+      "summary": "Serve governed metrics while migrating legacy SQL and controlling query performance."
+    },
+    {
+      "path": "databricks_guide/scenarios/10-replay-disaster-recovery.md",
+      "title": "Backfill, lost checkpoints, and region recovery",
+      "summary": "Recover data state without silently skipping retained changes or duplicating external effects."
+    },
+    {
+      "path": "databricks_guide/scenarios/11-federation-and-sharing.md",
+      "title": "Federated migration discovery and partner data sharing",
+      "summary": "Read external data with foreign catalogs, then disclose only approved assets to recipients."
+    },
+    {
+      "path": "databricks_guide/scenarios/12-promotion-and-upgrades.md",
+      "title": "Dev/test/prod CI/CD, schema evolution, and runtime upgrades",
+      "summary": "Promote a tested application and distinguish code, schema, policy, and state changes."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# OPT-IN: configure protected OAuth variables and a managed CLI-equipped agent.
+trigger: none
+pool:
+  name: DatabricksManagedAgents
+variables:
+  - group: databricks-dev
+steps:
+  - checkout: self
+  - script: python3 -m unittest discover -s databricks_guide/examples/tests -v
+    displayName: Local tests
+  - script: |
+      databricks current-user me
+      databricks bundle validate -t dev
+      databricks bundle deploy -t dev
+      databricks bundle run orders_daily -t dev --params 'catalog=de_lab_dev,run_date=2026-10-12,min_current_rows=2,validate_fixture=true'
+    workingDirectory: databricks_guide/examples
+    env:
+      DATABRICKS_AUTH_TYPE: oauth-m2m
+      DATABRICKS_HOST: $(DATABRICKS_HOST)
+      DATABRICKS_CLIENT_ID: $(DATABRICKS_CLIENT_ID)
+      DATABRICKS_CLIENT_SECRET: $(DATABRICKS_CLIENT_SECRET)
+      BUNDLE_VAR_workspace_host: $(DATABRICKS_HOST)

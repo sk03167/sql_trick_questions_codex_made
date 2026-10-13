@@ -1,0 +1,32 @@
+bundle:
+  name: orders_lakeflow_lab
+variables:
+  workspace_host:
+    description: Actual workspace URL
+  catalog:
+    default: de_lab_dev
+resources:
+  pipelines:
+    orders_pipeline:
+      name: orders_lakeflow_dev
+      catalog: ${var.catalog}
+      schema: silver
+      serverless: true
+      continuous: false
+      channel: CURRENT
+      edition: ADVANCED
+      configuration:
+        lab.source_path: /Volumes/${var.catalog}/ops/landing/orders
+        lab.schema_path: /Volumes/${var.catalog}/ops/state/lakeflow_orders_schema
+      libraries:
+        - file:
+            path: ../pipelines/orders_pipeline.py
+sync:
+  paths:
+    - ../pipelines
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: ${var.workspace_host}

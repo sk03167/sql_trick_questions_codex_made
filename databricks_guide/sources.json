@@ -1,0 +1,532 @@
+{
+  "https://docs.databricks.com/aws/en/jobs": {
+    "title": "Jobs",
+    "chapters": [
+      1,
+      22,
+      26
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ldp/developer/python-ref": {
+    "title": "Python Ref",
+    "chapters": [
+      1,
+      14
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/bundles/ci-cd": {
+    "title": "Ci Cd",
+    "chapters": [
+      1,
+      21
+    ]
+  },
+  "https://docs.databricks.com/aws/en/compute/configure": {
+    "title": "Configure",
+    "chapters": [
+      2,
+      23
+    ]
+  },
+  "https://docs.databricks.com/aws/en/compute/standard-overview": {
+    "title": "Standard Overview",
+    "chapters": [
+      2
+    ]
+  },
+  "https://docs.databricks.com/aws/en/compute/single-user-fgac": {
+    "title": "Single User Fgac",
+    "chapters": [
+      2,
+      19
+    ]
+  },
+  "https://docs.databricks.com/aws/en/sql/admin/create-sql-warehouse": {
+    "title": "Create Sql Warehouse",
+    "chapters": [
+      2,
+      17
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/cloud-storage/external-locations": {
+    "title": "Azure ADLS connection procedure",
+    "chapters": [
+      3
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/storage-credentials": {
+    "title": "Storage model and access",
+    "chapters": [
+      3
+    ]
+  },
+  "https://docs.databricks.com/aws/en/catalogs/create-catalog": {
+    "title": "Create Catalog",
+    "chapters": [
+      4,
+      23,
+      33
+    ]
+  },
+  "https://docs.databricks.com/aws/en/volumes/utility-commands": {
+    "title": "Utility Commands",
+    "chapters": [
+      4,
+      8
+    ]
+  },
+  "https://docs.databricks.com/aws/en/data-governance/unity-catalog/manage-privileges": {
+    "title": "Manage Privileges",
+    "chapters": [
+      4,
+      19,
+      23
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/databricks/volumes/paths": {
+    "title": "Volume path rules",
+    "chapters": [
+      4
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/bundles/variables": {
+    "title": "Variables",
+    "chapters": [
+      5,
+      20
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/job-parameters": {
+    "title": "Job Parameters",
+    "chapters": [
+      5
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/task-parameters": {
+    "title": "Task Parameters",
+    "chapters": [
+      5,
+      17
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ldp/parameters": {
+    "title": "Parameters",
+    "chapters": [
+      5,
+      14
+    ]
+  },
+  "https://docs.databricks.com/aws/en/notebooks/widgets": {
+    "title": "Widgets",
+    "chapters": [
+      6
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/databricks-utils": {
+    "title": "Databricks Utils",
+    "chapters": [
+      6,
+      12,
+      29
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/notebook": {
+    "title": "Notebook",
+    "chapters": [
+      6
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/jobs-quickstart": {
+    "title": "Jobs Quickstart",
+    "chapters": [
+      7,
+      25,
+      28
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/configure-task": {
+    "title": "Configure Task",
+    "chapters": [
+      7,
+      34
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/dynamic-value-references": {
+    "title": "Dynamic Value References",
+    "chapters": [
+      7,
+      34
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/task-values": {
+    "title": "Task Values",
+    "chapters": [
+      7
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/copy-into": {
+    "title": "Copy Into",
+    "chapters": [
+      8
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/copy-into/configure-data-access": {
+    "title": "Configure Data Access",
+    "chapters": [
+      8
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/schema": {
+    "title": "Schema",
+    "chapters": [
+      9,
+      32,
+      34
+    ]
+  },
+  "https://docs.databricks.com/aws/en/spark/api-options": {
+    "title": "Api Options",
+    "chapters": [
+      9,
+      32
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/production": {
+    "title": "Production",
+    "chapters": [
+      9,
+      28
+    ]
+  },
+  "https://docs.databricks.com/aws/en/connect/jdbc-connection": {
+    "title": "Jdbc Connection",
+    "chapters": [
+      10
+    ]
+  },
+  "https://docs.databricks.com/aws/en/query-federation": {
+    "title": "Query Federation",
+    "chapters": [
+      10,
+      17,
+      30
+    ]
+  },
+  "https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html": {
+    "title": "Spark JDBC options",
+    "chapters": [
+      10
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/sql-server-overview": {
+    "title": "Sql Server Overview",
+    "chapters": [
+      11
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/sql-server-pipeline": {
+    "title": "Sql Server Pipeline",
+    "chapters": [
+      11
+    ]
+  },
+  "https://docs.databricks.com/aws/en/connect/": {
+    "title": "",
+    "chapters": [
+      12
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect": {
+    "title": "Lakeflow Connect",
+    "chapters": [
+      12
+    ]
+  },
+  "https://docs.databricks.com/aws/en/connect/streaming/kafka": {
+    "title": "Kafka",
+    "chapters": [
+      13
+    ]
+  },
+  "https://docs.databricks.com/aws/en/connect/streaming/kafka/authentication": {
+    "title": "Authentication",
+    "chapters": [
+      13
+    ]
+  },
+  "https://learn.microsoft.com/azure/databricks/connect/streaming/kafka/authentication": {
+    "title": "Azure service credential authentication",
+    "chapters": [
+      13
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/databricks/ldp/event-hubs": {
+    "title": "Event Hubs pipeline source",
+    "chapters": [
+      13
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ldp/configure-pipeline": {
+    "title": "Configure Pipeline",
+    "chapters": [
+      14
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ldp/expectations": {
+    "title": "Expectations",
+    "chapters": [
+      14,
+      25,
+      26
+    ]
+  },
+  "https://docs.databricks.com/aws/en/delta/merge": {
+    "title": "Merge",
+    "chapters": [
+      15,
+      27,
+      28
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ldp/developer/ldp-python-ref-apply-changes": {
+    "title": "Ldp Python Ref Apply Changes",
+    "chapters": [
+      15
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ldp/cdc": {
+    "title": "Cdc",
+    "chapters": [
+      15
+    ]
+  },
+  "https://docs.databricks.com/aws/en/structured-streaming/foreach": {
+    "title": "Foreach",
+    "chapters": [
+      16,
+      31
+    ]
+  },
+  "https://docs.databricks.com/aws/en/structured-streaming/delta-lake": {
+    "title": "Delta Lake",
+    "chapters": [
+      16,
+      27,
+      31
+    ]
+  },
+  "https://spark.apache.org/docs/latest/streaming/apis-on-dataframes-and-datasets.html": {
+    "title": "Spark Structured Streaming guide",
+    "chapters": [
+      16
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/ci-cd": {
+    "title": "Ci Cd",
+    "chapters": [
+      17,
+      22,
+      24
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/auth/service-principals": {
+    "title": "Service Principals",
+    "chapters": [
+      18
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/auth/oauth-m2m": {
+    "title": "Oauth M2M",
+    "chapters": [
+      18,
+      22
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/bundles/run-as": {
+    "title": "Run As",
+    "chapters": [
+      18,
+      20
+    ]
+  },
+  "https://docs.databricks.com/aws/en/security/secrets": {
+    "title": "Secrets",
+    "chapters": [
+      18
+    ]
+  },
+  "https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks/manually-apply": {
+    "title": "Manually Apply",
+    "chapters": [
+      19
+    ]
+  },
+  "https://docs.databricks.com/aws/en/data-governance/unity-catalog/abac": {
+    "title": "Abac",
+    "chapters": [
+      19
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/bundles/deployment-modes": {
+    "title": "Deployment Modes",
+    "chapters": [
+      20
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/bundles/examples": {
+    "title": "Examples",
+    "chapters": [
+      20,
+      24,
+      28
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/auth/provider-github": {
+    "title": "Provider Github",
+    "chapters": [
+      21
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/ci-cd/github": {
+    "title": "Github",
+    "chapters": [
+      21
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/ci-cd/azure-devops": {
+    "title": "Azure Devops",
+    "chapters": [
+      22
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/terraform": {
+    "title": "Terraform",
+    "chapters": [
+      23
+    ]
+  },
+  "https://docs.databricks.com/aws/en/repos/git-operations-with-repos": {
+    "title": "Git Operations With Repos",
+    "chapters": [
+      24
+    ]
+  },
+  "https://docs.databricks.com/aws/en/dev-tools/databricks-connect/python/testing": {
+    "title": "Testing",
+    "chapters": [
+      24,
+      25
+    ]
+  },
+  "https://docs.databricks.com/aws/en/admin/system-tables/jobs": {
+    "title": "Jobs",
+    "chapters": [
+      26
+    ]
+  },
+  "https://docs.databricks.com/aws/en/admin/system-tables/billing": {
+    "title": "Billing",
+    "chapters": [
+      26
+    ]
+  },
+  "https://docs.databricks.com/aws/en/tables/clustering": {
+    "title": "Clustering",
+    "chapters": [
+      27
+    ]
+  },
+  "https://docs.databricks.com/aws/en/sql/language-manual/delta-vacuum": {
+    "title": "Delta Vacuum",
+    "chapters": [
+      27
+    ]
+  },
+  "https://learn.microsoft.com/en-in/azure/data-factory/transform-data-databricks-notebook": {
+    "title": "ADF Notebook activity",
+    "chapters": [
+      29
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/solution-template-databricks-notebook": {
+    "title": "ADF transformation template",
+    "chapters": [
+      29
+    ]
+  },
+  "https://docs.databricks.com/aws/en/data-sharing": {
+    "title": "Data Sharing",
+    "chapters": [
+      30,
+      33
+    ]
+  },
+  "https://docs.databricks.com/aws/en/tables/features/change-data-feed": {
+    "title": "Change Data Feed",
+    "chapters": [
+      30,
+      31,
+      34
+    ]
+  },
+  "https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage": {
+    "title": "Cloud Storage",
+    "chapters": [
+      30
+    ]
+  },
+  "https://docs.databricks.com/gcp/en/connect/unity-catalog/cloud-storage/external-locations-gcs": {
+    "title": "External Locations Gcs",
+    "chapters": [
+      30
+    ]
+  },
+  "https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/functions.html": {
+    "title": "Spark complex-type functions",
+    "chapters": [
+      32
+    ]
+  },
+  "https://docs.databricks.com/aws/en/query-federation/postgresql": {
+    "title": "Postgresql",
+    "chapters": [
+      33
+    ]
+  },
+  "https://docs.databricks.com/aws/en/opensharing/create-share": {
+    "title": "Create Share",
+    "chapters": [
+      33
+    ]
+  },
+  "https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage/s3/s3-external-location-manual": {
+    "title": "AWS S3 storage setup",
+    "chapters": [
+      30
+    ]
+  },
+  "https://docs.databricks.com/aws/en/ingestion/variant": {
+    "title": "VARIANT ingestion",
+    "chapters": [
+      32
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/scheduled": {
+    "title": "Run jobs on a schedule",
+    "chapters": [
+      7
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/file-arrival-triggers": {
+    "title": "File arrival trigger fields",
+    "chapters": [
+      7
+    ]
+  },
+  "https://docs.databricks.com/aws/en/jobs/triggers": {
+    "title": "Trigger configuration and compatibility",
+    "chapters": [
+      7
+    ]
+  }
+}

@@ -1,4 +1,14 @@
-# SQL Trick Question Catalog
+# Databricks practical guide
+
+This branch contains a detailed Databricks data engineering handbook: 34 chapters, 12 scenario walkthroughs, 58 diagrams, exact UI/parameter recipes, a worked orders project, and governance/infrastructure/CI/CD/testing guidance.
+
+- [Start with the complete guide index](DATABRICKS_GUIDE_INDEX.md)
+- [Run the worked orders lab](databricks_guide/chapters/28-worked-orders-lab.md)
+- [Verification and execution limits](databricks_guide/VERIFICATION.md)
+
+Branch: `databricks-practical-guide`. Azure Databricks is the main walkthrough, with AWS/GCP differences and GitHub Actions/Azure DevOps/Jenkins/GitLab alternatives. The active CI performs local validation; cloud deployment templates are opt-in.
+
+## SQL trick-question catalogue
 
 50 exercises organized into 25 patterns, with fresh datasets, expected outputs, and runnable solutions.
 

@@ -1,0 +1,9 @@
+{
+  "job_parameters": {
+    "catalog": "de_lab_dev",
+    "run_date": "2026-10-12",
+    "min_current_rows": "2",
+    "validate_fixture": "true"
+  },
+  "idempotency_token": "orders-lab-2026-10-12-revision-1"
+}

@@ -1,0 +1,26 @@
+# Standalone bundle snippet demonstrating loop parameter syntax.
+bundle:
+  name: loop_example
+variables:
+  workspace_host:
+    description: Target host
+workspace:
+  host: ${var.workspace_host}
+resources:
+  jobs:
+    loop_example:
+      name: loop_example
+      parameters:
+        - name: entities
+          default: '["orders","customers"]'
+      tasks:
+        - task_key: each_entity
+          for_each_task:
+            inputs: '{{job.parameters.entities}}'
+            concurrency: 2
+            task:
+              task_key: process_entity
+              notebook_task:
+                notebook_path: ../notebooks/parameter_demo.py
+                base_parameters:
+                  entity: '{{input}}'

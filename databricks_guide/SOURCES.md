@@ -1,0 +1,86 @@
+# Official source register
+
+Checked during authoring on 2026-10-13. UI wording is documentation-based and may vary by cloud, feature rollout, permissions, and workspace configuration. No live workspace buttons were clicked. Product names reflect current documentation; older URLs may redirect.
+
+- [Billing](https://docs.databricks.com/aws/en/admin/system-tables/billing) — chapters 26
+- [Jobs](https://docs.databricks.com/aws/en/admin/system-tables/jobs) — chapters 26
+- [Create Catalog](https://docs.databricks.com/aws/en/catalogs/create-catalog) — chapters 4, 23, 33
+- [Configure](https://docs.databricks.com/aws/en/compute/configure) — chapters 2, 23
+- [Single User Fgac](https://docs.databricks.com/aws/en/compute/single-user-fgac) — chapters 2, 19
+- [Standard Overview](https://docs.databricks.com/aws/en/compute/standard-overview) — chapters 2
+- [](https://docs.databricks.com/aws/en/connect/) — chapters 12
+- [Jdbc Connection](https://docs.databricks.com/aws/en/connect/jdbc-connection) — chapters 10
+- [Kafka](https://docs.databricks.com/aws/en/connect/streaming/kafka) — chapters 13
+- [Authentication](https://docs.databricks.com/aws/en/connect/streaming/kafka/authentication) — chapters 13
+- [Cloud Storage](https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage) — chapters 30
+- [AWS S3 storage setup](https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage/s3/s3-external-location-manual) — chapters 30
+- [Abac](https://docs.databricks.com/aws/en/data-governance/unity-catalog/abac) — chapters 19
+- [Manually Apply](https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks/manually-apply) — chapters 19
+- [Manage Privileges](https://docs.databricks.com/aws/en/data-governance/unity-catalog/manage-privileges) — chapters 4, 19, 23
+- [Data Sharing](https://docs.databricks.com/aws/en/data-sharing) — chapters 30, 33
+- [Merge](https://docs.databricks.com/aws/en/delta/merge) — chapters 15, 27, 28
+- [Oauth M2M](https://docs.databricks.com/aws/en/dev-tools/auth/oauth-m2m) — chapters 18, 22
+- [Provider Github](https://docs.databricks.com/aws/en/dev-tools/auth/provider-github) — chapters 21
+- [Service Principals](https://docs.databricks.com/aws/en/dev-tools/auth/service-principals) — chapters 18
+- [Ci Cd](https://docs.databricks.com/aws/en/dev-tools/bundles/ci-cd) — chapters 1, 21
+- [Deployment Modes](https://docs.databricks.com/aws/en/dev-tools/bundles/deployment-modes) — chapters 20
+- [Examples](https://docs.databricks.com/aws/en/dev-tools/bundles/examples) — chapters 20, 24, 28
+- [Run As](https://docs.databricks.com/aws/en/dev-tools/bundles/run-as) — chapters 18, 20
+- [Variables](https://docs.databricks.com/aws/en/dev-tools/bundles/variables) — chapters 5, 20
+- [Ci Cd](https://docs.databricks.com/aws/en/dev-tools/ci-cd) — chapters 17, 22, 24
+- [Azure Devops](https://docs.databricks.com/aws/en/dev-tools/ci-cd/azure-devops) — chapters 22
+- [Github](https://docs.databricks.com/aws/en/dev-tools/ci-cd/github) — chapters 21
+- [Testing](https://docs.databricks.com/aws/en/dev-tools/databricks-connect/python/testing) — chapters 24, 25
+- [Databricks Utils](https://docs.databricks.com/aws/en/dev-tools/databricks-utils) — chapters 6, 12, 29
+- [Terraform](https://docs.databricks.com/aws/en/dev-tools/terraform) — chapters 23
+- [Production](https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/production) — chapters 9, 28
+- [Schema](https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/schema) — chapters 9, 32, 34
+- [Copy Into](https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/copy-into) — chapters 8
+- [Configure Data Access](https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/copy-into/configure-data-access) — chapters 8
+- [Lakeflow Connect](https://docs.databricks.com/aws/en/ingestion/lakeflow-connect) — chapters 12
+- [Sql Server Overview](https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/sql-server-overview) — chapters 11
+- [Sql Server Pipeline](https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/sql-server-pipeline) — chapters 11
+- [VARIANT ingestion](https://docs.databricks.com/aws/en/ingestion/variant) — chapters 32
+- [Jobs](https://docs.databricks.com/aws/en/jobs) — chapters 1, 22, 26
+- [Configure Task](https://docs.databricks.com/aws/en/jobs/configure-task) — chapters 7, 34
+- [Dynamic Value References](https://docs.databricks.com/aws/en/jobs/dynamic-value-references) — chapters 7, 34
+- [Job Parameters](https://docs.databricks.com/aws/en/jobs/job-parameters) — chapters 5
+- [Jobs Quickstart](https://docs.databricks.com/aws/en/jobs/jobs-quickstart) — chapters 7, 25, 28
+- [Notebook](https://docs.databricks.com/aws/en/jobs/notebook) — chapters 6
+- [Task Parameters](https://docs.databricks.com/aws/en/jobs/task-parameters) — chapters 5, 17
+- [Task Values](https://docs.databricks.com/aws/en/jobs/task-values) — chapters 7
+- [Cdc](https://docs.databricks.com/aws/en/ldp/cdc) — chapters 15
+- [Configure Pipeline](https://docs.databricks.com/aws/en/ldp/configure-pipeline) — chapters 14
+- [Ldp Python Ref Apply Changes](https://docs.databricks.com/aws/en/ldp/developer/ldp-python-ref-apply-changes) — chapters 15
+- [Python Ref](https://docs.databricks.com/aws/en/ldp/developer/python-ref) — chapters 1, 14
+- [Expectations](https://docs.databricks.com/aws/en/ldp/expectations) — chapters 14, 25, 26
+- [Parameters](https://docs.databricks.com/aws/en/ldp/parameters) — chapters 5, 14
+- [Widgets](https://docs.databricks.com/aws/en/notebooks/widgets) — chapters 6
+- [Create Share](https://docs.databricks.com/aws/en/opensharing/create-share) — chapters 33
+- [Query Federation](https://docs.databricks.com/aws/en/query-federation) — chapters 10, 17, 30
+- [Postgresql](https://docs.databricks.com/aws/en/query-federation/postgresql) — chapters 33
+- [Git Operations With Repos](https://docs.databricks.com/aws/en/repos/git-operations-with-repos) — chapters 24
+- [Secrets](https://docs.databricks.com/aws/en/security/secrets) — chapters 18
+- [Api Options](https://docs.databricks.com/aws/en/spark/api-options) — chapters 9, 32
+- [Create Sql Warehouse](https://docs.databricks.com/aws/en/sql/admin/create-sql-warehouse) — chapters 2, 17
+- [Delta Vacuum](https://docs.databricks.com/aws/en/sql/language-manual/delta-vacuum) — chapters 27
+- [Delta Lake](https://docs.databricks.com/aws/en/structured-streaming/delta-lake) — chapters 16, 27, 31
+- [Foreach](https://docs.databricks.com/aws/en/structured-streaming/foreach) — chapters 16, 31
+- [Clustering](https://docs.databricks.com/aws/en/tables/clustering) — chapters 27
+- [Change Data Feed](https://docs.databricks.com/aws/en/tables/features/change-data-feed) — chapters 30, 31, 34
+- [Utility Commands](https://docs.databricks.com/aws/en/volumes/utility-commands) — chapters 4, 8
+- [External Locations Gcs](https://docs.databricks.com/gcp/en/connect/unity-catalog/cloud-storage/external-locations-gcs) — chapters 30
+- [Azure service credential authentication](https://learn.microsoft.com/azure/databricks/connect/streaming/kafka/authentication) — chapters 13
+- [ADF Notebook activity](https://learn.microsoft.com/en-in/azure/data-factory/transform-data-databricks-notebook) — chapters 29
+- [ADF transformation template](https://learn.microsoft.com/en-us/azure/data-factory/solution-template-databricks-notebook) — chapters 29
+- [Azure ADLS connection procedure](https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/cloud-storage/external-locations) — chapters 3
+- [Storage model and access](https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/storage-credentials) — chapters 3
+- [Event Hubs pipeline source](https://learn.microsoft.com/en-us/azure/databricks/ldp/event-hubs) — chapters 13
+- [Volume path rules](https://learn.microsoft.com/en-us/azure/databricks/volumes/paths) — chapters 4
+- [Spark complex-type functions](https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/functions.html) — chapters 32
+- [Spark JDBC options](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html) — chapters 10
+- [Spark Structured Streaming guide](https://spark.apache.org/docs/latest/streaming/apis-on-dataframes-and-datasets.html) — chapters 16
+
+- [Run jobs on a schedule](https://docs.databricks.com/aws/en/jobs/scheduled) — chapter 7
+- [File arrival trigger fields](https://docs.databricks.com/aws/en/jobs/file-arrival-triggers) — chapter 7
+- [Trigger configuration and compatibility](https://docs.databricks.com/aws/en/jobs/triggers) — chapter 7

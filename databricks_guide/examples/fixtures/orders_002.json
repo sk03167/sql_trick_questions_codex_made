@@ -1,0 +1,2 @@
+{"event_id": "E8", "order_id": "O100", "sequence": "3", "op": "U", "event_time": "2026-10-12T05:00:00Z", "amount": "130.00", "region": "IN"}
+{"event_id": "E9", "order_id": "O300", "sequence": "2", "op": "D", "event_time": "2026-10-12T05:00:00Z", "amount": null, "region": null}

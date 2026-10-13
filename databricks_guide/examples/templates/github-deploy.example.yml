@@ -1,0 +1,34 @@
+# OPT-IN template: copy into .github/workflows only after configuring identity,
+# environments and a managed runner with a reviewed pinned Databricks CLI.
+name: Example Databricks dev deployment
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: databricks-dev-deployment
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: [self-hosted, databricks-cli]
+    environment: databricks-dev
+    env:
+      DATABRICKS_AUTH_TYPE: github-oidc
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ vars.DATABRICKS_CLIENT_ID }}
+      BUNDLE_VAR_workspace_host: ${{ vars.DATABRICKS_HOST }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - run: python3 -m unittest discover -s databricks_guide/examples/tests -v
+      - run: databricks version
+      - run: databricks current-user me
+      - run: databricks bundle validate -t dev
+        working-directory: databricks_guide/examples
+      - run: databricks bundle deploy -t dev
+        working-directory: databricks_guide/examples
+      - run: databricks bundle run orders_daily -t dev --params 'catalog=de_lab_dev,run_date=2026-10-12,min_current_rows=2,validate_fixture=true'
+        working-directory: databricks_guide/examples
+# Integration prerequisites: UC namespace/grants, fixture uploaded, clean lab
+# target/checkpoint. For prod use a separate protected environment, prod host,
+# target=prod, BUNDLE_VAR_run_as_sp and prod fixture/reconciliation strategy.

@@ -1,0 +1,39 @@
+resources:
+  jobs:
+    orders_daily:
+      name: orders_daily
+      max_concurrent_runs: 1
+      timeout_seconds: 3600
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: run_date
+          default: '2026-10-12'
+        - name: min_current_rows
+          default: '2'
+        - name: validate_fixture
+          default: 'true'
+      tasks:
+        - task_key: ingest
+          max_retries: 2
+          min_retry_interval_millis: 30000
+          notebook_task:
+            notebook_path: ../notebooks/ingest_orders.py
+            base_parameters:
+              job_run_id: '{{job.run_id}}'
+        - task_key: merge_current
+          depends_on:
+            - task_key: ingest
+          max_retries: 1
+          notebook_task:
+            notebook_path: ../notebooks/merge_current.py
+        - task_key: publish_gold
+          depends_on:
+            - task_key: merge_current
+          notebook_task:
+            notebook_path: ../notebooks/publish_gold.py
+        - task_key: assert_quality
+          depends_on:
+            - task_key: publish_gold
+          notebook_task:
+            notebook_path: ../notebooks/assert_quality.py

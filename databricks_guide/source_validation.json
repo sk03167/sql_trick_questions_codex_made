@@ -1,0 +1,491 @@
+{
+  "checked_on": "2026-10-13",
+  "results": [
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs",
+      "final_url": "https://docs.databricks.com/aws/en/jobs",
+      "status": 200,
+      "title": "Lakeflow Jobs | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ldp/developer/python-ref",
+      "final_url": "https://docs.databricks.com/aws/en/ldp/developer/python-ref",
+      "status": 200,
+      "title": "Lakeflow pipelines Python language reference | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/bundles/ci-cd",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/ci-cd",
+      "status": 200,
+      "title": "CI/CD on Databricks | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/compute/configure",
+      "final_url": "https://docs.databricks.com/aws/en/compute/configure",
+      "status": 200,
+      "title": "Compute configuration reference | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/compute/standard-overview",
+      "final_url": "https://docs.databricks.com/aws/en/compute/standard-overview",
+      "status": 200,
+      "title": "Standard compute overview | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/compute/single-user-fgac",
+      "final_url": "https://docs.databricks.com/aws/en/compute/single-user-fgac",
+      "status": 200,
+      "title": "Fine-grained access control on dedicated compute | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/sql/admin/create-sql-warehouse",
+      "final_url": "https://docs.databricks.com/aws/en/compute/sql-warehouse/create",
+      "status": 200,
+      "title": "Create a SQL warehouse | Databricks on AWS"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/cloud-storage/external-locations",
+      "final_url": "https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/cloud-storage/external-locations-adls#external-location",
+      "status": 200,
+      "title": "Connect to an Azure Data Lake Storage Gen2 (ADLS Gen2) external location - Azure Databricks | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/storage-credentials",
+      "final_url": "https://learn.microsoft.com/en-us/azure/databricks/connect/unity-catalog/cloud-storage/",
+      "status": 200,
+      "title": "Connect to cloud object storage using Unity Catalog - Azure Databricks | Microsoft Learn"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/catalogs/create-catalog",
+      "final_url": "https://docs.databricks.com/aws/en/catalogs/create-catalog",
+      "status": 200,
+      "title": "Create catalogs | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/volumes/utility-commands",
+      "final_url": "https://docs.databricks.com/aws/en/volumes/utility-commands",
+      "status": 200,
+      "title": "Create and manage Unity Catalog volumes | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/manage-privileges",
+      "final_url": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/manage-privileges",
+      "status": 200,
+      "title": "Manage privileges in Unity Catalog | Databricks on AWS"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/databricks/volumes/paths",
+      "final_url": "https://learn.microsoft.com/en-us/azure/databricks/volumes/paths",
+      "status": 200,
+      "title": "Path rules and access in Unity Catalog volumes - Azure Databricks | Microsoft Learn"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/bundles/variables",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/bundles/variables",
+      "status": 200,
+      "title": "Substitutions and variables in Declarative Automation Bundles | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/job-parameters",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/job-parameters",
+      "status": 200,
+      "title": "Configure job parameters | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/task-parameters",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/task-parameters",
+      "status": 200,
+      "title": "Configure task parameters | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ldp/parameters",
+      "final_url": "https://docs.databricks.com/aws/en/ldp/parameters",
+      "status": 200,
+      "title": "Use parameters with pipelines | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/notebooks/widgets",
+      "final_url": "https://docs.databricks.com/aws/en/notebooks/widgets",
+      "status": 200,
+      "title": "Databricks widgets | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/databricks-utils",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/databricks-utils",
+      "status": 200,
+      "title": "Databricks Utilities (dbutils) reference | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/notebook",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/tasks/notebook",
+      "status": 200,
+      "title": "Notebook task for jobs | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/jobs-quickstart",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/jobs-quickstart",
+      "status": 200,
+      "title": "Create your first workflow with Lakeflow Jobs | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/configure-task",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/configure-task",
+      "status": 200,
+      "title": "Configure and edit tasks in Lakeflow Jobs | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/dynamic-value-references",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/dynamic-value-references",
+      "status": 200,
+      "title": "Dynamic value references | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/task-values",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/task-values",
+      "status": 200,
+      "title": "Use task values to pass information between tasks | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/copy-into",
+      "final_url": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/copy-into",
+      "status": 200,
+      "title": "Get started using COPY INTO to load data | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/copy-into/configure-data-access",
+      "final_url": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/copy-into/configure-data-access",
+      "status": 200,
+      "title": "Configure data access for ingestion | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/schema",
+      "final_url": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/schema",
+      "status": 200,
+      "title": "Configure schema inference and evolution in Auto Loader | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/spark/api-options",
+      "final_url": "https://docs.databricks.com/aws/en/spark/api-options",
+      "status": 200,
+      "title": "Spark API options reference | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/production",
+      "final_url": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/production",
+      "status": 200,
+      "title": "Configure Auto Loader for production workloads | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/connect/jdbc-connection",
+      "final_url": "https://docs.databricks.com/aws/en/connect/jdbc-connection",
+      "status": 200,
+      "title": "JDBC connection | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/query-federation",
+      "final_url": "https://docs.databricks.com/aws/en/query-federation",
+      "status": 200,
+      "title": "Connect to external databases and catalogs | Databricks on AWS"
+    },
+    {
+      "url": "https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html",
+      "final_url": "https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html",
+      "status": 200,
+      "title": "JDBC To Other Databases - Spark 4.2.0 Documentation"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/sql-server-overview",
+      "final_url": "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/sql-server-overview",
+      "status": 200,
+      "title": "Microsoft SQL Server ingestion connector | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/sql-server-pipeline",
+      "final_url": "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/sql-server-pipeline",
+      "status": 200,
+      "title": "Ingest data from SQL Server | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/connect/",
+      "final_url": "https://docs.databricks.com/aws/en/connect/",
+      "status": 200,
+      "title": "Connect to data sources and external services | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect",
+      "final_url": "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect",
+      "status": 200,
+      "title": "Lakeflow Connect connector concepts | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/connect/streaming/kafka",
+      "final_url": "https://docs.databricks.com/aws/en/connect/streaming/kafka",
+      "status": 200,
+      "title": "Connect to Apache Kafka | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/connect/streaming/kafka/authentication",
+      "final_url": "https://docs.databricks.com/aws/en/connect/streaming/kafka/authentication",
+      "status": 200,
+      "title": "Authentication | Databricks on AWS"
+    },
+    {
+      "url": "https://learn.microsoft.com/azure/databricks/connect/streaming/kafka/authentication",
+      "final_url": "https://learn.microsoft.com/en-us/azure/databricks/connect/streaming/kafka/authentication",
+      "status": 200,
+      "title": "Authentication - Azure Databricks | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/databricks/ldp/event-hubs",
+      "final_url": "https://learn.microsoft.com/en-us/azure/databricks/ldp/event-hubs",
+      "status": 200,
+      "title": "Use Azure Event Hubs as a pipeline data source - Azure Databricks | Microsoft Learn"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ldp/configure-pipeline",
+      "final_url": "https://docs.databricks.com/aws/en/ldp/configure-pipeline",
+      "status": 200,
+      "title": "Configure pipelines | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ldp/expectations",
+      "final_url": "https://docs.databricks.com/aws/en/ldp/expectations",
+      "status": 200,
+      "title": "Manage data quality with pipeline expectations | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/delta/merge",
+      "final_url": "https://docs.databricks.com/aws/en/delta/merge",
+      "status": 200,
+      "title": "Upsert into a Delta Lake table using merge | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ldp/developer/ldp-python-ref-apply-changes",
+      "final_url": "https://docs.databricks.com/aws/en/ldp/developer/ldp-python-ref-apply-changes",
+      "status": 200,
+      "title": "create_auto_cdc_flow | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ldp/cdc",
+      "final_url": "https://docs.databricks.com/aws/en/ldp/cdc",
+      "status": 200,
+      "title": "The AUTO CDC APIs: Simplify change data capture with pipelines | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/structured-streaming/foreach",
+      "final_url": "https://docs.databricks.com/aws/en/structured-streaming/foreach",
+      "status": 200,
+      "title": "Use foreachBatch to write to arbitrary data sinks | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/structured-streaming/delta-lake",
+      "final_url": "https://docs.databricks.com/aws/en/structured-streaming/delta-lake",
+      "status": 200,
+      "title": "Delta Lake table streaming reads and writes | Databricks on AWS"
+    },
+    {
+      "url": "https://spark.apache.org/docs/latest/streaming/apis-on-dataframes-and-datasets.html",
+      "final_url": "https://spark.apache.org/docs/latest/streaming/apis-on-dataframes-and-datasets.html",
+      "status": 200,
+      "title": "Structured Streaming Programming Guide - Spark 4.2.0 Documentation"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/ci-cd",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/ci-cd",
+      "status": 200,
+      "title": "CI/CD on Databricks | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/auth/service-principals",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/auth/service-principals",
+      "status": 200,
+      "title": "Service principals for CI/CD | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/auth/oauth-m2m",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/auth/oauth-m2m",
+      "status": 200,
+      "title": "Authorize service principal access to Databricks with OAuth | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/bundles/run-as",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/bundles/run-as",
+      "status": 200,
+      "title": "Specify a run identity for a Declarative Automation Bundles workflow | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/security/secrets",
+      "final_url": "https://docs.databricks.com/aws/en/security/secrets",
+      "status": 200,
+      "title": "Secret management | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks/manually-apply",
+      "final_url": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks/manually-apply",
+      "status": 200,
+      "title": "Manually apply row filters and column masks | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/abac",
+      "final_url": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/abac",
+      "status": 200,
+      "title": "Attribute-based access control in Unity Catalog | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/bundles/deployment-modes",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/bundles/deployment-modes",
+      "status": 200,
+      "title": "Declarative Automation Bundles deployment modes | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/bundles/examples",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/bundles/examples",
+      "status": 200,
+      "title": "Bundle configuration examples | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/auth/provider-github",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/auth/provider-github",
+      "status": 200,
+      "title": "Enable workload identity federation for GitHub Actions | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/ci-cd/github",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/ci-cd/github",
+      "status": 200,
+      "title": "GitHub Actions | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/ci-cd/azure-devops",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/ci-cd/azure-devops",
+      "status": 200,
+      "title": "Continuous integration and delivery on Databricks using Azure DevOps | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/terraform",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/terraform",
+      "status": 200,
+      "title": "Databricks Terraform provider | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/repos/git-operations-with-repos",
+      "final_url": "https://docs.databricks.com/aws/en/repos/git-operations-with-repos",
+      "status": 200,
+      "title": "Create and manage Git folders | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/dev-tools/databricks-connect/python/testing",
+      "final_url": "https://docs.databricks.com/aws/en/dev-tools/databricks-connect/python/testing",
+      "status": 200,
+      "title": "Testing for Databricks Connect for Python | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/admin/system-tables/jobs",
+      "final_url": "https://docs.databricks.com/aws/en/admin/system-tables/jobs",
+      "status": 200,
+      "title": "Jobs system table reference | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/admin/system-tables/billing",
+      "final_url": "https://docs.databricks.com/aws/en/admin/system-tables/billing",
+      "status": 200,
+      "title": "Billable usage system table reference | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/tables/clustering",
+      "final_url": "https://docs.databricks.com/aws/en/tables/clustering",
+      "status": 200,
+      "title": "Use liquid clustering for tables | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/sql/language-manual/delta-vacuum",
+      "final_url": "https://docs.databricks.com/aws/en/sql/language-manual/delta-vacuum",
+      "status": 200,
+      "title": "VACUUM | Databricks on AWS"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-in/azure/data-factory/transform-data-databricks-notebook",
+      "final_url": "https://learn.microsoft.com/en-in/azure/data-factory/transform-data-databricks-notebook",
+      "status": 200,
+      "title": "Transform data with Databricks Notebook - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/solution-template-databricks-notebook",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/solution-template-databricks-notebook",
+      "status": 200,
+      "title": "Transformation with Azure Databricks - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/data-sharing",
+      "final_url": "https://docs.databricks.com/aws/en/data-sharing",
+      "status": 200,
+      "title": "Share data and AI assets securely | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/tables/features/change-data-feed",
+      "final_url": "https://docs.databricks.com/aws/en/tables/features/change-data-feed",
+      "status": 200,
+      "title": "Use change data feed on Databricks | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage",
+      "final_url": "https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage",
+      "status": 200,
+      "title": "Connect to cloud object storage using Unity Catalog | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/gcp/en/connect/unity-catalog/cloud-storage/external-locations-gcs",
+      "final_url": "https://docs.databricks.com/gcp/en/connect/unity-catalog/cloud-storage/external-locations-gcs",
+      "status": 200,
+      "title": "Connect to a Google Cloud Storage (GCS) external location | Databricks on Google Cloud"
+    },
+    {
+      "url": "https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/functions.html",
+      "final_url": "https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/functions.html",
+      "status": 200,
+      "title": "Functions \u2014 PySpark 4.2.0 documentation"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/query-federation/postgresql",
+      "final_url": "https://docs.databricks.com/aws/en/query-federation/postgresql",
+      "status": 200,
+      "title": "Run federated queries on PostgreSQL | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/opensharing/create-share",
+      "final_url": "https://docs.databricks.com/aws/en/opensharing/create-share",
+      "status": 200,
+      "title": "Create shares for OpenSharing | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage/s3/s3-external-location-manual",
+      "final_url": "https://docs.databricks.com/aws/en/connect/unity-catalog/cloud-storage/s3/s3-external-location-manual",
+      "status": 200,
+      "title": "Create a storage credential and external location for S3 using Catalog Explorer or SQL | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/ingestion/variant",
+      "final_url": "https://docs.databricks.com/aws/en/ingestion/variant",
+      "status": 200,
+      "title": "Ingest data as semi-structured variant type | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/scheduled",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/scheduled",
+      "status": 200,
+      "title": "Run jobs on a schedule | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/file-arrival-triggers",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/file-arrival-triggers",
+      "status": 200,
+      "title": "Trigger jobs when new files arrive | Databricks on AWS"
+    },
+    {
+      "url": "https://docs.databricks.com/aws/en/jobs/triggers",
+      "final_url": "https://docs.databricks.com/aws/en/jobs/triggers",
+      "status": 200,
+      "title": "Automate jobs with schedules and triggers | Databricks on AWS"
+    }
+  ]
+}

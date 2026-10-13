@@ -2,3 +2,11 @@ __pycache__/
 *.pyc
 *.db
 .DS_Store
+
+# Databricks guide local tools and deployment state
+node_modules/
+.databricks/
+.terraform/
+*.tfstate
+*.tfstate.*
+.venv/

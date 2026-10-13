@@ -1,0 +1,29 @@
+bundle:
+  name: orders_lab
+include:
+  - resources/*.yml
+variables:
+  workspace_host:
+    description: Actual target workspace URL; supply BUNDLE_VAR_workspace_host
+  catalog:
+    default: de_lab_dev
+  run_as_sp:
+    description: Production execution service principal application ID
+    default: unused-in-dev
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: ${var.workspace_host}
+    variables:
+      catalog: de_lab_dev
+  prod:
+    mode: production
+    workspace:
+      host: ${var.workspace_host}
+      root_path: /Workspace/Shared/.bundle/orders_lab/prod
+    variables:
+      catalog: de_lab_prod
+    run_as:
+      service_principal_name: ${var.run_as_sp}
