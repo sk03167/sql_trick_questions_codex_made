@@ -1,6 +1,6 @@
 """Repository-local completeness, link, fixture, code-syntax, and diagram checks."""
 from pathlib import Path
-import ast,json,re,hashlib
+import ast,json,re,hashlib,os
 from urllib.parse import unquote
 BASE=Path(__file__).resolve().parents[1]
 ROOT=BASE.parent
@@ -11,7 +11,14 @@ for entry in catalog['chapters']+catalog['scenarios']:
     for heading in ['Data design','Governance','Tests']:
         assert heading.lower() in text.lower(),(p,heading)
     assert 'code push' in text.lower() or 'ci/cd' in text.lower(),(p,'Code automation section missing')
-markdown=list(BASE.rglob('*.md'))+[ROOT/'DATABRICKS_GUIDE_INDEX.md']
+def owned_files():
+    excluded={'node_modules','.terraform','.databricks','__pycache__','.venv','.git'}
+    for directory,subdirs,names in os.walk(BASE):
+        subdirs[:]=[d for d in subdirs if d not in excluded]
+        for name in names:
+            yield Path(directory)/name
+files=list(owned_files())
+markdown=[p for p in files if p.suffix=='.md']+[ROOT/'DATABRICKS_GUIDE_INDEX.md']
 links=0
 actual=[]
 for p in markdown:
@@ -26,7 +33,7 @@ for p in markdown:
             links+=1
     for i,source in enumerate(re.findall(r'```mermaid\n(.*?)```',text,re.S),1):
         actual.append((p.stem+f'-{i}',source.strip()))
-for p in BASE.rglob('*.py'):
+for p in (p for p in files if p.suffix=='.py'):
     ast.parse(p.read_text(),filename=str(p))
 for p in (BASE/'examples/fixtures').glob('orders_*.json'):
     for line in p.read_text().splitlines():assert isinstance(json.loads(line),dict),p
