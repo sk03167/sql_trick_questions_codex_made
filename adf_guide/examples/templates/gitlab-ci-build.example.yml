@@ -1,0 +1,14 @@
+# Build-only example, approved tagged Node22/Python runner.
+stages: [validate]
+adf-build:
+  stage: validate
+  tags: [adf-build]
+  script:
+    - python3 -m unittest discover -s adf_guide/examples/tests -v
+    - cd adf_guide/tools
+    - npm ci --ignore-scripts --no-audit --no-fund
+    - npm run build -- export ../examples/factory "$ADF_DEV_FACTORY_ID" arm-output
+  artifacts:
+    paths: [adf_guide/tools/arm-output/]
+# Add protected serialized test/prod release jobs with the corresponding Azure
+# identity adapter; GitHub-specific OIDC configuration isn't interchangeable.

@@ -1,0 +1,497 @@
+{
+  "checked_on": "2026-10-13",
+  "results": [
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/introduction",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/introduction",
+      "status": 200,
+      "title": "Introduction to Azure Data Factory - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-pipelines-activities",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-pipelines-activities",
+      "status": 200,
+      "title": "Pipelines and Activities - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime",
+      "status": 200,
+      "title": "Integration runtime - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-change-data-capture",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-change-data-capture",
+      "status": 200,
+      "title": "Change data capture - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/quickstart-create-data-factory-portal",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/quickstart-create-data-factory",
+      "status": 200,
+      "title": "Create an Azure Data Factory - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/iterative-development-debugging",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/iterative-development-debugging",
+      "status": 200,
+      "title": "Iterative development and debugging - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/source-control",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/source-control",
+      "status": 200,
+      "title": "Source control - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery",
+      "status": 200,
+      "title": "Continuous integration and delivery - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/create-self-hosted-integration-runtime",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/create-self-hosted-integration-runtime",
+      "status": 200,
+      "title": "Create a self-hosted integration runtime - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/managed-virtual-network-private-endpoint",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/managed-virtual-network-private-endpoint",
+      "status": 200,
+      "title": "Managed virtual network and managed private endpoints - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/create-azure-ssis-integration-runtime",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/create-azure-ssis-integration-runtime",
+      "status": 200,
+      "title": "Create an Azure-SSIS integration runtime in Azure Data Factory - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-data-lake-storage",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-data-lake-storage",
+      "status": 200,
+      "title": "Copy and transform data in Azure Data Lake Storage Gen2 - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-sql-database",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-sql-database",
+      "status": 200,
+      "title": "Copy and transform data in Azure SQL Database - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/store-credentials-in-key-vault",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/store-credentials-in-key-vault",
+      "status": 200,
+      "title": "Store credentials in Azure Key Vault - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/parameterize-linked-services",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/parameterize-linked-services",
+      "status": 200,
+      "title": "Parameterize linked services - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-datasets-linked-services",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-datasets-linked-services",
+      "status": 200,
+      "title": "Datasets - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/format-binary",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/format-binary",
+      "status": 200,
+      "title": "Binary format - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/format-delimited-text",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/format-delimited-text",
+      "status": 200,
+      "title": "Delimited text format in Azure Data Factory - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/format-json",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/format-json",
+      "status": 200,
+      "title": "JSON format - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-expression-language-functions",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-expression-language-functions",
+      "status": 200,
+      "title": "How to use parameters and expressions in Azure Data Factory - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-expression-language-functions",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-expression-language-functions",
+      "status": 200,
+      "title": "Expression and functions - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/parameters-data-flow",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/parameters-data-flow",
+      "status": 200,
+      "title": "Parameterizing mapping data flows - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-system-variables",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-system-variables",
+      "status": 200,
+      "title": "System variables - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-set-variable-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-set-variable-activity",
+      "status": 200,
+      "title": "Set Variable Activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-append-variable-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-append-variable-activity",
+      "status": 200,
+      "title": "Append Variable Activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-for-each-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-for-each-activity",
+      "status": 200,
+      "title": "ForEach activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-execute-pipeline-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-execute-pipeline-activity",
+      "status": 200,
+      "title": "Execute Pipeline Activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-overview",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-overview",
+      "status": 200,
+      "title": "Copy activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-data-consistency",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-data-consistency",
+      "status": 200,
+      "title": "Data consistency verification in copy activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-sql-server",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-sql-server",
+      "status": 200,
+      "title": "Copy and transform data to and from SQL Server - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-oracle",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-oracle",
+      "status": 200,
+      "title": "Copy data to and from Oracle - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-performance",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-performance",
+      "status": 200,
+      "title": "Copy activity performance and scalability guide - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/tutorial-incremental-copy-portal",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/tutorial-incremental-copy-portal",
+      "status": 200,
+      "title": "Incrementally copy a table using Azure portal - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-stored-procedure",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-stored-procedure",
+      "status": 200,
+      "title": "Transform data by using the Stored Procedure activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-script",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-script",
+      "status": 200,
+      "title": "Transform data by using the Script activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-change-data-capture-resource",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-change-data-capture-resource",
+      "status": 200,
+      "title": "Capture changed data by using a change data capture resource - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-alter-row",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-alter-row",
+      "status": 200,
+      "title": "Alter row transformation in mapping data flow - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-sink",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-sink",
+      "status": 200,
+      "title": "Sink transformation in mapping data flow - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-rest",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-rest",
+      "status": 200,
+      "title": "Copy and transform data from and to a REST endpoint - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-schema-and-type-mapping",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-schema-and-type-mapping",
+      "status": 200,
+      "title": "Schema and data type mapping in copy activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-web-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-web-activity",
+      "status": 200,
+      "title": "Web Activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-http",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-http",
+      "status": 200,
+      "title": "Copy data from an HTTP source - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-until-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-until-activity",
+      "status": 200,
+      "title": "Until activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-azure-function-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-azure-function-activity",
+      "status": 200,
+      "title": "Azure Function Activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-lookup-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-lookup-activity",
+      "status": 200,
+      "title": "Lookup activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-get-metadata-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-get-metadata-activity",
+      "status": 200,
+      "title": "Get Metadata activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-filter-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-filter-activity",
+      "status": 200,
+      "title": "Filter activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/tutorial-pipeline-return-value",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/tutorial-pipeline-return-value",
+      "status": 200,
+      "title": "Set Pipeline Return Value - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-if-condition-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-if-condition-activity",
+      "status": 200,
+      "title": "If Condition activity - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-switch-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-switch-activity",
+      "status": 200,
+      "title": "Switch activity in Azure Data Factory - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-fail-activity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-fail-activity",
+      "status": 200,
+      "title": "Execute a Fail activity in Azure Data Factory and Synapse Analytics - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/tutorial-pipeline-failure-error-handling",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/tutorial-pipeline-failure-error-handling",
+      "status": 200,
+      "title": "Pipeline failure and error message - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-schedule-trigger",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-schedule-trigger",
+      "status": 200,
+      "title": "Create schedule triggers - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-tumbling-window-trigger",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-tumbling-window-trigger",
+      "status": 200,
+      "title": "Create tumbling window triggers - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-event-trigger",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-event-trigger",
+      "status": 200,
+      "title": "Create event-based triggers - Azure Data Factory & Azure Synapse Analytics | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-overview",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-overview",
+      "status": 200,
+      "title": "Mapping data flows - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-debug-mode",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-debug-mode",
+      "status": 200,
+      "title": "Mapping data flow Debug Mode - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-derived-column",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-derived-column",
+      "status": 200,
+      "title": "Derived column transformation in mapping data flows - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-join",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-join",
+      "status": 200,
+      "title": "Join transformation in mapping data flow - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-aggregate",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-aggregate",
+      "status": 200,
+      "title": "Aggregate transformation in mapping data flow - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime-performance",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime-performance",
+      "status": 200,
+      "title": "Integration Runtime Performance - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-performance",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-performance",
+      "status": 200,
+      "title": "Mapping data flow performance and tuning guide - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/transform-data-databricks-notebook",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/transform-data-databricks-notebook",
+      "status": 200,
+      "title": "Transform data with Databricks Notebook - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/data-factory-service-identity",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/data-factory-service-identity",
+      "status": 200,
+      "title": "Managed identity - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connect-data-factory-to-azure-purview",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connect-data-factory-to-azure-purview",
+      "status": 200,
+      "title": "Connect a Data Factory to Microsoft Purview - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-data-tool-metadata-driven",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-data-tool-metadata-driven",
+      "status": 200,
+      "title": "Build large-scale data copy pipelines with metadata-driven approach in copy data tool - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-improvements",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-improvements",
+      "status": 200,
+      "title": "Automated publishing for continuous integration and delivery - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-resource-manager-custom-parameters",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-resource-manager-custom-parameters",
+      "status": 200,
+      "title": "Custom parameters in a Resource Manager template - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-automate-azure-pipelines",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-automate-azure-pipelines",
+      "status": 200,
+      "title": "Automate continuous integration - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-sample-script",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-sample-script",
+      "status": 200,
+      "title": "Continuous integration and delivery pre- and post-deployment scripts - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/quickstart-create-data-factory-resource-manager-template",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/quickstart-create-data-factory-resource-manager-template",
+      "status": 200,
+      "title": "Create an Azure Data Factory using an Azure Resource Manager template (ARM template) - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect",
+      "final_url": "https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect",
+      "status": 200,
+      "title": "Authenticate to Azure from GitHub Actions by OpenID Connect | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/monitor-visually",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/monitor-visually",
+      "status": 200,
+      "title": "Visually monitor Azure Data Factory - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/monitor-programmatically",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/monitor-programmatically",
+      "status": 200,
+      "title": "Programmatically monitor an Azure Data Factory - Azure Data Factory | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-performance-troubleshooting",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-performance-troubleshooting",
+      "status": 200,
+      "title": "Troubleshoot copy activity performance - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-cosmos-db",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-cosmos-db",
+      "status": 200,
+      "title": "Copy and transform data in Azure Cosmos DB for NoSQL - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-mongodb-atlas",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-mongodb-atlas",
+      "status": 200,
+      "title": "Copy data from or to MongoDB Atlas - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-sftp",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-sftp",
+      "status": 200,
+      "title": "Copy and transform data in SFTP server using Azure Data Factory or Azure Synapse Analytics - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-amazon-simple-storage-service",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-amazon-simple-storage-service",
+      "status": 200,
+      "title": "Copy and transform data in Amazon Simple Storage Service (S3) - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-google-cloud-storage",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/connector-google-cloud-storage",
+      "status": 200,
+      "title": "Copy data from Google Cloud Storage - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-flatten",
+      "final_url": "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-flatten",
+      "status": 200,
+      "title": "Flatten transformation in mapping data flow - Azure Data Factory & Azure Synapse | Microsoft Learn"
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/fabric/data-factory/compare-fabric-data-factory-and-azure-data-factory",
+      "final_url": "https://learn.microsoft.com/en-us/fabric/data-factory/compare-fabric-data-factory-and-azure-data-factory",
+      "status": 200,
+      "title": "Differences between Data Factory in Fabric and Azure - Microsoft Fabric | Microsoft Learn"
+    }
+  ]
+}

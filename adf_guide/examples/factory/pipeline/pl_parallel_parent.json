@@ -1,0 +1,58 @@
+{
+  "name": "pl_parallel_parent",
+  "properties": {
+    "parameters": {
+      "p_entities": {
+        "type": "Array",
+        "defaultValue": [
+          "orders",
+          "customers"
+        ]
+      },
+      "p_batch_id": {
+        "type": "String",
+        "defaultValue": "demo-001"
+      }
+    },
+    "activities": [
+      {
+        "name": "EachEntity",
+        "type": "ForEach",
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 2,
+          "items": {
+            "value": "@pipeline().parameters.p_entities",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "name": "RunChild",
+              "type": "ExecutePipeline",
+              "typeProperties": {
+                "pipeline": {
+                  "referenceName": "pl_parameter_child",
+                  "type": "PipelineReference"
+                },
+                "waitOnCompletion": true,
+                "parameters": {
+                  "p_entity": {
+                    "value": "@item()",
+                    "type": "Expression"
+                  },
+                  "p_batch_id": {
+                    "value": "@pipeline().parameters.p_batch_id",
+                    "type": "Expression"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "annotations": [
+      "Educational ADF guide; replace environment settings before use"
+    ]
+  }
+}

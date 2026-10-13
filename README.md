@@ -1,4 +1,14 @@
-# SQL Trick Question Catalog
+# Azure Data Factory practical guide
+
+A dedicated ADF v2 handbook with 34 chapters, 12 scenario walkthroughs, 58 diagrams, exact UI/field instructions, parameter/expression examples, validated factory definitions, ARM exports, CI/IaC templates and tests.
+
+- [Complete guide index](AZURE_DATA_FACTORY_GUIDE_INDEX.md)
+- [Worked parameter and file-copy lab](adf_guide/chapters/30-worked-lab.md)
+- [Verification and execution limits](adf_guide/VERIFICATION.md)
+
+Branch: `azure-data-factory-practical-guide`. The active GitHub workflow validates/exports definitions and checks local fixtures/diagrams; it deploys no Azure resources.
+
+## SQL trick-question catalogue
 
 50 exercises organized into 25 patterns, with fresh datasets, expected outputs, and runnable solutions.
 

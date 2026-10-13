@@ -1,0 +1,271 @@
+{
+  "researched_on": "2026-10-13",
+  "chapters": [
+    {
+      "number": 1,
+      "path": "adf_guide/chapters/01-platform-map.md",
+      "title": "ADF platform map and the shared lab",
+      "summary": "Understand control flow, data movement, transformation compute, and environment boundaries."
+    },
+    {
+      "number": 2,
+      "path": "adf_guide/chapters/02-create-and-author.md",
+      "title": "Create the factory and navigate authoring, debug, and publish",
+      "summary": "Set up the development surface and distinguish code validation from execution."
+    },
+    {
+      "number": 3,
+      "path": "adf_guide/chapters/03-integration-runtimes.md",
+      "title": "Azure IR, self-hosted IR, Azure-SSIS IR, and execution location",
+      "summary": "Choose the execution plane that can actually reach both ends of the activity."
+    },
+    {
+      "number": 4,
+      "path": "adf_guide/chapters/04-linked-services-identity.md",
+      "title": "Linked services, managed identities, SQL credentials, and Key Vault",
+      "summary": "Define connections without making runtime input a secret distribution channel."
+    },
+    {
+      "number": 5,
+      "path": "adf_guide/chapters/05-datasets-and-paths.md",
+      "title": "Datasets, formats, locations, and parameterized paths",
+      "summary": "Describe the selected source/sink data and keep transport separate from parsing."
+    },
+    {
+      "number": 6,
+      "path": "adf_guide/chapters/06-parameter-map.md",
+      "title": "Parameter scopes and deployment versus runtime values",
+      "summary": "Know exactly where to define, pass, and read each value."
+    },
+    {
+      "number": 7,
+      "path": "adf_guide/chapters/07-expressions.md",
+      "title": "Expressions: types, interpolation, dates, escaping, and outputs",
+      "summary": "Use ADF syntax deliberately instead of mixing pipeline, SQL, Data Flow, and notebook languages."
+    },
+    {
+      "number": 8,
+      "path": "adf_guide/chapters/08-variables-and-concurrency.md",
+      "title": "Variables, counters, arrays, and parallel-loop races",
+      "summary": "Keep iteration-local state inside isolated child pipeline runs."
+    },
+    {
+      "number": 9,
+      "path": "adf_guide/chapters/09-file-copy.md",
+      "title": "File ingestion: Binary/CSV, hierarchy, wildcards, and completion",
+      "summary": "Move a complete immutable delivery into a stable batch destination."
+    },
+    {
+      "number": 10,
+      "path": "adf_guide/chapters/10-database-copy.md",
+      "title": "SQL/Oracle/on-prem database ingestion and source load",
+      "summary": "Configure query/table reads, runtime routing, and a reproducible extraction boundary."
+    },
+    {
+      "number": 11,
+      "path": "adf_guide/chapters/11-watermarks.md",
+      "title": "Incremental watermarks, committed boundaries, and transactional advancement",
+      "summary": "Capture a stable interval and move its boundary only after target acceptance."
+    },
+    {
+      "number": 12,
+      "path": "adf_guide/chapters/12-cdc-deletes.md",
+      "title": "CDC, hard deletes, soft deletes, and snapshot comparison",
+      "summary": "Choose a change/deletion mechanism rather than expecting Copy to infer missing rows."
+    },
+    {
+      "number": 13,
+      "path": "adf_guide/chapters/13-rest-copy.md",
+      "title": "REST Copy: linked service, dataset, pagination, and JSON mapping",
+      "summary": "Copy API rows with the connector's native request and pagination fields."
+    },
+    {
+      "number": 14,
+      "path": "adf_guide/chapters/14-web-http-functions.md",
+      "title": "Web, HTTP Copy, Azure Functions, and custom paging",
+      "summary": "Choose a control request versus bulk transfer and make polling finite."
+    },
+    {
+      "number": 15,
+      "path": "adf_guide/chapters/15-lookup-metadata-filter.md",
+      "title": "Lookup, Get Metadata, and Filter: output shapes and limits",
+      "summary": "Use bounded control metadata without treating it as a bulk-data channel."
+    },
+    {
+      "number": 16,
+      "path": "adf_guide/chapters/16-foreach-child-returns.md",
+      "title": "ForEach, Execute Pipeline, and child return values",
+      "summary": "Pass immutable per-item inputs and wait for real child outcomes."
+    },
+    {
+      "number": 17,
+      "path": "adf_guide/chapters/17-conditions-errors-until.md",
+      "title": "If, Switch, Until, retries, and error-propagation graphs",
+      "summary": "Make failure visible even when logging and cleanup succeed."
+    },
+    {
+      "number": 18,
+      "path": "adf_guide/chapters/18-triggers-windows-events.md",
+      "title": "Schedule, tumbling windows, storage events, and batch identity",
+      "summary": "Use a trigger whose state and retry model match the source delivery contract."
+    },
+    {
+      "number": 19,
+      "path": "adf_guide/chapters/19-mapping-data-flows.md",
+      "title": "Mapping Data Flow transformations: schema, joins, aggregate, and sink",
+      "summary": "Build a managed Spark graph and retain the business grain through transformations."
+    },
+    {
+      "number": 20,
+      "path": "adf_guide/chapters/20-data-flow-parameters.md",
+      "title": "Data Flow parameters, expression mode, compute, and performance",
+      "summary": "Bind runtime inputs while keeping its expression language separate from pipeline syntax."
+    },
+    {
+      "number": 21,
+      "path": "adf_guide/chapters/21-external-compute.md",
+      "title": "Databricks, Synapse, SQL, functions, and streaming boundaries",
+      "summary": "Use ADF as the orchestrator while keeping compute-specific semantics explicit."
+    },
+    {
+      "number": 22,
+      "path": "adf_guide/chapters/22-loading-idempotency.md",
+      "title": "Loading, SQL upsert, deletes, partitions, and idempotent publication",
+      "summary": "Define what retrying a load changes before choosing append, overwrite, or upsert."
+    },
+    {
+      "number": 23,
+      "path": "adf_guide/chapters/23-security-network-governance.md",
+      "title": "Security, private endpoints, Purview, RBAC, and diagnostic access",
+      "summary": "Keep management permissions, data permissions, networking, and lineage distinct."
+    },
+    {
+      "number": 24,
+      "path": "adf_guide/chapters/24-metadata-framework.md",
+      "title": "Metadata-driven ingestion framework and configuration ownership",
+      "summary": "Scale reusable pipelines without giving a control table arbitrary execution power."
+    },
+    {
+      "number": 25,
+      "path": "adf_guide/chapters/25-git-publish.md",
+      "title": "Git branches, collaboration, Publish all, and exported ARM",
+      "summary": "Review source changes and understand what is actually live in a factory."
+    },
+    {
+      "number": 26,
+      "path": "adf_guide/chapters/26-azure-devops-ci.md",
+      "title": "Azure DevOps CI/CD: build artifacts, environment overrides, and trigger handling",
+      "summary": "Generate once, test the same artifact, and promote it with a controlled release."
+    },
+    {
+      "number": 27,
+      "path": "adf_guide/chapters/27-other-ci-and-infra.md",
+      "title": "GitHub Actions, Jenkins, GitLab, Bicep, and Terraform alternatives",
+      "summary": "Replace the runner without changing the ADF artifact or runtime data contract."
+    },
+    {
+      "number": 28,
+      "path": "adf_guide/chapters/28-test-strategy.md",
+      "title": "Tests: source contracts, definition validation, integration, and release gates",
+      "summary": "Check real data outcomes separately from ADF resource shape and run status."
+    },
+    {
+      "number": 29,
+      "path": "adf_guide/chapters/29-monitor-cost-performance.md",
+      "title": "Monitoring, Log Analytics, Copy bottlenecks, and cost",
+      "summary": "Diagnose the slow stage and watch freshness/completeness alongside run status."
+    },
+    {
+      "number": 30,
+      "path": "adf_guide/chapters/30-worked-lab.md",
+      "title": "Worked lab: parameter isolation, file Copy, rerun, and reconciliation",
+      "summary": "Use the validated sample factory and record exact expected results."
+    },
+    {
+      "number": 31,
+      "path": "adf_guide/chapters/31-backfill-recovery.md",
+      "title": "Backfill, recovery, region migration, and rollback",
+      "summary": "Restore boundaries, identities, triggers, and data\u2014not only the pipeline JSON."
+    },
+    {
+      "number": 32,
+      "path": "adf_guide/chapters/32-nosql-sftp-crosscloud.md",
+      "title": "NoSQL, SFTP, nested documents, and cross-cloud source substitutions",
+      "summary": "Check each connector's operation/schema contract instead of replacing only a hostname."
+    },
+    {
+      "number": 33,
+      "path": "adf_guide/chapters/33-troubleshooting.md",
+      "title": "Troubleshooting by symptom, parameter, runtime, and graph",
+      "summary": "Find the failing layer before resetting state or broadening permissions."
+    },
+    {
+      "number": 34,
+      "path": "adf_guide/chapters/34-fabric-synapse-scope.md",
+      "title": "ADF versus Synapse pipelines and Fabric Data Factory",
+      "summary": "Use the requested ADF service and plan migrations by capability, not product-name substitution."
+    }
+  ],
+  "scenarios": [
+    {
+      "path": "adf_guide/scenarios/01-on-prem-migration.md",
+      "title": "On-prem warehouse migration to Azure",
+      "summary": "Use SHIR, snapshots, CDC, parallel validation and controlled cutover."
+    },
+    {
+      "path": "adf_guide/scenarios/02-daily-files-deadline.md",
+      "title": "Daily files: 100 million orders by 6 a.m.",
+      "summary": "Use a completion contract, bounded Copy and measured processing capacity."
+    },
+    {
+      "path": "adf_guide/scenarios/03-database-cdc.md",
+      "title": "Incremental database CDC with hard deletes",
+      "summary": "Choose native CDC or a complete ordered ledger, then commit state and boundary."
+    },
+    {
+      "path": "adf_guide/scenarios/04-rest-saas.md",
+      "title": "Paginated SaaS REST API to durable landing",
+      "summary": "Configure native pagination or a custom extractor for unsupported contracts."
+    },
+    {
+      "path": "adf_guide/scenarios/05-sftp-batch.md",
+      "title": "SFTP files to ADLS with verified completion",
+      "summary": "Preserve transport identity, host keys and a stable business batch."
+    },
+    {
+      "path": "adf_guide/scenarios/06-metadata-framework.md",
+      "title": "Many tables with metadata-driven parallel ingestion",
+      "summary": "Use bounded Lookup, immutable loop inputs and isolated children/control state."
+    },
+    {
+      "path": "adf_guide/scenarios/07-databricks-sql.md",
+      "title": "ADF orchestration with Databricks or SQL transformations",
+      "summary": "Move sources first and verify external computation outcomes before publication."
+    },
+    {
+      "path": "adf_guide/scenarios/08-nosql-documents.md",
+      "title": "Cosmos/MongoDB documents to header and line facts",
+      "summary": "Preserve source versions/deletes and avoid row multiplication when flattening."
+    },
+    {
+      "path": "adf_guide/scenarios/09-streaming-boundary.md",
+      "title": "Kafka/Event Hubs with ADF batch orchestration",
+      "summary": "Keep streaming offsets/state in the streaming engine and give ADF completed handoffs."
+    },
+    {
+      "path": "adf_guide/scenarios/10-private-governance.md",
+      "title": "Private source/sink access and governed enterprise pipelines",
+      "summary": "Configure actual execution-plane routes and least-privilege source identities."
+    },
+    {
+      "path": "adf_guide/scenarios/11-replay-region-recovery.md",
+      "title": "Backfill, source retention gaps and region recovery",
+      "summary": "Restore explicit boundaries, data, control state, identity and scheduler state."
+    },
+    {
+      "path": "adf_guide/scenarios/12-release-maintenance.md",
+      "title": "Dev/test/prod delivery and maintenance",
+      "summary": "Promote the same reviewed ARM artifact with tested parameter and trigger contracts."
+    }
+  ]
+}

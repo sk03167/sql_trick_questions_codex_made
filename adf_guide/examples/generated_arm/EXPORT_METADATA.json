@@ -1,0 +1,14 @@
+{
+  "generated_on": "2026-10-13",
+  "node": "22.23.3",
+  "microsoft_utilities": "1.0.3",
+  "factory_id_is_illustrative": true,
+  "validation_bundle_url": "https://adf.azure.com/assets/cmd-api/main.js",
+  "validation_bundle_sha256": "74782a53de66bf3afd2f8b3ad1ed215afa82a9bff4c8ede936cde8affa044584",
+  "resource_count": 10,
+  "parameters": [
+    "factoryName",
+    "ls_adls_properties_parameters_p_account_url_defaultValue",
+    "ls_rest_public_example_properties_typeProperties_url"
+  ]
+}

@@ -1,0 +1,350 @@
+[
+  {
+    "id": "01-platform-map-1",
+    "path": "adf_guide/chapters/01-platform-map.md",
+    "source": "flowchart LR\n S[\"Files, databases, REST, SaaS\"] --> C[\"Copy activity on selected IR\"]\n C --> L[\"Durable landing or staging\"]\n L --> T[\"SQL, Data Flow, or Databricks transformation\"]\n T --> O[\"Validated tables and consumers\"]\n P[\"Pipeline and trigger control flow\"] --> C\n P --> T",
+    "summary": "01. ADF platform map and the shared lab"
+  },
+  {
+    "id": "02-create-and-author-1",
+    "path": "adf_guide/chapters/02-create-and-author.md",
+    "source": "flowchart LR\n G[\"Git source / author changes\"] --> V[\"Validate all\"]\n G --> D[\"Debug with supplied values\"]\n G --> P[\"Publish or generated ARM deployment\"]\n P --> R[\"Published Trigger now or scheduled run\"]",
+    "summary": "02. Create the factory and navigate authoring, debug, and publish"
+  },
+  {
+    "id": "03-integration-runtimes-1",
+    "path": "adf_guide/chapters/03-integration-runtimes.md",
+    "source": "flowchart LR\n A[\"ADF service schedules activity\"] --> R[\"Selected integration runtime\"]\n R --> S[\"Source connection\"]\n R --> D[\"Sink connection\"]\n N[\"DNS, routing, firewall, credentials\"] --> R",
+    "summary": "03. Azure IR, self-hosted IR, Azure-SSIS IR, and execution location"
+  },
+  {
+    "id": "04-linked-services-identity-1",
+    "path": "adf_guide/chapters/04-linked-services-identity.md",
+    "source": "flowchart LR\n P[\"Pipeline dataset reference\"] --> D[\"Dataset\"]\n D --> L[\"Linked service endpoint and auth\"]\n L --> I[\"Runtime and identity\"]\n I --> A[\"Data-plane grants and network\"]",
+    "summary": "04. Linked services, managed identities, SQL credentials, and Key Vault"
+  },
+  {
+    "id": "05-datasets-and-paths-1",
+    "path": "adf_guide/chapters/05-datasets-and-paths.md",
+    "source": "sequenceDiagram\n participant P as Pipeline run\n participant A as Copy activity\n participant D as Dataset\n participant L as Linked service\n P->>A: p_source_fs and p_source_folder\n A->>D: Bind dataset reference parameters\n D->>D: Resolve file system and folder\n D->>L: Resolve endpoint and credentials",
+    "summary": "05. Datasets, formats, locations, and parameterized paths"
+  },
+  {
+    "id": "06-parameter-map-1",
+    "path": "adf_guide/chapters/06-parameter-map.md",
+    "source": "flowchart LR\n C[\"CI and ARM environment settings\"] --> F[\"Published factory defaults\"]\n R[\"Run or trigger inputs\"] --> P[\"Pipeline parameters\"]\n P --> D[\"Dataset parameters\"]\n D --> L[\"Linked-service parameters\"]\n P --> X[\"Child pipeline or Data Flow inputs\"]",
+    "summary": "06. Parameter scopes and deployment versus runtime values"
+  },
+  {
+    "id": "07-expressions-1",
+    "path": "adf_guide/chapters/07-expressions.md",
+    "source": "flowchart LR\n E[\"Expression-valued field\"] --> T[\"Evaluate ADF function and scope\"]\n T --> V[\"Typed value\"]\n S[\"String interpolation\"] --> I[\"Always string result\"]\n V --> A[\"Activity parameter\"]\n I --> A",
+    "summary": "07. Expressions: types, interpolation, dates, escaping, and outputs"
+  },
+  {
+    "id": "08-variables-and-concurrency-1",
+    "path": "adf_guide/chapters/08-variables-and-concurrency.md",
+    "source": "flowchart LR\n P[\"Parent immutable array input\"] --> F[\"Parallel ForEach\"]\n F --> C1[\"Child run orders with own variables\"]\n F --> C2[\"Child run customers with own variables\"]\n C1 --> R1[\"Independent result\"]\n C2 --> R2[\"Independent result\"]",
+    "summary": "08. Variables, counters, arrays, and parallel-loop races"
+  },
+  {
+    "id": "09-file-copy-1",
+    "path": "adf_guide/chapters/09-file-copy.md",
+    "source": "flowchart LR\n S[\"Completed immutable source folder\"] --> C[\"Binary Copy with stable batch inputs\"]\n C --> L[\"Landing batch prefix, hierarchy preserved\"]\n L --> V[\"File and content reconciliation\"]\n V --> T[\"Approved downstream row ingestion\"]",
+    "summary": "09. File ingestion: Binary/CSV, hierarchy, wildcards, and completion"
+  },
+  {
+    "id": "10-database-copy-1",
+    "path": "adf_guide/chapters/10-database-copy.md",
+    "source": "flowchart LR\n D[\"Source database and committed boundary\"] --> R[\"Selected runtime with source access\"]\n R --> C[\"Copy table, query, or procedure\"]\n C --> S[\"Staging files or staging table\"]\n S --> M[\"Validated merge and publication\"]",
+    "summary": "10. SQL/Oracle/on-prem database ingestion and source load"
+  },
+  {
+    "id": "11-watermarks-1",
+    "path": "adf_guide/chapters/11-watermarks.md",
+    "source": "sequenceDiagram\n participant W as Control boundary\n participant S as Source published ledger\n participant A as ADF pipeline\n participant T as Target staging and state\n W-->>A: Last committed low version\n S-->>A: Captured published high version\n A->>S: Pull low exclusive, high inclusive\n S-->>A: Stable change interval\n A->>T: Stage and reconcile\n A->>T: Transactional merge and advance low to high",
+    "summary": "11. Incremental watermarks, committed boundaries, and transactional advancement"
+  },
+  {
+    "id": "12-cdc-deletes-1",
+    "path": "adf_guide/chapters/12-cdc-deletes.md",
+    "source": "flowchart LR\n S[\"Source changes with operation and sequence\"] --> B[\"Retained staging or raw events\"]\n B --> V[\"Validate contract and ordering\"]\n V --> M[\"Apply inserts, updates, deletes\"]\n M --> T[\"Current state and retained history\"]",
+    "summary": "12. CDC, hard deletes, soft deletes, and snapshot comparison"
+  },
+  {
+    "id": "13-rest-copy-1",
+    "path": "adf_guide/chapters/13-rest-copy.md",
+    "source": "flowchart LR\n L[\"REST linked service: base URL and auth\"] --> D[\"RestResource relative URL\"]\n D --> C[\"RestSource request and pagination\"]\n C --> M[\"Collection mapping\"]\n M --> J[\"JSON/SQL landing rows\"]",
+    "summary": "13. REST Copy: linked service, dataset, pagination, and JSON mapping"
+  },
+  {
+    "id": "14-web-http-functions-1",
+    "path": "adf_guide/chapters/14-web-http-functions.md",
+    "source": "sequenceDiagram\n participant A as ADF controller\n participant W as External service\n participant L as Durable landing\n A->>W: Submit request with stable idempotency key\n W-->>A: Operation ID\n loop Until terminal state or deadline\n A->>W: Poll status\n W-->>A: State and safe metadata\n end\n W->>L: Completed data and manifest\n A->>L: Verify completion before Copy",
+    "summary": "14. Web, HTTP Copy, Azure Functions, and custom paging"
+  },
+  {
+    "id": "15-lookup-metadata-filter-1",
+    "path": "adf_guide/chapters/15-lookup-metadata-filter.md",
+    "source": "flowchart LR\n M[\"Control table or file inventory\"] --> L[\"Lookup / Get Metadata\"]\n L --> F[\"Filter bounded entries\"]\n F --> E[\"ForEach immutable item\"]\n E --> C[\"Child pipeline per entity\"]",
+    "summary": "15. Lookup, Get Metadata, and Filter: output shapes and limits"
+  },
+  {
+    "id": "16-foreach-child-returns-1",
+    "path": "adf_guide/chapters/16-foreach-child-returns.md",
+    "source": "sequenceDiagram\n participant P as Parent ForEach\n participant C as Child pipeline run\n P->>C: Immutable entity and batch parameters\n C->>C: Validate and use private variable\n C-->>P: Completion or failure\n P->>P: Continue only after required children succeed",
+    "summary": "16. ForEach, Execute Pipeline, and child return values"
+  },
+  {
+    "id": "17-conditions-errors-until-1",
+    "path": "adf_guide/chapters/17-conditions-errors-until.md",
+    "source": "flowchart TD\n C[\"Copy / transformation\"] -->|Success| Q[\"Business acceptance check\"]\n C -->|Failure| L[\"Log error safely\"]\n Q -->|Valid| P[\"Publish result\"]\n Q -->|Invalid| F[\"Explicit Fail\"]\n L --> F",
+    "summary": "17. If, Switch, Until, retries, and error-propagation graphs"
+  },
+  {
+    "id": "18-triggers-windows-events-1",
+    "path": "adf_guide/chapters/18-triggers-windows-events.md",
+    "source": "flowchart LR\n S[\"Schedule / window / event\"] --> P[\"Resolve pipeline parameters\"]\n P --> C[\"Validate source completion and boundary\"]\n C --> W[\"Process logical batch\"]\n W --> A[\"Commit and record acceptance\"]",
+    "summary": "18. Schedule, tumbling windows, storage events, and batch identity"
+  },
+  {
+    "id": "19-mapping-data-flows-1",
+    "path": "adf_guide/chapters/19-mapping-data-flows.md",
+    "source": "flowchart LR\n S[\"Typed source rows\"] --> D[\"Derived columns and casts\"]\n D --> V[\"Assert / conditional split\"]\n V --> Q[\"Quarantine invalid rows\"]\n V --> A[\"Aggregate or join at defined grain\"]\n A --> K[\"Sink with explicit update/write policy\"]",
+    "summary": "19. Mapping Data Flow transformations: schema, joins, aggregate, and sink"
+  },
+  {
+    "id": "20-data-flow-parameters-1",
+    "path": "adf_guide/chapters/20-data-flow-parameters.md",
+    "source": "flowchart LR\n P[\"Pipeline parameter and ADF expression\"] --> A[\"Data Flow activity parameter binding\"]\n A --> L[\"Literal value or expression mode\"]\n L --> D[\"Data Flow uses dollar parameter names\"]\n D --> C[\"Managed Spark transformations\"]",
+    "summary": "20. Data Flow parameters, expression mode, compute, and performance"
+  },
+  {
+    "id": "21-external-compute-1",
+    "path": "adf_guide/chapters/21-external-compute.md",
+    "source": "flowchart LR\n A[\"ADF source movement and dependencies\"] --> L[\"Durable staging\"]\n L --> D[\"Databricks or SQL transformation\"]\n D --> Q[\"Business reconciliation\"]\n Q --> P[\"Publication\"]\n K[\"Kafka / Event Hubs\"] --> S[\"Streaming engine\"]\n S --> L",
+    "summary": "21. Databricks, Synapse, SQL, functions, and streaming boundaries"
+  },
+  {
+    "id": "22-loading-idempotency-1",
+    "path": "adf_guide/chapters/22-loading-idempotency.md",
+    "source": "flowchart LR\n S[\"Stable source boundary and batch ID\"] --> B[\"Batch-keyed staging\"]\n B --> V[\"Validation and duplicate/conflict checks\"]\n V --> M[\"Commit keyed state and boundary\"]\n M --> P[\"Expose accepted result\"]",
+    "summary": "22. Loading, SQL upsert, deletes, partitions, and idempotent publication"
+  },
+  {
+    "id": "23-security-network-governance-1",
+    "path": "adf_guide/chapters/23-security-network-governance.md",
+    "source": "flowchart LR\n U[\"Developer / CI identity\"] --> M[\"Factory management permissions\"]\n F[\"Factory runtime identity\"] --> D[\"Storage / SQL / API data permissions\"]\n R[\"Selected execution runtime\"] --> N[\"DNS, routes, firewall, private endpoint\"]\n D --> A[\"Allowed source and sink operation\"]\n N --> A\n A --> L[\"Audit and supported lineage\"]",
+    "summary": "23. Security, private endpoints, Purview, RBAC, and diagnostic access"
+  },
+  {
+    "id": "24-metadata-framework-1",
+    "path": "adf_guide/chapters/24-metadata-framework.md",
+    "source": "flowchart LR\n M[\"Reviewed control metadata\"] --> L[\"Lookup bounded enabled entities\"]\n L --> F[\"ForEach direct immutable items\"]\n F --> C[\"Child route per allowlisted source kind\"]\n C --> S[\"Batch-isolated stage and commit\"]\n S --> A[\"Audited status / committed boundary\"]",
+    "summary": "24. Metadata-driven ingestion framework and configuration ownership"
+  },
+  {
+    "id": "25-git-publish-1",
+    "path": "adf_guide/chapters/25-git-publish.md",
+    "source": "flowchart LR\n F[\"Feature branch authoring JSON\"] --> P[\"PR into collaboration branch\"]\n P --> V[\"Validate and export ARM\"]\n V --> A[\"Versioned deployment artifact\"]\n A --> D[\"Test/prod live factory deployment\"]\n P --> U[\"Optional dev Publish all\"]",
+    "summary": "25. Git branches, collaboration, Publish all, and exported ARM"
+  },
+  {
+    "id": "26-azure-devops-ci-1",
+    "path": "adf_guide/chapters/26-azure-devops-ci.md",
+    "source": "flowchart LR\n C[\"Reviewed collaboration commit\"] --> V[\"Microsoft utility validate/export\"]\n V --> A[\"ARM artifact plus parameter contract\"]\n A --> T[\"Protected test release and smoke tests\"]\n T --> P[\"Same artifact to production\"]",
+    "summary": "26. Azure DevOps CI/CD: build artifacts, environment overrides, and trigger handling"
+  },
+  {
+    "id": "27-other-ci-and-infra-1",
+    "path": "adf_guide/chapters/27-other-ci-and-infra.md",
+    "source": "flowchart LR\n G[\"GitHub / DevOps / Jenkins / GitLab\"] --> C[\"Shared validate/export commands\"]\n C --> A[\"Reviewed ARM artifact\"]\n I[\"Platform IaC prerequisite\"] --> D[\"Controlled target deployment\"]\n A --> D\n D --> T[\"Live smoke, access, reconciliation tests\"]",
+    "summary": "27. GitHub Actions, Jenkins, GitLab, Bicep, and Terraform alternatives"
+  },
+  {
+    "id": "28-test-strategy-1",
+    "path": "adf_guide/chapters/28-test-strategy.md",
+    "source": "flowchart LR\n J[\"Local source and fixture checks\"] --> V[\"Microsoft definition validate/export\"]\n V --> L[\"Live IR, source, sink and control tests\"]\n L --> R[\"Reconciliation and access gates\"]\n R --> P[\"Protected publication\"]",
+    "summary": "28. Tests: source contracts, definition validation, integration, and release gates"
+  },
+  {
+    "id": "29-monitor-cost-performance-1",
+    "path": "adf_guide/chapters/29-monitor-cost-performance.md",
+    "source": "flowchart LR\n P[\"Pipeline / activity / trigger runs\"] --> M[\"Monitor and diagnostic logs\"]\n R[\"IR health, queue, transfer metrics\"] --> M\n D[\"Source boundary and reconciliation\"] --> M\n M --> A[\"Owned alerts and runbooks\"]\n M --> C[\"Measured cost per accepted batch\"]",
+    "summary": "29. Monitoring, Log Analytics, Copy bottlenecks, and cost"
+  },
+  {
+    "id": "30-worked-lab-1",
+    "path": "adf_guide/chapters/30-worked-lab.md",
+    "source": "flowchart LR\n A[\"Parent entity array and batch input\"] --> C[\"Isolated child parameter demo\"]\n S[\"Completed two-file source fixture\"] --> F[\"ADF Binary Copy\"]\n F --> D[\"Stable landing batch prefix\"]\n D --> V[\"File hash and CSV reconciliation\"]",
+    "summary": "30. Worked lab: parameter isolation, file Copy, rerun, and reconciliation"
+  },
+  {
+    "id": "31-backfill-recovery-1",
+    "path": "adf_guide/chapters/31-backfill-recovery.md",
+    "source": "flowchart LR\n B[\"Known accepted source boundary\"] --> R[\"Isolated replay stage and target\"]\n C[\"Retained source history/files\"] --> R\n R --> V[\"Reconcile keys, deletes, totals, access\"]\n V --> S[\"Controlled consumer cutover\"]\n O[\"Prior target retained\"] -.-> V",
+    "summary": "31. Backfill, recovery, region migration, and rollback"
+  },
+  {
+    "id": "32-nosql-sftp-crosscloud-1",
+    "path": "adf_guide/chapters/32-nosql-sftp-crosscloud.md",
+    "source": "flowchart LR\n S[\"Document / file / external cloud source\"] --> C[\"Connector-specific runtime access\"]\n C --> R[\"Restricted raw staging\"]\n R --> H[\"Header / document state\"]\n R --> L[\"Line / nested-array facts\"]\n H --> V[\"Correct-grain business publication\"]\n L --> V",
+    "summary": "32. NoSQL, SFTP, nested documents, and cross-cloud source substitutions"
+  },
+  {
+    "id": "33-troubleshooting-1",
+    "path": "adf_guide/chapters/33-troubleshooting.md",
+    "source": "flowchart TD\n S[\"Failure or wrong data\"] --> P[\"Resolved inputs and code artifact\"]\n P --> I[\"Runtime identity and reachability\"]\n I --> B[\"Source boundary, sink side effects, graph\"]\n B --> R[\"Small isolated reproduction\"]\n R --> F[\"Narrow fix and regression\"]",
+    "summary": "33. Troubleshooting by symptom, parameter, runtime, and graph"
+  },
+  {
+    "id": "34-fabric-synapse-scope-1",
+    "path": "adf_guide/chapters/34-fabric-synapse-scope.md",
+    "source": "flowchart LR\n A[\"Existing ADF contracts and assets\"] --> I[\"Inventory capabilities and dependencies\"]\n I --> M[\"Map each activity, connector, identity, trigger\"]\n M --> P[\"Prototype in target service\"]\n P --> T[\"Data, access, cost, recovery acceptance\"]\n T --> C[\"Controlled consumer and scheduler cutover\"]",
+    "summary": "34. ADF versus Synapse pipelines and Fabric Data Factory"
+  },
+  {
+    "id": "01-on-prem-migration-1",
+    "path": "adf_guide/scenarios/01-on-prem-migration.md",
+    "source": "flowchart LR\n A[\"On-prem SQL Server or Oracle\"] --> B[\"SHIR snapshot / retained changes\"]\n B --> C[\"ADLS staging plus SQL or Databricks\"]\n C --> D[\"Reconciled cloud marts and consumers\"]",
+    "summary": "On-prem warehouse migration to Azure"
+  },
+  {
+    "id": "01-on-prem-migration-2",
+    "path": "adf_guide/scenarios/01-on-prem-migration.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "On-prem warehouse migration to Azure"
+  },
+  {
+    "id": "02-daily-files-deadline-1",
+    "path": "adf_guide/scenarios/02-daily-files-deadline.md",
+    "source": "flowchart LR\n A[\"Immutable nightly files\"] --> B[\"Manifest / completion and ADF Copy\"]\n B --> C[\"Transform and business checks\"]\n C --> D[\"Accepted 06:00 publication\"]",
+    "summary": "Daily files: 100 million orders by 6 a.m."
+  },
+  {
+    "id": "02-daily-files-deadline-2",
+    "path": "adf_guide/scenarios/02-daily-files-deadline.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "Daily files: 100 million orders by 6 a.m."
+  },
+  {
+    "id": "03-database-cdc-1",
+    "path": "adf_guide/scenarios/03-database-cdc.md",
+    "source": "flowchart LR\n A[\"Published source changes\"] --> B[\"ADF supported CDC or bounded Copy\"]\n B --> C[\"Ordered insert/update/delete application\"]\n C --> D[\"Current state and history contract\"]",
+    "summary": "Incremental database CDC with hard deletes"
+  },
+  {
+    "id": "03-database-cdc-2",
+    "path": "adf_guide/scenarios/03-database-cdc.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "Incremental database CDC with hard deletes"
+  },
+  {
+    "id": "04-rest-saas-1",
+    "path": "adf_guide/scenarios/04-rest-saas.md",
+    "source": "flowchart LR\n A[\"Vendor REST API\"] --> B[\"REST linked service / dataset\"]\n B --> C[\"Paginated Copy or bounded extractor\"]\n C --> D[\"Accepted staging then curated load\"]",
+    "summary": "Paginated SaaS REST API to durable landing"
+  },
+  {
+    "id": "04-rest-saas-2",
+    "path": "adf_guide/scenarios/04-rest-saas.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "Paginated SaaS REST API to durable landing"
+  },
+  {
+    "id": "05-sftp-batch-1",
+    "path": "adf_guide/scenarios/05-sftp-batch.md",
+    "source": "flowchart LR\n A[\"SFTP delivery\"] --> B[\"Verified host and runtime reachability\"]\n B --> C[\"Binary/CSV Copy to stable ADLS batch\"]\n C --> D[\"Reconciled accepted delivery\"]",
+    "summary": "SFTP files to ADLS with verified completion"
+  },
+  {
+    "id": "05-sftp-batch-2",
+    "path": "adf_guide/scenarios/05-sftp-batch.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "SFTP files to ADLS with verified completion"
+  },
+  {
+    "id": "06-metadata-framework-1",
+    "path": "adf_guide/scenarios/06-metadata-framework.md",
+    "source": "flowchart LR\n A[\"Reviewed entity control table\"] --> B[\"Lookup and typed Filter\"]\n B --> C[\"Parallel child per entity\"]\n C --> D[\"Audited commit/result per batch\"]",
+    "summary": "Many tables with metadata-driven parallel ingestion"
+  },
+  {
+    "id": "06-metadata-framework-2",
+    "path": "adf_guide/scenarios/06-metadata-framework.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "Many tables with metadata-driven parallel ingestion"
+  },
+  {
+    "id": "07-databricks-sql-1",
+    "path": "adf_guide/scenarios/07-databricks-sql.md",
+    "source": "flowchart LR\n A[\"ADF source movement\"] --> B[\"Durable stage and explicit inputs\"]\n B --> C[\"Databricks notebook / SQL procedure\"]\n C --> D[\"Reconciled output and final status\"]",
+    "summary": "ADF orchestration with Databricks or SQL transformations"
+  },
+  {
+    "id": "07-databricks-sql-2",
+    "path": "adf_guide/scenarios/07-databricks-sql.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "ADF orchestration with Databricks or SQL transformations"
+  },
+  {
+    "id": "08-nosql-documents-1",
+    "path": "adf_guide/scenarios/08-nosql-documents.md",
+    "source": "flowchart LR\n A[\"Document database / export\"] --> B[\"Connector-specific restricted raw stage\"]\n B --> C[\"Typed header and nested line transformation\"]\n C --> D[\"Correct-grain marts\"]",
+    "summary": "Cosmos/MongoDB documents to header and line facts"
+  },
+  {
+    "id": "08-nosql-documents-2",
+    "path": "adf_guide/scenarios/08-nosql-documents.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "Cosmos/MongoDB documents to header and line facts"
+  },
+  {
+    "id": "09-streaming-boundary-1",
+    "path": "adf_guide/scenarios/09-streaming-boundary.md",
+    "source": "flowchart LR\n A[\"Kafka / Event Hubs events\"] --> B[\"Supported streaming engine\"]\n B --> C[\"Retained lakehouse/files and completion boundary\"]\n C --> D[\"ADF downstream batch orchestration\"]",
+    "summary": "Kafka/Event Hubs with ADF batch orchestration"
+  },
+  {
+    "id": "09-streaming-boundary-2",
+    "path": "adf_guide/scenarios/09-streaming-boundary.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "Kafka/Event Hubs with ADF batch orchestration"
+  },
+  {
+    "id": "10-private-governance-1",
+    "path": "adf_guide/scenarios/10-private-governance.md",
+    "source": "flowchart LR\n A[\"Private database / storage / API\"] --> B[\"Approved SHIR or managed-network IR\"]\n B --> C[\"Restricted source/stage/transform\"]\n C --> D[\"Audited approved consumption\"]",
+    "summary": "Private source/sink access and governed enterprise pipelines"
+  },
+  {
+    "id": "10-private-governance-2",
+    "path": "adf_guide/scenarios/10-private-governance.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "Private source/sink access and governed enterprise pipelines"
+  },
+  {
+    "id": "11-replay-region-recovery-1",
+    "path": "adf_guide/scenarios/11-replay-region-recovery.md",
+    "source": "flowchart LR\n A[\"Retained files / source CDC\"] --> B[\"Isolated replay stage/target\"]\n B --> C[\"Validated keys/deletes/totals/policies\"]\n C --> D[\"Controlled consumer and trigger cutover\"]",
+    "summary": "Backfill, source retention gaps and region recovery"
+  },
+  {
+    "id": "11-replay-region-recovery-2",
+    "path": "adf_guide/scenarios/11-replay-region-recovery.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "Backfill, source retention gaps and region recovery"
+  },
+  {
+    "id": "12-release-maintenance-1",
+    "path": "adf_guide/scenarios/12-release-maintenance.md",
+    "source": "flowchart LR\n A[\"Feature-branch definitions\"] --> B[\"Local contract and Microsoft export checks\"]\n B --> C[\"Protected test deployment and acceptance\"]\n C --> D[\"Production artifact promotion\"]",
+    "summary": "Dev/test/prod delivery and maintenance"
+  },
+  {
+    "id": "12-release-maintenance-2",
+    "path": "adf_guide/scenarios/12-release-maintenance.md",
+    "source": "flowchart LR\n I[\"Platform/source prerequisites\"] --> A[\"Reviewed app ARM artifact\"]\n A --> T[\"Live access and data acceptance\"]\n T --> P[\"Intended schedule or cutover\"]",
+    "summary": "Dev/test/prod delivery and maintenance"
+  }
+]

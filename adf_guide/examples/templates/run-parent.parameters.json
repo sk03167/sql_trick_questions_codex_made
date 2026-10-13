@@ -1,0 +1,7 @@
+{
+  "p_entities": [
+    "orders",
+    "customers"
+  ],
+  "p_batch_id": "demo-001"
+}

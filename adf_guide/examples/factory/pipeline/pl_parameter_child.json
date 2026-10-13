@@ -1,0 +1,74 @@
+{
+  "name": "pl_parameter_child",
+  "properties": {
+    "parameters": {
+      "p_entity": {
+        "type": "String",
+        "defaultValue": "orders"
+      },
+      "p_batch_id": {
+        "type": "String",
+        "defaultValue": "demo-001"
+      }
+    },
+    "activities": [
+      {
+        "name": "ValidateEntity",
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "value": "@and(contains(createArray('orders', 'customers'), pipeline().parameters.p_entity), not(empty(pipeline().parameters.p_batch_id)))",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "name": "BuildLabel",
+              "type": "SetVariable",
+              "typeProperties": {
+                "variableName": "v_label",
+                "value": {
+                  "value": "@concat(pipeline().parameters.p_entity, '|', pipeline().parameters.p_batch_id)",
+                  "type": "Expression"
+                }
+              }
+            },
+            {
+              "name": "SimulateWork",
+              "type": "Wait",
+              "dependsOn": [
+                {
+                  "activity": "BuildLabel",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ],
+              "typeProperties": {
+                "waitTimeInSeconds": 1
+              }
+            }
+          ],
+          "ifFalseActivities": [
+            {
+              "name": "RejectInput",
+              "type": "Fail",
+              "typeProperties": {
+                "message": "Entity is not allowlisted or batch ID is empty",
+                "errorCode": "INVALID_INPUT"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "annotations": [
+      "Educational ADF guide; replace environment settings before use"
+    ],
+    "variables": {
+      "v_label": {
+        "type": "String",
+        "defaultValue": ""
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "factoryName": {
+      "value": "replace-with-real-test-factory"
+    },
+    "ls_adls_properties_parameters_p_account_url_defaultValue": {
+      "value": "https://replacewithteststorage.dfs.core.windows.net"
+    },
+    "ls_rest_public_example_properties_typeProperties_url": {
+      "value": "https://api.example.invalid/"
+    }
+  }
+}

@@ -1,0 +1,86 @@
+# Official source register
+
+Researched 2026-10-13. UI instructions follow current Microsoft documentation; labels/capabilities can differ by connector version, rollout and permissions. No live Azure UI session was used. Product/source versions and previews are treated explicitly.
+
+- [Concepts Change Data Capture](https://learn.microsoft.com/en-us/azure/data-factory/concepts-change-data-capture) — chapters 1, 11, 12
+- [Concepts Data Flow Debug Mode](https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-debug-mode) — chapters 19, 20, 29
+- [Concepts Data Flow Overview](https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-overview) — chapters 19
+- [Concepts Data Flow Performance](https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-performance) — chapters 20
+- [Concepts Datasets Linked Services](https://learn.microsoft.com/en-us/azure/data-factory/concepts-datasets-linked-services) — chapters 5
+- [Concepts Integration Runtime](https://learn.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime) — chapters 1, 3, 34
+- [Concepts Integration Runtime Performance](https://learn.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime-performance) — chapters 20
+- [Concepts Pipelines Activities](https://learn.microsoft.com/en-us/azure/data-factory/concepts-pipelines-activities) — chapters 1
+- [Connect Data Factory To Azure Purview](https://learn.microsoft.com/en-us/azure/data-factory/connect-data-factory-to-azure-purview) — chapters 23
+- [Connector Amazon Simple Storage Service](https://learn.microsoft.com/en-us/azure/data-factory/connector-amazon-simple-storage-service) — chapters 32
+- [Connector Azure Cosmos Db](https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-cosmos-db) — chapters 32
+- [Connector Azure Data Lake Storage](https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-data-lake-storage) — chapters 4, 9
+- [Connector Azure Sql Database](https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-sql-database) — chapters 4, 10, 22
+- [Connector Google Cloud Storage](https://learn.microsoft.com/en-us/azure/data-factory/connector-google-cloud-storage) — chapters 32
+- [Connector Http](https://learn.microsoft.com/en-us/azure/data-factory/connector-http) — chapters 14
+- [Connector Mongodb Atlas](https://learn.microsoft.com/en-us/azure/data-factory/connector-mongodb-atlas) — chapters 32
+- [Connector Oracle](https://learn.microsoft.com/en-us/azure/data-factory/connector-oracle) — chapters 10
+- [Connector Rest](https://learn.microsoft.com/en-us/azure/data-factory/connector-rest) — chapters 13
+- [Connector Sftp](https://learn.microsoft.com/en-us/azure/data-factory/connector-sftp) — chapters 32
+- [Connector Sql Server](https://learn.microsoft.com/en-us/azure/data-factory/connector-sql-server) — chapters 10
+- [Continuous Integration Delivery Automate Azure Pipelines](https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-automate-azure-pipelines) — chapters 26
+- [Continuous Integration Delivery Improvements](https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-improvements) — chapters 25, 26, 27, 28, 30
+- [Continuous Integration Delivery Resource Manager Custom Parameters](https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-resource-manager-custom-parameters) — chapters 25
+- [Continuous Integration Delivery Sample Script](https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-sample-script) — chapters 26, 31
+- [Continuous Integration Deployment](https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment) — chapters 2, 25, 26, 27, 34
+- [Control Flow Append Variable Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-append-variable-activity) — chapters 8
+- [Control Flow Azure Function Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-azure-function-activity) — chapters 14, 21
+- [Control Flow Execute Pipeline Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-execute-pipeline-activity) — chapters 8, 16, 24, 30
+- [Control Flow Expression Language Functions](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-expression-language-functions) — chapters 6, 7, 33
+- [Control Flow Fail Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-fail-activity) — chapters 17
+- [Control Flow Filter Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-filter-activity) — chapters 15
+- [Control Flow For Each Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-for-each-activity) — chapters 8, 16, 24
+- [Control Flow Get Metadata Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-get-metadata-activity) — chapters 15
+- [Control Flow If Condition Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-if-condition-activity) — chapters 17
+- [Control Flow Lookup Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-lookup-activity) — chapters 15, 24
+- [Control Flow Set Variable Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-set-variable-activity) — chapters 8, 16
+- [Control Flow Switch Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-switch-activity) — chapters 17
+- [Control Flow System Variables](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-system-variables) — chapters 7, 18
+- [Control Flow Until Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-until-activity) — chapters 14, 17
+- [Control Flow Web Activity](https://learn.microsoft.com/en-us/azure/data-factory/control-flow-web-activity) — chapters 14
+- [Copy Activity Data Consistency](https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-data-consistency) — chapters 9, 28
+- [Copy Activity Overview](https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-overview) — chapters 9, 30
+- [Copy Activity Performance](https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-performance) — chapters 10, 29
+- [Copy Activity Performance Troubleshooting](https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-performance-troubleshooting) — chapters 29, 33
+- [Copy Activity Schema And Type Mapping](https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-schema-and-type-mapping) — chapters 13
+- [Copy Data Tool Metadata Driven](https://learn.microsoft.com/en-us/azure/data-factory/copy-data-tool-metadata-driven) — chapters 24
+- [Create Azure Ssis Integration Runtime](https://learn.microsoft.com/en-us/azure/data-factory/create-azure-ssis-integration-runtime) — chapters 3
+- [Create Self Hosted Integration Runtime](https://learn.microsoft.com/en-us/azure/data-factory/create-self-hosted-integration-runtime) — chapters 3, 31
+- [Data Factory Service Identity](https://learn.microsoft.com/en-us/azure/data-factory/data-factory-service-identity) — chapters 23
+- [Data Flow Aggregate](https://learn.microsoft.com/en-us/azure/data-factory/data-flow-aggregate) — chapters 19
+- [Data Flow Alter Row](https://learn.microsoft.com/en-us/azure/data-factory/data-flow-alter-row) — chapters 12, 22
+- [Data Flow Derived Column](https://learn.microsoft.com/en-us/azure/data-factory/data-flow-derived-column) — chapters 19
+- [Data Flow Flatten](https://learn.microsoft.com/en-us/azure/data-factory/data-flow-flatten) — chapters 32
+- [Data Flow Join](https://learn.microsoft.com/en-us/azure/data-factory/data-flow-join) — chapters 19
+- [Data Flow Sink](https://learn.microsoft.com/en-us/azure/data-factory/data-flow-sink) — chapters 12, 19, 22
+- [Format Binary](https://learn.microsoft.com/en-us/azure/data-factory/format-binary) — chapters 5, 9
+- [Format Delimited Text](https://learn.microsoft.com/en-us/azure/data-factory/format-delimited-text) — chapters 5
+- [Format Json](https://learn.microsoft.com/en-us/azure/data-factory/format-json) — chapters 5, 13
+- [How To Change Data Capture Resource](https://learn.microsoft.com/en-us/azure/data-factory/how-to-change-data-capture-resource) — chapters 12
+- [How To Create Event Trigger](https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-event-trigger) — chapters 18
+- [How To Create Schedule Trigger](https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-schedule-trigger) — chapters 18
+- [How To Create Tumbling Window Trigger](https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-tumbling-window-trigger) — chapters 18, 31
+- [How To Expression Language Functions](https://learn.microsoft.com/en-us/azure/data-factory/how-to-expression-language-functions) — chapters 6
+- [Introduction](https://learn.microsoft.com/en-us/azure/data-factory/introduction) — chapters 1
+- [Iterative Development Debugging](https://learn.microsoft.com/en-us/azure/data-factory/iterative-development-debugging) — chapters 2, 28, 30
+- [Managed Virtual Network Private Endpoint](https://learn.microsoft.com/en-us/azure/data-factory/managed-virtual-network-private-endpoint) — chapters 3, 23
+- [Monitor Programmatically](https://learn.microsoft.com/en-us/azure/data-factory/monitor-programmatically) — chapters 29
+- [Monitor Visually](https://learn.microsoft.com/en-us/azure/data-factory/monitor-visually) — chapters 29, 31, 33
+- [Parameterize Linked Services](https://learn.microsoft.com/en-us/azure/data-factory/parameterize-linked-services) — chapters 4, 6
+- [Parameters Data Flow](https://learn.microsoft.com/en-us/azure/data-factory/parameters-data-flow) — chapters 6, 7, 20, 34
+- [Quickstart Create Data Factory Portal](https://learn.microsoft.com/en-us/azure/data-factory/quickstart-create-data-factory-portal) — chapters 2
+- [Quickstart Create Data Factory Resource Manager Template](https://learn.microsoft.com/en-us/azure/data-factory/quickstart-create-data-factory-resource-manager-template) — chapters 27
+- [Source Control](https://learn.microsoft.com/en-us/azure/data-factory/source-control) — chapters 2, 25
+- [Store Credentials In Key Vault](https://learn.microsoft.com/en-us/azure/data-factory/store-credentials-in-key-vault) — chapters 4, 23
+- [Transform Data Databricks Notebook](https://learn.microsoft.com/en-us/azure/data-factory/transform-data-databricks-notebook) — chapters 21
+- [Transform Data Using Script](https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-script) — chapters 11, 21
+- [Transform Data Using Stored Procedure](https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-stored-procedure) — chapters 11, 21, 22
+- [Tutorial Incremental Copy Portal](https://learn.microsoft.com/en-us/azure/data-factory/tutorial-incremental-copy-portal) — chapters 11
+- [Tutorial Pipeline Failure Error Handling](https://learn.microsoft.com/en-us/azure/data-factory/tutorial-pipeline-failure-error-handling) — chapters 17, 28, 33
+- [Tutorial Pipeline Return Value](https://learn.microsoft.com/en-us/azure/data-factory/tutorial-pipeline-return-value) — chapters 16
+- [Azure login with GitHub OIDC](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect) — chapters 27
+- [Official ADF/Fabric comparison](https://learn.microsoft.com/en-us/fabric/data-factory/compare-fabric-data-factory-and-azure-data-factory) — chapters 34

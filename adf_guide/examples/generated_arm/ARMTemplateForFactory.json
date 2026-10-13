@@ -1,0 +1,643 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "adf-guide-dev"
+        },
+        "ls_adls_properties_parameters_p_account_url_defaultValue": {
+            "type": "string",
+            "defaultValue": "https://exampleadflab.dfs.core.windows.net"
+        },
+        "ls_rest_public_example_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://api.example.invalid/"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/pl_copy_files')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "CopyFiles",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.01:00:00",
+                            "retry": 2,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "BinarySource",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSReadSettings",
+                                    "recursive": true
+                                }
+                            },
+                            "sink": {
+                                "type": "BinarySink",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSWriteSettings",
+                                    "copyBehavior": "PreserveHierarchy"
+                                }
+                            },
+                            "enableStaging": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "ds_adls_binary",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "p_file_system": {
+                                        "value": "@pipeline().parameters.p_source_fs",
+                                        "type": "Expression"
+                                    },
+                                    "p_folder": {
+                                        "value": "@pipeline().parameters.p_source_folder",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "ds_adls_binary",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "p_file_system": {
+                                        "value": "@pipeline().parameters.p_sink_fs",
+                                        "type": "Expression"
+                                    },
+                                    "p_folder": {
+                                        "value": "@concat(pipeline().parameters.p_landing_root, '/batch=', pipeline().parameters.p_batch_id)",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "RequireFiles",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "CopyFiles",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@greater(activity('CopyFiles').output.filesRead, 0)",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "EmptyBatch",
+                                    "type": "Fail",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "message": "No files copied; verify delivery and dataset parameters",
+                                        "errorCode": "EMPTY_BATCH"
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "Accepted",
+                                    "type": "Wait",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "waitTimeInSeconds": 1
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "p_source_fs": {
+                        "type": "String",
+                        "defaultValue": "lab"
+                    },
+                    "p_source_folder": {
+                        "type": "String",
+                        "defaultValue": "incoming/orders/2026-10-12"
+                    },
+                    "p_sink_fs": {
+                        "type": "String",
+                        "defaultValue": "lab"
+                    },
+                    "p_landing_root": {
+                        "type": "String",
+                        "defaultValue": "landing/orders"
+                    },
+                    "p_batch_id": {
+                        "type": "String",
+                        "defaultValue": "orders-20261012-001"
+                    }
+                },
+                "annotations": [
+                    "Educational ADF guide; replace environment settings before use"
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/ds_adls_binary')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/pl_parallel_parent')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "EachEntity",
+                        "type": "ForEach",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@pipeline().parameters.p_entities",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "batchCount": 2,
+                            "activities": [
+                                {
+                                    "name": "RunChild",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "pl_parameter_child",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "p_entity": {
+                                                "value": "@item()",
+                                                "type": "Expression"
+                                            },
+                                            "p_batch_id": {
+                                                "value": "@pipeline().parameters.p_batch_id",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "p_entities": {
+                        "type": "Array",
+                        "defaultValue": [
+                            "orders",
+                            "customers"
+                        ]
+                    },
+                    "p_batch_id": {
+                        "type": "String",
+                        "defaultValue": "demo-001"
+                    }
+                },
+                "annotations": [
+                    "Educational ADF guide; replace environment settings before use"
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/pipelines/pl_parameter_child')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/pl_parameter_child')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ValidateEntity",
+                        "type": "IfCondition",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@and(contains(createArray('orders', 'customers'), pipeline().parameters.p_entity), not(empty(pipeline().parameters.p_batch_id)))",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "RejectInput",
+                                    "type": "Fail",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "message": "Entity is not allowlisted or batch ID is empty",
+                                        "errorCode": "INVALID_INPUT"
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "BuildLabel",
+                                    "type": "SetVariable",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "v_label",
+                                        "value": {
+                                            "value": "@concat(pipeline().parameters.p_entity, '|', pipeline().parameters.p_batch_id)",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "SimulateWork",
+                                    "type": "Wait",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "BuildLabel",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "waitTimeInSeconds": 1
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "p_entity": {
+                        "type": "String",
+                        "defaultValue": "orders"
+                    },
+                    "p_batch_id": {
+                        "type": "String",
+                        "defaultValue": "demo-001"
+                    }
+                },
+                "variables": {
+                    "v_label": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [
+                    "Educational ADF guide; replace environment settings before use"
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/pl_rest_orders_example')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "CopyApiOrders",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.01:00:00",
+                            "retry": 2,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "RestSource",
+                                "httpRequestTimeout": "00:01:00",
+                                "requestInterval": "00.00:00:01.000",
+                                "requestMethod": "GET",
+                                "paginationRules": {
+                                    "AbsoluteUrl": "$.nextLink"
+                                }
+                            },
+                            "sink": {
+                                "type": "JsonSink",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSWriteSettings"
+                                },
+                                "formatSettings": {
+                                    "type": "JsonWriteSettings",
+                                    "filePattern": "arrayOfObjects"
+                                }
+                            },
+                            "enableStaging": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "path": "[['order_id']"
+                                        },
+                                        "sink": {
+                                            "path": "[['order_id']"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "path": "[['amount']"
+                                        },
+                                        "sink": {
+                                            "path": "[['amount']"
+                                        }
+                                    }
+                                ],
+                                "collectionReference": "$.items"
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "ds_rest_orders",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "p_relative_url": {
+                                        "value": "@pipeline().parameters.p_relative_url",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "ds_adls_json",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "p_file_system": {
+                                        "value": "@pipeline().parameters.p_file_system",
+                                        "type": "Expression"
+                                    },
+                                    "p_folder": {
+                                        "value": "@pipeline().parameters.p_output_folder",
+                                        "type": "Expression"
+                                    },
+                                    "p_file": "orders.json"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "p_relative_url": {
+                        "type": "String",
+                        "defaultValue": "v1/orders?page_size=500"
+                    },
+                    "p_file_system": {
+                        "type": "String",
+                        "defaultValue": "lab"
+                    },
+                    "p_output_folder": {
+                        "type": "String",
+                        "defaultValue": "landing/api-orders/batch=demo-001"
+                    }
+                },
+                "annotations": [
+                    "Educational ADF guide; replace environment settings before use"
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/ds_rest_orders')]",
+                "[concat(variables('factoryId'), '/datasets/ds_adls_json')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_adls_binary')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_adls",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "p_file_system": {
+                        "type": "String"
+                    },
+                    "p_folder": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().p_folder",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().p_file_system",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_adls')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_adls_json')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_adls",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "p_file_system": {
+                        "type": "String"
+                    },
+                    "p_folder": {
+                        "type": "String"
+                    },
+                    "p_file": {
+                        "type": "String"
+                    }
+                },
+                "annotations": [],
+                "type": "Json",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().p_file",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().p_folder",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().p_file_system",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_adls')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_rest_orders')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ls_rest_public_example",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "p_relative_url": {
+                        "type": "String",
+                        "defaultValue": "v1/orders?page_size=500"
+                    }
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {
+                    "relativeUrl": {
+                        "value": "@dataset().p_relative_url",
+                        "type": "Expression"
+                    }
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ls_rest_public_example')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_adls')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "parameters": {
+                    "p_account_url": {
+                        "type": "String",
+                        "defaultValue": "[parameters('ls_adls_properties_parameters_p_account_url_defaultValue')]"
+                    }
+                },
+                "annotations": [
+                    "Illustrative host; uses factory managed identity, no storage key"
+                ],
+                "type": "AzureBlobFS",
+                "typeProperties": {
+                    "url": "@linkedService().p_account_url"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ls_rest_public_example')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [
+                    "Anonymous public API illustration, not suitable for a private vendor API"
+                ],
+                "type": "RestService",
+                "typeProperties": {
+                    "url": "[parameters('ls_rest_public_example_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "Anonymous"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/tr_daily_files_stopped')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "pl_copy_files",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "p_source_fs": "lab",
+                            "p_source_folder": "@concat('incoming/orders/',formatDateTime(addDays(convertTimeZone(trigger().scheduledTime,'UTC','India Standard Time'),-1),'yyyy-MM-dd'))",
+                            "p_sink_fs": "lab",
+                            "p_landing_root": "landing/orders",
+                            "p_batch_id": "@concat('orders-',formatDateTime(addDays(convertTimeZone(trigger().scheduledTime,'UTC','India Standard Time'),-1),'yyyyMMdd'))"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2026-10-13T04:00:00",
+                        "timeZone": "India Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                4
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/pipelines/pl_copy_files')]"
+            ]
+        }
+    ]
+}

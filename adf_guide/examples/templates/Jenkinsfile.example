@@ -1,0 +1,18 @@
+// Approved Node22/Azure-equipped agent; build-only illustration.
+pipeline {
+  agent { label 'adf-build' }
+  options { disableConcurrentBuilds() }
+  environment { ADF_DEV_FACTORY_ID = '/subscriptions/<sub>/resourceGroups/<rg>/providers/Microsoft.DataFactory/factories/<dev-factory>' }
+  stages {
+    stage('Local tests') { steps { sh 'python3 -m unittest discover -s adf_guide/examples/tests -v' } }
+    stage('Validate and export') {
+      steps { dir('adf_guide/tools') {
+        sh 'npm ci --ignore-scripts --no-audit --no-fund'
+        sh 'npm run build -- export ../examples/factory "$ADF_DEV_FACTORY_ID" arm-output'
+      } }
+    }
+  }
+  post { success { archiveArtifacts artifacts: 'adf_guide/tools/arm-output/**', fingerprint: true } }
+}
+// Protected release job consumes this same artifact with environment identity,
+// reviewed overrides, pre/deploy/smoke/post lifecycle. No secrets in this file.

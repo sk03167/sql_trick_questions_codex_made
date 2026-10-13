@@ -1,0 +1,20 @@
+{
+  "Microsoft.DataFactory/factories/linkedServices": {
+    "AzureBlobFS": {
+      "properties": {
+        "parameters": {
+          "*": {
+            "defaultValue": "="
+          }
+        }
+      }
+    },
+    "RestService": {
+      "properties": {
+        "typeProperties": {
+          "url": "="
+        }
+      }
+    }
+  }
+}

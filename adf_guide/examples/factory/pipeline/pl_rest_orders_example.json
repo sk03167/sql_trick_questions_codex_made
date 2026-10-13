@@ -1,0 +1,107 @@
+{
+  "name": "pl_rest_orders_example",
+  "properties": {
+    "parameters": {
+      "p_relative_url": {
+        "type": "String",
+        "defaultValue": "v1/orders?page_size=500"
+      },
+      "p_file_system": {
+        "type": "String",
+        "defaultValue": "lab"
+      },
+      "p_output_folder": {
+        "type": "String",
+        "defaultValue": "landing/api-orders/batch=demo-001"
+      }
+    },
+    "activities": [
+      {
+        "name": "CopyApiOrders",
+        "type": "Copy",
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_rest_orders",
+            "type": "DatasetReference",
+            "parameters": {
+              "p_relative_url": {
+                "value": "@pipeline().parameters.p_relative_url",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_adls_json",
+            "type": "DatasetReference",
+            "parameters": {
+              "p_file_system": {
+                "value": "@pipeline().parameters.p_file_system",
+                "type": "Expression"
+              },
+              "p_folder": {
+                "value": "@pipeline().parameters.p_output_folder",
+                "type": "Expression"
+              },
+              "p_file": "orders.json"
+            }
+          }
+        ],
+        "typeProperties": {
+          "source": {
+            "type": "RestSource",
+            "requestMethod": "GET",
+            "paginationRules": {
+              "AbsoluteUrl": "$.nextLink"
+            },
+            "httpRequestTimeout": "00:01:00",
+            "requestInterval": "00:00:01"
+          },
+          "sink": {
+            "type": "JsonSink",
+            "storeSettings": {
+              "type": "AzureBlobFSWriteSettings"
+            },
+            "formatSettings": {
+              "type": "JsonWriteSettings",
+              "filePattern": "arrayOfObjects"
+            }
+          },
+          "translator": {
+            "type": "TabularTranslator",
+            "collectionReference": "$.items",
+            "mappings": [
+              {
+                "source": {
+                  "path": "['order_id']"
+                },
+                "sink": {
+                  "path": "['order_id']"
+                }
+              },
+              {
+                "source": {
+                  "path": "['amount']"
+                },
+                "sink": {
+                  "path": "['amount']"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "annotations": [
+      "Educational ADF guide; replace environment settings before use"
+    ]
+  }
+}

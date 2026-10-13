@@ -1,0 +1,7 @@
+{
+  "p_source_fs": "lab",
+  "p_source_folder": "incoming/orders/2026-10-12",
+  "p_sink_fs": "lab",
+  "p_landing_root": "landing/orders",
+  "p_batch_id": "orders-20261012-001"
+}

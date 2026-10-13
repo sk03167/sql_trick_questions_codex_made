@@ -1,0 +1,38 @@
+{
+  "name": "tr_daily_files_stopped",
+  "properties": {
+    "type": "ScheduleTrigger",
+    "runtimeState": "Stopped",
+    "pipelines": [
+      {
+        "pipelineReference": {
+          "referenceName": "pl_copy_files",
+          "type": "PipelineReference"
+        },
+        "parameters": {
+          "p_source_fs": "lab",
+          "p_source_folder": "@concat('incoming/orders/',formatDateTime(addDays(convertTimeZone(trigger().scheduledTime,'UTC','India Standard Time'),-1),'yyyy-MM-dd'))",
+          "p_sink_fs": "lab",
+          "p_landing_root": "landing/orders",
+          "p_batch_id": "@concat('orders-',formatDateTime(addDays(convertTimeZone(trigger().scheduledTime,'UTC','India Standard Time'),-1),'yyyyMMdd'))"
+        }
+      }
+    ],
+    "typeProperties": {
+      "recurrence": {
+        "frequency": "Day",
+        "interval": 1,
+        "startTime": "2026-10-13T04:00:00",
+        "timeZone": "India Standard Time",
+        "schedule": {
+          "hours": [
+            4
+          ],
+          "minutes": [
+            0
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "ds_rest_orders",
+  "properties": {
+    "type": "RestResource",
+    "linkedServiceName": {
+      "referenceName": "ls_rest_public_example",
+      "type": "LinkedServiceReference"
+    },
+    "parameters": {
+      "p_relative_url": {
+        "type": "String",
+        "defaultValue": "v1/orders?page_size=500"
+      }
+    },
+    "typeProperties": {
+      "relativeUrl": {
+        "value": "@dataset().p_relative_url",
+        "type": "Expression"
+      }
+    },
+    "schema": []
+  }
+}

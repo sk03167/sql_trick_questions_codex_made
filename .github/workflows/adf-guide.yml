@@ -1,0 +1,38 @@
+name: ADF guide validation and ARM export
+on:
+  push:
+    branches: [azure-data-factory-practical-guide]
+    paths: ['adf_guide/**', 'AZURE_DATA_FACTORY_GUIDE_INDEX.md', '.github/workflows/adf-guide.yml']
+  pull_request:
+    paths: ['adf_guide/**', 'AZURE_DATA_FACTORY_GUIDE_INDEX.md', '.github/workflows/adf-guide.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '22'
+      - name: Local acceptance tests
+        run: python3 -m unittest discover -s adf_guide/examples/tests -v
+      - name: Owned definitions, documents, and code
+        run: |
+          python3 adf_guide/tools/validate_factory.py
+          python3 adf_guide/tools/validate_guide.py
+      - name: Install pinned build tools
+        run: npm ci --prefix adf_guide/tools --ignore-scripts --no-audit --no-fund
+      - name: Microsoft definition validation and ARM export
+        working-directory: adf_guide/tools
+        run: npm run build -- export ../examples/factory /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-adf-guide/providers/Microsoft.DataFactory/factories/adf-guide-dev arm-output
+      - name: Check newly exported parameter contract
+        run: python3 adf_guide/tools/check_export.py adf_guide/tools/arm-output
+      - name: Install isolated diagram browser
+        run: npm exec --prefix adf_guide/tools -- playwright install --with-deps chromium
+      - name: Render and check every diagram
+        run: node adf_guide/tools/render_diagrams.cjs
+      - name: Final owned-file and diagram coherence
+        run: python3 adf_guide/tools/validate_guide.py

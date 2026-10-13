@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "scripts": {"build": "node node_modules/@microsoft/azure-data-factory-utilities/lib/index", "diagrams": "node render_diagrams.cjs"},
+  "dependencies": {"@microsoft/azure-data-factory-utilities": "1.0.3", "mermaid": "12.1.0", "playwright": "1.64.0"}
+}

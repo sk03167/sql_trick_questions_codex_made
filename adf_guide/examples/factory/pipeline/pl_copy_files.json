@@ -1,0 +1,129 @@
+{
+  "name": "pl_copy_files",
+  "properties": {
+    "parameters": {
+      "p_source_fs": {
+        "type": "String",
+        "defaultValue": "lab"
+      },
+      "p_source_folder": {
+        "type": "String",
+        "defaultValue": "incoming/orders/2026-10-12"
+      },
+      "p_sink_fs": {
+        "type": "String",
+        "defaultValue": "lab"
+      },
+      "p_landing_root": {
+        "type": "String",
+        "defaultValue": "landing/orders"
+      },
+      "p_batch_id": {
+        "type": "String",
+        "defaultValue": "orders-20261012-001"
+      }
+    },
+    "activities": [
+      {
+        "name": "CopyFiles",
+        "type": "Copy",
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_adls_binary",
+            "type": "DatasetReference",
+            "parameters": {
+              "p_file_system": {
+                "value": "@pipeline().parameters.p_source_fs",
+                "type": "Expression"
+              },
+              "p_folder": {
+                "value": "@pipeline().parameters.p_source_folder",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_adls_binary",
+            "type": "DatasetReference",
+            "parameters": {
+              "p_file_system": {
+                "value": "@pipeline().parameters.p_sink_fs",
+                "type": "Expression"
+              },
+              "p_folder": {
+                "value": "@concat(pipeline().parameters.p_landing_root, '/batch=', pipeline().parameters.p_batch_id)",
+                "type": "Expression"
+              }
+            }
+          }
+        ],
+        "typeProperties": {
+          "source": {
+            "type": "BinarySource",
+            "storeSettings": {
+              "type": "AzureBlobFSReadSettings",
+              "recursive": true
+            }
+          },
+          "sink": {
+            "type": "BinarySink",
+            "storeSettings": {
+              "type": "AzureBlobFSWriteSettings",
+              "copyBehavior": "PreserveHierarchy"
+            }
+          },
+          "enableStaging": false
+        }
+      },
+      {
+        "name": "RequireFiles",
+        "type": "IfCondition",
+        "dependsOn": [
+          {
+            "activity": "CopyFiles",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "typeProperties": {
+          "expression": {
+            "value": "@greater(activity('CopyFiles').output.filesRead, 0)",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "name": "Accepted",
+              "type": "Wait",
+              "typeProperties": {
+                "waitTimeInSeconds": 1
+              }
+            }
+          ],
+          "ifFalseActivities": [
+            {
+              "name": "EmptyBatch",
+              "type": "Fail",
+              "typeProperties": {
+                "message": "No files copied; verify delivery and dataset parameters",
+                "errorCode": "EMPTY_BATCH"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "annotations": [
+      "Educational ADF guide; replace environment settings before use"
+    ]
+  }
+}

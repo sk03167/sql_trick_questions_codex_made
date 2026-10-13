@@ -1,0 +1,49 @@
+# OPT-IN. Managed agent has approved Node22/AzureCLI+datafactory extension,
+# pwsh/Az modules. Configure target environment/OIDC and run acceptance before use.
+name: Example protected ADF release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: adf-test-deploy
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: [self-hosted, adf-release]
+    environment: adf-test
+    env:
+      TARGET_RG: ${{ vars.TARGET_RG }}
+      TARGET_FACTORY: ${{ vars.TARGET_FACTORY }}
+      STORAGE_URL: ${{ vars.STORAGE_URL }}
+      REST_URL: ${{ vars.REST_URL }}
+      ADF_DEV_FACTORY_ID: ${{ vars.ADF_DEV_FACTORY_ID }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - run: python3 -m unittest discover -s adf_guide/examples/tests -v
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: adf_guide/tools
+      - run: npm run build -- export ../examples/factory "$ADF_DEV_FACTORY_ID" arm-output
+        working-directory: adf_guide/tools
+      - uses: azure/login@7184910d9eb2b1c5e48f7073824a90609bb9b6d6
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+      - name: Generate reviewed endpoint/factory overrides
+        run: python3 adf_guide/tools/make_parameters.py --template adf_guide/tools/arm-output/ARMTemplateForFactory.json --factory "$TARGET_FACTORY" --storage-url "$STORAGE_URL" --rest-url "$REST_URL" --output /tmp/adf-target.parameters.json
+      - name: Predeployment affected-trigger handling
+        shell: pwsh
+        run: ./adf_guide/tools/arm-output/PrePostDeploymentScript.ps1 -armTemplate ./adf_guide/tools/arm-output/ARMTemplateForFactory.json -ResourceGroupName $env:TARGET_RG -DataFactoryName $env:TARGET_FACTORY -predeployment $true -deleteDeployment $false
+      - name: Deploy reviewed application ARM
+        run: az deployment group create --resource-group "$TARGET_RG" --template-file adf_guide/tools/arm-output/ARMTemplateForFactory.json --parameters @/tmp/adf-target.parameters.json
+      - name: Execute parameter-only smoke and await real outcome
+        run: python3 adf_guide/tools/live_smoke.py --resource-group "$TARGET_RG" --factory "$TARGET_FACTORY" --parameters adf_guide/examples/templates/run-parent.parameters.json
+      - name: Postdeployment intended-trigger handling
+        shell: pwsh
+        run: ./adf_guide/tools/arm-output/PrePostDeploymentScript.ps1 -armTemplate ./adf_guide/tools/arm-output/ARMTemplateForFactory.json -ResourceGroupName $env:TARGET_RG -DataFactoryName $env:TARGET_FACTORY -predeployment $false -deleteDeployment $false
+# This smoke only proves parameter/control-flow execution. Add real IR/Copy/data
+# reconciliation/access checks before production. Failed deployment/smoke leaves
+# trigger restoration to the approved recovery process; do not blindly restart.

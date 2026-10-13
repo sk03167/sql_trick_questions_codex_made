@@ -1,0 +1,21 @@
+{
+  "name": "ls_adls",
+  "properties": {
+    "type": "AzureBlobFS",
+    "parameters": {
+      "p_account_url": {
+        "type": "String",
+        "defaultValue": "https://exampleadflab.dfs.core.windows.net"
+      }
+    },
+    "typeProperties": {
+      "url": {
+        "value": "@linkedService().p_account_url",
+        "type": "Expression"
+      }
+    },
+    "annotations": [
+      "Illustrative host; uses factory managed identity, no storage key"
+    ]
+  }
+}

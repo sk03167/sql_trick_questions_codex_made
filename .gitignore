@@ -2,3 +2,12 @@ __pycache__/
 *.pyc
 *.db
 .DS_Store
+
+# ADF tooling/downloads and local deployment artifacts
+node_modules/
+.venv/
+adf_guide/tools/downloads/
+adf_guide/tools/arm-output/
+.terraform/
+*.tfstate
+*.tfstate.*

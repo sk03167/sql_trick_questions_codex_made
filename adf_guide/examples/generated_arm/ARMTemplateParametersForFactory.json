@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "adf-guide-dev"
+        },
+        "ls_adls_properties_parameters_p_account_url_defaultValue": {
+            "value": "https://exampleadflab.dfs.core.windows.net"
+        },
+        "ls_rest_public_example_properties_typeProperties_url": {
+            "value": "https://api.example.invalid/"
+        }
+    }
+}

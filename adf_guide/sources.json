@@ -1,0 +1,551 @@
+{
+  "https://learn.microsoft.com/en-us/azure/data-factory/introduction": {
+    "title": "Introduction",
+    "chapters": [
+      1
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/concepts-pipelines-activities": {
+    "title": "Concepts Pipelines Activities",
+    "chapters": [
+      1
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime": {
+    "title": "Concepts Integration Runtime",
+    "chapters": [
+      1,
+      3,
+      34
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/concepts-change-data-capture": {
+    "title": "Concepts Change Data Capture",
+    "chapters": [
+      1,
+      11,
+      12
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/quickstart-create-data-factory-portal": {
+    "title": "Quickstart Create Data Factory Portal",
+    "chapters": [
+      2
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/iterative-development-debugging": {
+    "title": "Iterative Development Debugging",
+    "chapters": [
+      2,
+      28,
+      30
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/source-control": {
+    "title": "Source Control",
+    "chapters": [
+      2,
+      25
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-deployment": {
+    "title": "Continuous Integration Deployment",
+    "chapters": [
+      2,
+      25,
+      26,
+      27,
+      34
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/create-self-hosted-integration-runtime": {
+    "title": "Create Self Hosted Integration Runtime",
+    "chapters": [
+      3,
+      31
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/managed-virtual-network-private-endpoint": {
+    "title": "Managed Virtual Network Private Endpoint",
+    "chapters": [
+      3,
+      23
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/create-azure-ssis-integration-runtime": {
+    "title": "Create Azure Ssis Integration Runtime",
+    "chapters": [
+      3
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-data-lake-storage": {
+    "title": "Connector Azure Data Lake Storage",
+    "chapters": [
+      4,
+      9
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-sql-database": {
+    "title": "Connector Azure Sql Database",
+    "chapters": [
+      4,
+      10,
+      22
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/store-credentials-in-key-vault": {
+    "title": "Store Credentials In Key Vault",
+    "chapters": [
+      4,
+      23
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/parameterize-linked-services": {
+    "title": "Parameterize Linked Services",
+    "chapters": [
+      4,
+      6
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/concepts-datasets-linked-services": {
+    "title": "Concepts Datasets Linked Services",
+    "chapters": [
+      5
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/format-binary": {
+    "title": "Format Binary",
+    "chapters": [
+      5,
+      9
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/format-delimited-text": {
+    "title": "Format Delimited Text",
+    "chapters": [
+      5
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/format-json": {
+    "title": "Format Json",
+    "chapters": [
+      5,
+      13
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/how-to-expression-language-functions": {
+    "title": "How To Expression Language Functions",
+    "chapters": [
+      6
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-expression-language-functions": {
+    "title": "Control Flow Expression Language Functions",
+    "chapters": [
+      6,
+      7,
+      33
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/parameters-data-flow": {
+    "title": "Parameters Data Flow",
+    "chapters": [
+      6,
+      7,
+      20,
+      34
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-system-variables": {
+    "title": "Control Flow System Variables",
+    "chapters": [
+      7,
+      18
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-set-variable-activity": {
+    "title": "Control Flow Set Variable Activity",
+    "chapters": [
+      8,
+      16
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-append-variable-activity": {
+    "title": "Control Flow Append Variable Activity",
+    "chapters": [
+      8
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-for-each-activity": {
+    "title": "Control Flow For Each Activity",
+    "chapters": [
+      8,
+      16,
+      24
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-execute-pipeline-activity": {
+    "title": "Control Flow Execute Pipeline Activity",
+    "chapters": [
+      8,
+      16,
+      24,
+      30
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-overview": {
+    "title": "Copy Activity Overview",
+    "chapters": [
+      9,
+      30
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-data-consistency": {
+    "title": "Copy Activity Data Consistency",
+    "chapters": [
+      9,
+      28
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-sql-server": {
+    "title": "Connector Sql Server",
+    "chapters": [
+      10
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-oracle": {
+    "title": "Connector Oracle",
+    "chapters": [
+      10
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-performance": {
+    "title": "Copy Activity Performance",
+    "chapters": [
+      10,
+      29
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/tutorial-incremental-copy-portal": {
+    "title": "Tutorial Incremental Copy Portal",
+    "chapters": [
+      11
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-stored-procedure": {
+    "title": "Transform Data Using Stored Procedure",
+    "chapters": [
+      11,
+      21,
+      22
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/transform-data-using-script": {
+    "title": "Transform Data Using Script",
+    "chapters": [
+      11,
+      21
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/how-to-change-data-capture-resource": {
+    "title": "How To Change Data Capture Resource",
+    "chapters": [
+      12
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-alter-row": {
+    "title": "Data Flow Alter Row",
+    "chapters": [
+      12,
+      22
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-sink": {
+    "title": "Data Flow Sink",
+    "chapters": [
+      12,
+      19,
+      22
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-rest": {
+    "title": "Connector Rest",
+    "chapters": [
+      13
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-schema-and-type-mapping": {
+    "title": "Copy Activity Schema And Type Mapping",
+    "chapters": [
+      13
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-web-activity": {
+    "title": "Control Flow Web Activity",
+    "chapters": [
+      14
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-http": {
+    "title": "Connector Http",
+    "chapters": [
+      14
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-until-activity": {
+    "title": "Control Flow Until Activity",
+    "chapters": [
+      14,
+      17
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-azure-function-activity": {
+    "title": "Control Flow Azure Function Activity",
+    "chapters": [
+      14,
+      21
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-lookup-activity": {
+    "title": "Control Flow Lookup Activity",
+    "chapters": [
+      15,
+      24
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-get-metadata-activity": {
+    "title": "Control Flow Get Metadata Activity",
+    "chapters": [
+      15
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-filter-activity": {
+    "title": "Control Flow Filter Activity",
+    "chapters": [
+      15
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/tutorial-pipeline-return-value": {
+    "title": "Tutorial Pipeline Return Value",
+    "chapters": [
+      16
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-if-condition-activity": {
+    "title": "Control Flow If Condition Activity",
+    "chapters": [
+      17
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-switch-activity": {
+    "title": "Control Flow Switch Activity",
+    "chapters": [
+      17
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/control-flow-fail-activity": {
+    "title": "Control Flow Fail Activity",
+    "chapters": [
+      17
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/tutorial-pipeline-failure-error-handling": {
+    "title": "Tutorial Pipeline Failure Error Handling",
+    "chapters": [
+      17,
+      28,
+      33
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-schedule-trigger": {
+    "title": "How To Create Schedule Trigger",
+    "chapters": [
+      18
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-tumbling-window-trigger": {
+    "title": "How To Create Tumbling Window Trigger",
+    "chapters": [
+      18,
+      31
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/how-to-create-event-trigger": {
+    "title": "How To Create Event Trigger",
+    "chapters": [
+      18
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-overview": {
+    "title": "Concepts Data Flow Overview",
+    "chapters": [
+      19
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-debug-mode": {
+    "title": "Concepts Data Flow Debug Mode",
+    "chapters": [
+      19,
+      20,
+      29
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-derived-column": {
+    "title": "Data Flow Derived Column",
+    "chapters": [
+      19
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-join": {
+    "title": "Data Flow Join",
+    "chapters": [
+      19
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-aggregate": {
+    "title": "Data Flow Aggregate",
+    "chapters": [
+      19
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/concepts-integration-runtime-performance": {
+    "title": "Concepts Integration Runtime Performance",
+    "chapters": [
+      20
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-performance": {
+    "title": "Concepts Data Flow Performance",
+    "chapters": [
+      20
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/transform-data-databricks-notebook": {
+    "title": "Transform Data Databricks Notebook",
+    "chapters": [
+      21
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/data-factory-service-identity": {
+    "title": "Data Factory Service Identity",
+    "chapters": [
+      23
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connect-data-factory-to-azure-purview": {
+    "title": "Connect Data Factory To Azure Purview",
+    "chapters": [
+      23
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/copy-data-tool-metadata-driven": {
+    "title": "Copy Data Tool Metadata Driven",
+    "chapters": [
+      24
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-improvements": {
+    "title": "Continuous Integration Delivery Improvements",
+    "chapters": [
+      25,
+      26,
+      27,
+      28,
+      30
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-resource-manager-custom-parameters": {
+    "title": "Continuous Integration Delivery Resource Manager Custom Parameters",
+    "chapters": [
+      25
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-automate-azure-pipelines": {
+    "title": "Continuous Integration Delivery Automate Azure Pipelines",
+    "chapters": [
+      26
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/continuous-integration-delivery-sample-script": {
+    "title": "Continuous Integration Delivery Sample Script",
+    "chapters": [
+      26,
+      31
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/quickstart-create-data-factory-resource-manager-template": {
+    "title": "Quickstart Create Data Factory Resource Manager Template",
+    "chapters": [
+      27
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect": {
+    "title": "Azure login with GitHub OIDC",
+    "chapters": [
+      27
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/monitor-visually": {
+    "title": "Monitor Visually",
+    "chapters": [
+      29,
+      31,
+      33
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/monitor-programmatically": {
+    "title": "Monitor Programmatically",
+    "chapters": [
+      29
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/copy-activity-performance-troubleshooting": {
+    "title": "Copy Activity Performance Troubleshooting",
+    "chapters": [
+      29,
+      33
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-cosmos-db": {
+    "title": "Connector Azure Cosmos Db",
+    "chapters": [
+      32
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-mongodb-atlas": {
+    "title": "Connector Mongodb Atlas",
+    "chapters": [
+      32
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-sftp": {
+    "title": "Connector Sftp",
+    "chapters": [
+      32
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-amazon-simple-storage-service": {
+    "title": "Connector Amazon Simple Storage Service",
+    "chapters": [
+      32
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/connector-google-cloud-storage": {
+    "title": "Connector Google Cloud Storage",
+    "chapters": [
+      32
+    ]
+  },
+  "https://learn.microsoft.com/en-us/azure/data-factory/data-flow-flatten": {
+    "title": "Data Flow Flatten",
+    "chapters": [
+      32
+    ]
+  },
+  "https://learn.microsoft.com/en-us/fabric/data-factory/compare-fabric-data-factory-and-azure-data-factory": {
+    "title": "Official ADF/Fabric comparison",
+    "chapters": [
+      34
+    ]
+  }
+}

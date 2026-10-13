@@ -1,0 +1,13 @@
+{
+  "batch_id": "orders-20261012-001",
+  "complete": true,
+  "files": [
+    "orders_001.csv",
+    "orders_002.csv"
+  ],
+  "records": 3,
+  "revenue": {
+    "IN": "145.00",
+    "US": "50.00"
+  }
+}

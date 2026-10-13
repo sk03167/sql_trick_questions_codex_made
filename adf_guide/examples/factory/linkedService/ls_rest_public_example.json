@@ -1,0 +1,14 @@
+{
+  "name": "ls_rest_public_example",
+  "properties": {
+    "type": "RestService",
+    "typeProperties": {
+      "url": "https://api.example.invalid/",
+      "enableServerCertificateValidation": true,
+      "authenticationType": "Anonymous"
+    },
+    "annotations": [
+      "Anonymous public API illustration, not suitable for a private vendor API"
+    ]
+  }
+}

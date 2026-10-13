@@ -1,0 +1,21 @@
+# Build-only example: it exports definitions but doesn't deploy a factory.
+trigger: none
+pool:
+  vmImage: ubuntu-24.04
+steps:
+  - checkout: self
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '22.x'
+  - script: python3 -m unittest discover -s adf_guide/examples/tests -v
+    displayName: Local acceptance oracle
+  - script: npm ci --ignore-scripts --no-audit --no-fund
+    workingDirectory: adf_guide/tools
+  - script: npm run build -- export ../examples/factory "$(ADF_DEV_FACTORY_ID)" arm-output
+    workingDirectory: adf_guide/tools
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: adf_guide/tools/arm-output
+      artifact: adf-arm
+# Release stages download this artifact, apply reviewed environment overrides,
+# run current pre/post script with approved Azure identity, deploy and test.
