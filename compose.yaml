@@ -1,0 +1,12 @@
+services:
+  dev:
+    image: python-libreoffice-dev
+    container_name: python-libreoffice-dev-session
+    working_dir: /workspace
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+    stdin_open: true
+    tty: true
+    command: bash
